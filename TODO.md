@@ -64,11 +64,11 @@ Use this checklist **every time** you implement a feature or fix (not just once 
   - [x] Log cache hits/misses (+v0.6.1)
   - [x] Add richer runtime logging events (+v0.6.3)
 
-- [ ] Update logs and commit (+v0.6.5)
-  - [ ] Update `CHANGELOG.md` (+v0.6.5)
-  - [ ] Update `extension/logs/dev_log.md` (+v0.6.5)
-  - [ ] Write/update manual test plan (+v0.6.5)
-  - [ ] Commit: "fix: show log actions on welcome/errors"
+- [x] Update logs and commit (+v0.6.5)
+  - [x] Update `CHANGELOG.md` (+v0.6.5)
+  - [x] Update `extension/logs/dev_log.md` (+v0.6.5)
+  - [x] Write/update manual test plan (+v0.6.5)
+  - [x] Commit: "fix: show log actions on welcome/errors"
 
 ### Phase 5: Caching & Performance (OPTIONAL NEXT)
 
