@@ -6,10 +6,11 @@ Manage Morgen tasks from Ulauncher - list, search, and create tasks
 import logging
 from ulauncher.api.client.Extension import Extension
 from ulauncher.api.client.EventListener import EventListener
-from ulauncher.api.shared.event import KeywordQueryEvent
+from ulauncher.api.shared.event import KeywordQueryEvent, ItemEnterEvent
 from ulauncher.api.shared.item.ExtensionResultItem import ExtensionResultItem
 from ulauncher.api.shared.action.RenderResultListAction import RenderResultListAction
 from ulauncher.api.shared.action.HideWindowAction import HideWindowAction
+from ulauncher.api.shared.action.ExtensionCustomAction import ExtensionCustomAction
 
 try:
     from ulauncher.api.shared.action.CopyToClipboardAction import CopyToClipboardAction
@@ -25,6 +26,7 @@ from src.morgen_api import (
 )
 from src.cache import TaskCache
 from src.formatter import TaskFormatter
+from src.date_parser import DateParser, DateParseError
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +37,7 @@ class MorgenTasksExtension(Extension):
     def __init__(self):
         super(MorgenTasksExtension, self).__init__()
         self.subscribe(KeywordQueryEvent, KeywordQueryEventListener())
+        self.subscribe(ItemEnterEvent, ItemEnterEventListener())
         self.cache = None
         self.api_client = None
         logger.info("Morgen Tasks Extension initialized")
@@ -76,6 +79,11 @@ class KeywordQueryEventListener(EventListener):
 
         items = []
         formatter = TaskFormatter()
+
+        # Phase 4: create task flow (mg new ...)
+        create_items = self._maybe_build_create_flow(raw_query)
+        if create_items is not None:
+            return RenderResultListAction(create_items)
 
         force_refresh, query = self._parse_query(raw_query)
 
@@ -148,6 +156,127 @@ class KeywordQueryEventListener(EventListener):
             ))
 
         return RenderResultListAction(items)
+
+    def _maybe_build_create_flow(self, raw_query: str):
+        """
+        If query starts with 'new' or 'add', return items for the create flow.
+        Otherwise return None.
+        """
+        if not raw_query:
+            return None
+
+        parts = raw_query.split(None, 1)
+        if not parts:
+            return None
+
+        head = parts[0].lower()
+        if head not in {"new", "add"}:
+            return None
+
+        rest = parts[1].strip() if len(parts) > 1 else ""
+        items = []
+
+        if not rest:
+            items.append(ExtensionResultItem(
+                icon='images/icon.png',
+                name='Create task: missing title',
+                description='Usage: mg new <title> [@due] [!priority]',
+                on_enter=HideWindowAction()
+            ))
+            return items
+
+        parse = self._parse_create_args(rest)
+        if parse.get("error"):
+            items.append(ExtensionResultItem(
+                icon='images/icon.png',
+                name='Cannot create task',
+                description=parse["error"],
+                on_enter=HideWindowAction()
+            ))
+            return items
+
+        title = parse["title"]
+        due = parse.get("due")
+        due_display = parse.get("due_display")
+        priority = parse.get("priority", 0)
+
+        summary = []
+        if due:
+            summary.append(f"Due: {due_display}")
+        if priority:
+            summary.append(f"Priority: {priority}")
+        if not summary:
+            summary.append("No due date / priority")
+
+        items.append(ExtensionResultItem(
+            icon='images/icon.png',
+            name='Create Morgen task',
+            description=' | '.join(summary),
+            on_enter=HideWindowAction()
+        ))
+
+        payload = {
+            "action": "create_task",
+            "title": title,
+            "due": due,
+            "priority": priority,
+        }
+
+        items.append(ExtensionResultItem(
+            icon='images/icon.png',
+            name=f'Create: {title}',
+            description='Press Enter to create this task',
+            on_enter=ExtensionCustomAction(payload, keep_app_open=True)
+        ))
+
+        items.append(ExtensionResultItem(
+            icon='images/icon.png',
+            name='Cancel',
+            description='Close without creating a task',
+            on_enter=HideWindowAction()
+        ))
+
+        return items
+
+    def _parse_create_args(self, rest: str) -> dict:
+        """
+        Parse create args from the part after 'new' / 'add'.
+
+        Supports:
+          - @<due> (e.g. @today, @tomorrow, @next-mon, @2026-02-10, @2026-02-10T15:30, @15:30)
+          - !<priority> (1..9), e.g. !3
+        """
+        tokens = rest.split()
+        title_parts = []
+        due_token = None
+        priority = 0
+
+        for token in tokens:
+            if token.startswith("@") and len(token) > 1 and due_token is None:
+                due_token = token[1:]
+                continue
+            if token.startswith("!") and len(token) > 1 and token[1:].isdigit():
+                p = int(token[1:])
+                if 0 <= p <= 9:
+                    priority = p
+                    continue
+            title_parts.append(token)
+
+        title = " ".join(title_parts).strip()
+        if not title:
+            return {"error": "Missing title. Usage: mg new <title> [@due] [!priority]"}
+
+        parsed = {"title": title, "priority": priority}
+
+        if due_token:
+            try:
+                due_parsed = DateParser().parse(due_token)
+                parsed["due"] = due_parsed.due
+                parsed["due_display"] = due_parsed.display
+            except DateParseError as e:
+                return {"error": f"Invalid due date '{due_token}': {e}"}
+
+        return parsed
 
     def _parse_query(self, raw_query: str):
         """
@@ -258,6 +387,98 @@ class KeywordQueryEventListener(EventListener):
             ))
 
         return items
+
+
+class ItemEnterEventListener(EventListener):
+    """Handles item enter events for custom actions."""
+
+    def on_event(self, event, extension):
+        data = None
+        try:
+            data = event.get_data()
+        except Exception:
+            data = getattr(event, "data", None)
+
+        if not isinstance(data, dict) or not data.get("action"):
+            return HideWindowAction()
+
+        if data.get("action") != "create_task":
+            return HideWindowAction()
+
+        title = (data.get("title") or "").strip()
+        due = data.get("due")
+        try:
+            priority = int(data.get("priority") or 0)
+        except Exception:
+            priority = 0
+
+        api_key = extension.preferences.get("api_key", "").strip()
+        cache_ttl_str = extension.preferences.get("cache_ttl", "600")
+        try:
+            cache_ttl = int(cache_ttl_str)
+        except ValueError:
+            cache_ttl = 600
+
+        if not api_key:
+            return RenderResultListAction([ExtensionResultItem(
+                icon='images/icon.png',
+                name='Cannot create task',
+                description='Missing API key. Set it in extension preferences.',
+                on_enter=HideWindowAction()
+            )])
+
+        # Ensure client/cache are initialized
+        if extension.api_client is None or extension.api_client.api_key != api_key:
+            extension.api_client = MorgenAPIClient(api_key)
+        if extension.cache is None:
+            extension.cache = TaskCache(ttl=cache_ttl)
+
+        try:
+            resp = extension.api_client.create_task(title=title, due=due, priority=priority)
+            task_id = resp.get("data", {}).get("id") or ""
+
+            if extension.cache:
+                extension.cache.invalidate()
+
+            description = f"Created (id: {task_id})" if task_id else "Created"
+            return RenderResultListAction([ExtensionResultItem(
+                icon='images/icon.png',
+                name='Task created',
+                description=description,
+                on_enter=HideWindowAction()
+            )])
+
+        except MorgenAuthError:
+            return RenderResultListAction([ExtensionResultItem(
+                icon='images/icon.png',
+                name='Authentication Failed',
+                description='Invalid API key. Check extension preferences.',
+                on_enter=HideWindowAction()
+            )])
+
+        except MorgenRateLimitError:
+            return RenderResultListAction([ExtensionResultItem(
+                icon='images/icon.png',
+                name='Rate limit exceeded',
+                description='Try again later.',
+                on_enter=HideWindowAction()
+            )])
+
+        except (MorgenNetworkError, MorgenAPIError) as e:
+            return RenderResultListAction([ExtensionResultItem(
+                icon='images/icon.png',
+                name='Create failed',
+                description=str(getattr(e, "message", e)),
+                on_enter=HideWindowAction()
+            )])
+
+        except Exception as e:
+            return RenderResultListAction([ExtensionResultItem(
+                icon='images/icon.png',
+                name='Unexpected error',
+                description=str(e),
+                on_enter=HideWindowAction()
+            )])
 
 
 if __name__ == '__main__':

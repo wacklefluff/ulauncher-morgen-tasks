@@ -3,7 +3,7 @@
 Current task list and development roadmap.
 
 **Last Updated**: 2026-02-05
-**Current Version**: v0.3.0 (Phase 3 Complete)
+**Current Version**: v0.4.0 (Phase 4 Implemented)
 **Current Branch**: `develop`
 
 ## Immediate Next Steps
@@ -45,29 +45,29 @@ Current task list and development roadmap.
 
 ## Phase 4: Create Tasks (After Phase 3)
 
-- [ ] Create `src/date_parser.py` - Natural language date parsing
-  - [ ] Implement `DateParser` class
-  - [ ] Parse "today", "tomorrow", "next week"
-  - [ ] Parse specific dates
-  - [ ] Parse times (3pm, 15:00)
-  - [ ] Convert to Morgen format: `YYYY-MM-DDTHH:mm:ss`
-  - [ ] Handle invalid dates
+- [x] Create `src/date_parser.py` - Natural language date parsing
+  - [x] Implement `DateParser` class
+  - [x] Parse "today", "tomorrow", "next week"
+  - [x] Parse specific dates
+  - [x] Parse times (3pm, 15:00)
+  - [x] Convert to Morgen format: `YYYY-MM-DDTHH:mm:ss`
+  - [x] Handle invalid dates
 
-- [ ] Implement task creation command syntax
-  - [ ] Parse `mg new <title>` command
-  - [ ] Parse `@<date>` for due dates
-  - [ ] Parse `!<priority>` for priority (1-9)
+- [x] Implement task creation command syntax
+  - [x] Parse `mg new <title>` command
+  - [x] Parse `@<date>` for due dates
+  - [x] Parse `!<priority>` for priority (1-9)
   - [ ] Future: Parse `#<tag>` for tags
 
-- [ ] Update `main.py` for task creation
-  - [ ] Detect "new" keyword in query
-  - [ ] Parse task components (title, date, priority)
-  - [ ] Show preview before creation
-  - [ ] Use `ExtensionCustomAction` for confirmation
-  - [ ] Subscribe to `ItemEnterEvent`
-  - [ ] Create task via API
-  - [ ] Show success/error message
-  - [ ] Invalidate cache after creation
+- [x] Update `main.py` for task creation
+  - [x] Detect "new" keyword in query
+  - [x] Parse task components (title, date, priority)
+  - [x] Show preview before creation
+  - [x] Use `ExtensionCustomAction` for confirmation
+  - [x] Subscribe to `ItemEnterEvent`
+  - [x] Create task via API
+  - [x] Show success/error message
+  - [x] Invalidate cache after creation
 
 - [ ] Test task creation
   - [ ] Create task with title only
@@ -78,8 +78,8 @@ Current task list and development roadmap.
   - [ ] Verify cache invalidation
 
 - [ ] Update logs and commit
-  - [ ] Update `CHANGELOG.md` to v0.4.0
-  - [ ] Git commit: "feat: create tasks with date parsing"
+  - [x] Update `CHANGELOG.md` to v0.4.0
+  - [x] Git commit: "feat: create tasks with date parsing"
 
 ## Phase 5: Caching & Performance (After Phase 4)
 

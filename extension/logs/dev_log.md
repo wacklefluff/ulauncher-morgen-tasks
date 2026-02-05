@@ -14,6 +14,27 @@
 
 ---
 
+## 2026-02-05 (Session 6)
+
+**Goals**:
+- Implement Phase 4: create tasks
+
+**Accomplished**:
+- Added `extension/src/date_parser.py` (`DateParser`) for due parsing
+- Updated `extension/main.py` with create flow:
+  - `mg new <title> [@due] [!priority]` (preview + confirmation)
+  - Handles custom action via `ItemEnterEvent`
+  - Invalidates cache after successful creation
+- Updated docs for v0.4.0 (`CHANGELOG.md`, `README.md`, `extension/README.md`, `TODO.md`)
+
+**Notes**:
+- Manual testing needed in Ulauncher:
+  - `mg new Test task`
+  - `mg new Test @tomorrow`
+  - `mg new Test @next-mon !3`
+
+---
+
 ## 2026-02-05 (Session 4)
 
 **Goals**:
