@@ -16,7 +16,7 @@ Quick reference guide for AI agents working on the Ulauncher Morgen Tasks Extens
    cat README.md                           # Project overview
    cat TODO.md                              # Current tasks
    cat extension/logs/dev_log.md            # Recent progress
-   cat /home/user/.claude/plans/buzzing-waddling-fiddle.md  # Detailed plan
+   ls development/research/                                  # Implementation plans
    ```
 
 2. **Check git status**:
@@ -77,8 +77,8 @@ Create these files:
 - `extension/logs/issues.md` - Known bugs
 - `extension/logs/improvements.md` - Future ideas
 
-### Plans
-- `/home/user/.claude/plans/buzzing-waddling-fiddle.md` - Implementation plan
+### Plans & Research
+- `development/research/` - Implementation plans (always write new plans here as `<name>_<date>.md`)
 
 ## Critical Information
 
@@ -109,11 +109,31 @@ Create these files:
 → /home/user/Documents/AI/Morgen-Tasks/extension/
 ```
 
+## Package Management (NixOS)
+
+This is a **NixOS** system. Use `shell.nix` for all dependencies.
+
+- **Never use `pip install`** — it won't persist on NixOS
+- Edit `shell.nix` to add packages, then run `nix-shell`
+- Python packages: `python3Packages.<name>` in `buildInputs`
+- System tools: `pkgs.<name>` in `buildInputs`
+
+```bash
+# Enter dev environment
+nix-shell
+
+# Add a package: edit shell.nix, then re-enter
+nix-shell
+```
+
 ## Essential Commands
 
 ```bash
 # Navigate to project
 cd /home/user/Documents/AI/Morgen-Tasks/
+
+# Enter dev environment (NixOS)
+nix-shell
 
 # Test extension
 pkill ulauncher && ulauncher -v
@@ -203,7 +223,7 @@ git commit -m "feat: implement Morgen API client with caching"
 
 **Full Guide**: Read `CLAUDE.md` for detailed information
 
-**Implementation Plan**: `/home/user/.claude/plans/buzzing-waddling-fiddle.md`
+**Implementation Plans**: `development/research/`
 
 **Morgen API Docs**: `(Morgen) Tasks - Morgen Developer Documentation.pdf`
 
@@ -213,7 +233,7 @@ git commit -m "feat: implement Morgen API client with caching"
 
 1. Check `CLAUDE.md` for detailed explanations
 2. Check `extension/logs/issues.md` for known problems
-3. Check implementation plan in `.claude/plans/`
+3. Check implementation plans in `development/research/`
 4. Review Morgen API PDF documentation
 
 ---

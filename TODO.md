@@ -3,51 +3,12 @@
 Current task list and development roadmap.
 
 **Last Updated**: 2026-02-05
-**Current Version**: v0.1.0 (Phase 1 Complete)
+**Current Version**: v0.2.0 (Phase 2 Complete)
 **Current Branch**: `develop`
 
 ## Immediate Next Steps
 
-### Phase 2: API Integration & Authentication (NEXT)
-
-- [ ] Create `src/morgen_api.py` - Morgen API client
-  - [ ] Implement `__init__(api_key)`
-  - [ ] Implement `list_tasks(limit=100)` method
-  - [ ] Implement `create_task(title, **kwargs)` method
-  - [ ] Add error handling for network errors
-  - [ ] Add error handling for auth errors (401)
-  - [ ] Add error handling for rate limit errors (429)
-  - [ ] Add error handling for validation errors (400)
-
-- [ ] Create `src/cache.py` - Task caching system
-  - [ ] Implement `TaskCache` class
-  - [ ] Add `get_tasks()` method with TTL check
-  - [ ] Add `set_tasks(tasks)` method with timestamp
-  - [ ] Add `invalidate()` method
-  - [ ] Test cache expiration
-
-- [ ] Update `main.py` to test API connection
-  - [ ] Import MorgenAPIClient
-  - [ ] Retrieve API key from preferences
-  - [ ] Call `list_tasks()` on keyword trigger
-  - [ ] Display error messages for API failures
-  - [ ] Log raw API responses for debugging
-
-- [ ] Test API integration
-  - [ ] Test with valid API key
-  - [ ] Test with invalid API key
-  - [ ] Test with no internet connection
-  - [ ] Test cache behavior
-
-- [ ] Update logs
-  - [ ] Log progress in `extension/logs/dev_log.md`
-  - [ ] Log any issues in `extension/logs/issues.md`
-  - [ ] Update `CHANGELOG.md` to v0.2.0
-
-- [ ] Git commit
-  - [ ] Commit with message: "feat: Morgen API integration"
-
-## Phase 3: List/Search Tasks (After Phase 2)
+### Phase 3: List/Search Tasks (NEXT)
 
 - [ ] Create `src/formatter.py` - Display formatting
   - [ ] Implement `TaskFormatter` class
@@ -224,6 +185,22 @@ See `extension/logs/improvements.md` for detailed ideas.
 - [x] Test extension loads in Ulauncher
 - [x] Add README.md
 - [x] Update CHANGELOG
+
+### Phase 2: API Integration ✅ (v0.2.0)
+- [x] Create `src/morgen_api.py` - Morgen API client
+  - [x] Implement `__init__(api_key)`
+  - [x] Implement `list_tasks(limit=100)` method
+  - [x] Implement `create_task(title, **kwargs)` method
+  - [x] Add error handling for network, auth, rate limit, validation errors
+- [x] Create `src/cache.py` - Task caching system
+  - [x] Implement `TaskCache` class with TTL
+  - [x] Add `get_tasks()`, `set_tasks()`, `invalidate()` methods
+- [x] Update `main.py` with API integration
+  - [x] Cache-first strategy
+  - [x] Error handling with fallback to cached data
+  - [x] Display task count and first 5 tasks
+- [x] Test with real Morgen account
+- [x] Update logs and CHANGELOG
 
 ## Notes
 

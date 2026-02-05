@@ -17,7 +17,7 @@ This document explains how AI agents (like Claude) should work on this project. 
 1. `/home/user/Documents/AI/Morgen-Tasks/README.md` - Project overview
 2. `/home/user/Documents/AI/Morgen-Tasks/TODO.md` - Current tasks
 3. `/home/user/Documents/AI/Morgen-Tasks/extension/logs/dev_log.md` - Development progress
-4. `/home/user/.claude/plans/buzzing-waddling-fiddle.md` - Detailed implementation plan
+4. `development/research/` - Implementation plans and research
 
 **Current directory**:
 ```bash
@@ -142,7 +142,7 @@ extension/logs/
 ├── CHANGELOG.md        # Version history - UPDATE ON VERSION CHANGES
 ├── CLAUDE.md           # This file - for AI agents
 ├── AGENTS.md           # Quick reference for AI agents
-└── .claude/plans/      # Implementation plans
+└── development/research/ # Implementation plans and research
 ```
 
 #### Important External Files
@@ -373,11 +373,36 @@ ls -la ~/.local/share/ulauncher/extensions/ulauncher-morgen-tasks/
 ls -la "(Morgen) Tasks - Morgen Developer Documentation.pdf"
 ```
 
-### 9. What to Do Next
+### 9. Implementation Plans
+
+**Always write implementation plans to `development/research/<name>_<date>.md`**. This keeps plans version-controlled alongside the project. Never store plans only in `.claude/plans/` — always copy or create them in `development/research/`.
+
+### 10. Package Management (NixOS)
+
+This project runs on **NixOS**. Use `shell.nix` for all dependency management.
+
+**Adding a package**:
+1. Edit `shell.nix` in the project root
+2. Add the package to `buildInputs`
+3. Run `nix-shell` to enter the environment
+
+**Rules**:
+- Never use `pip install` directly — it won't persist on NixOS
+- All Python packages go through `python3Packages.*` in `shell.nix`
+- System tools go through `pkgs.*` in `shell.nix`
+- Run `nix-shell` before developing to ensure all dependencies are available
+
+**Example** — adding the `requests` library:
+```nix
+# In shell.nix, add to buildInputs:
+python3Packages.requests
+```
+
+### 11. What to Do Next
 
 **If starting Phase 2**:
 
-1. Read the Phase 2 section in `.claude/plans/buzzing-waddling-fiddle.md`
+1. Read the Phase 2 plan in `development/research/`
 2. Create `extension/src/morgen_api.py`:
    - MorgenAPIClient class
    - __init__(api_key)
@@ -394,12 +419,12 @@ ls -la "(Morgen) Tasks - Morgen Developer Documentation.pdf"
 6. Update logs
 7. Commit changes
 
-**Reference implementation plan**:
+**Reference implementation plans**:
 ```bash
-cat /home/user/.claude/plans/buzzing-waddling-fiddle.md
+ls development/research/
 ```
 
-### 10. Important Reminders
+### 12. Important Reminders
 
 ✅ **DO**:
 - Read dev_log.md before starting
@@ -419,10 +444,10 @@ cat /home/user/.claude/plans/buzzing-waddling-fiddle.md
 - Ignore the implementation plan
 - Work on multiple phases at once
 
-### 11. Getting Help
+### 13. Getting Help
 
 **Documentation Locations**:
-- Implementation plan: `.claude/plans/buzzing-waddling-fiddle.md`
+- Implementation plans: `development/research/`
 - Morgen API docs: `https://docs.morgen.so/ or "(Morgen) Tasks - Morgen Developer Documentation.pdf"`
 - Ulauncher API: https://docs.ulauncher.io/
 - Development issues: `extension/logs/issues.md`
@@ -433,7 +458,7 @@ cat /home/user/.claude/plans/buzzing-waddling-fiddle.md
 - Check `~/.local/share/ulauncher/last.log`
 - Add logging: `logger.info("Debug message")`
 
-### 12. Success Criteria
+### 14. Success Criteria
 
 **For Each Phase**:
 - [ ] Feature works as described
@@ -467,7 +492,7 @@ Essential Files:
 - TODO.md - What to do next
 - extension/logs/dev_log.md - Session notes
 - extension/main.py - Main code
-- .claude/plans/*.md - Implementation plan
+- development/research/*.md - Implementation plans
 
 Test Command:
   pkill ulauncher && ulauncher -v

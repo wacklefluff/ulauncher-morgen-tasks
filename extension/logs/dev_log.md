@@ -1,5 +1,53 @@
 # Development Log
 
+## 2026-02-05 (Session 3)
+
+**Goals**:
+- Test Phase 1 extension in Ulauncher
+- Implement Phase 2: Morgen API integration
+
+**Accomplished**:
+- Phase 1 testing: PASSED
+  - Extension loads in Ulauncher without errors
+  - Keyword `mg` triggers correctly
+  - Welcome message displays when no API key set
+  - "Morgen Tasks is working!" displays when API key configured
+  - Cache TTL preference shown correctly
+- Phase 1 officially verified and complete
+
+- Phase 2 implementation: COMPLETE
+  - Updated `CLAUDE.md` with NixOS package management section and plans location
+  - Updated `AGENTS.md` with NixOS section and updated plan references
+  - Created `shell.nix` for NixOS development environment (Python 3 + dev tools)
+  - Created `src/__init__.py` (package marker)
+  - Created `src/morgen_api.py`:
+    - Custom exceptions: `MorgenAPIError`, `MorgenAuthError`, `MorgenRateLimitError`, `MorgenValidationError`, `MorgenNetworkError`
+    - `MorgenAPIClient` class with `list_tasks()` and `create_task()` methods
+    - Full error handling for network, auth, rate limit, and validation errors
+    - Uses `urllib.request` (stdlib) — no external dependencies
+  - Created `src/cache.py`:
+    - `TaskCache` class with TTL-based expiration (default 10 min)
+    - Methods: `get_tasks()`, `set_tasks()`, `invalidate()`, `is_fresh()`, `get_age_display()`
+    - Tracks `last_updated` for future incremental updates
+  - Updated `main.py`:
+    - Integrated API client and cache
+    - Cache-first strategy (check cache before API call)
+    - Lazy initialization (re-create client if API key changes)
+    - Shows task count + first 5 tasks
+    - Comprehensive error handling with fallback to cached data
+  - Tested with real Morgen account — tasks load correctly, cache works
+
+**Issues**:
+- None
+
+**Next Steps**:
+- Phase 3: Task formatting and search
+  - Create `src/formatter.py`
+  - Implement search filtering
+  - Better task display
+
+---
+
 ## 2026-02-05 (Session 2)
 
 **Goals**:
