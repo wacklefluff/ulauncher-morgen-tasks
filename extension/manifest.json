@@ -1,0 +1,34 @@
+{
+  "required_api_version": "2",
+  "name": "Morgen Tasks",
+  "description": "Manage your Morgen tasks directly from Ulauncher - list, search, and create tasks",
+  "developer_name": "Morgen Tasks Extension",
+  "developer_url": "https://github.com/yourusername/ulauncher-morgen-tasks",
+  "icon": "images/icon.png",
+  "options": {
+    "query_debounce": 0.1
+  },
+  "preferences": [
+    {
+      "id": "mg_keyword",
+      "type": "keyword",
+      "name": "Morgen Tasks",
+      "description": "Keyword to trigger Morgen Tasks extension",
+      "default_value": "mg"
+    },
+    {
+      "id": "api_key",
+      "type": "input",
+      "name": "Morgen API Key",
+      "description": "Your Morgen API key from platform.morgen.so",
+      "default_value": ""
+    },
+    {
+      "id": "cache_ttl",
+      "type": "input",
+      "name": "Cache Duration (seconds)",
+      "description": "How long to cache task list (default: 600 seconds / 10 minutes)",
+      "default_value": "600"
+    }
+  ]
+}
