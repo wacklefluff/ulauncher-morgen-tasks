@@ -423,7 +423,7 @@ cat /home/user/.claude/plans/buzzing-waddling-fiddle.md
 
 **Documentation Locations**:
 - Implementation plan: `.claude/plans/buzzing-waddling-fiddle.md`
-- Morgen API docs: `(Morgen) Tasks - Morgen Developer Documentation.pdf`
+- Morgen API docs: `https://docs.morgen.so/ or "(Morgen) Tasks - Morgen Developer Documentation.pdf"`
 - Ulauncher API: https://docs.ulauncher.io/
 - Development issues: `extension/logs/issues.md`
 
