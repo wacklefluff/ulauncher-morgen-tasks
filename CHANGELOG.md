@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-02-05 (Phase 5 Started)
+
+### Added
+- Disk-persistent task cache (`extension/src/cache.py`)
+  - Loads cached tasks across Ulauncher restarts
+  - Clears persisted cache on manual invalidate/refresh
+
 ## [0.4.0] - 2026-02-05 (Phase 4 Implemented)
 
 ### Added

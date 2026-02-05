@@ -3,7 +3,7 @@
 Current task list and development roadmap.
 
 **Last Updated**: 2026-02-05
-**Current Version**: v0.4.0 (Phase 4 Implemented)
+**Current Version**: v0.5.0 (Phase 5 Started)
 **Current Branch**: `develop`
 
 ## Immediate Next Steps
@@ -84,9 +84,10 @@ Current task list and development roadmap.
 ## Phase 5: Caching & Performance (After Phase 4)
 
 - [ ] Optimize caching strategy
-  - [ ] Implement 10-minute cache by default
-  - [ ] Add cache age indicators
-  - [ ] Add manual refresh option
+  - [x] Implement 10-minute cache by default
+  - [x] Add cache age indicators
+  - [x] Add manual refresh option
+  - [x] Persist cache to disk across restarts
   - [ ] Consider background refresh
 
 - [ ] Add performance optimizations
