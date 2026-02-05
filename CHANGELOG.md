@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-02-05
+
+### Added
+- File-based runtime logging (`extension/logs/runtime.log`) with rotation.
+
 ### Fixed
 - Help command no longer overrides searches when the query starts with “help” (e.g. `mg help regression` now searches).
 

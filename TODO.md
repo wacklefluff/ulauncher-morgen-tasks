@@ -3,7 +3,7 @@
 Current task list and development roadmap.
 
 **Last Updated**: 2026-02-05
-**Current Version**: v0.6.0 (Phase 6 Started)
+**Current Version**: v0.6.1 (Phase 6 Started)
 **Current Branch**: `develop`
 
 ## Release Checklist (Repeat Every Feature/Fix)
@@ -27,6 +27,7 @@ Use this checklist **every time** you implement a feature or fix (not just once 
 - v0.4.0 — create tasks + due parsing (see Phase 4; commit: `feat: create tasks with date parsing`)
 - v0.5.0 — disk-persistent cache (see Phase 5; commit: `perf: persist task cache to disk`)
 - v0.6.0 — help + clear cache commands (see Phase 6; commit: `feat: add help and clear cache commands`)
+- v0.6.1 — file-based runtime logging (see Phase 6; commit: `feat: add file-based runtime logging`)
 
 ## Immediate Next Steps
 
@@ -52,8 +53,14 @@ Use this checklist **every time** you implement a feature or fix (not just once 
   - [ ] Create docs/API_REFERENCE.md
 
 - [ ] Add logging
-  - [ ] Log API errors to file
-  - [ ] Log cache hits/misses
+  - [x] Log API errors to file (+v0.6.1)
+  - [x] Log cache hits/misses (+v0.6.1)
+
+- [ ] Update logs and commit (+v0.6.1)
+  - [ ] Update `CHANGELOG.md` (+v0.6.1)
+  - [ ] Update `extension/logs/dev_log.md` (+v0.6.1)
+  - [ ] Write/update manual test plan (+v0.6.1)
+  - [ ] Commit: "feat: add file-based runtime logging"
 
 ### Phase 5: Caching & Performance (OPTIONAL NEXT)
 

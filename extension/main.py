@@ -4,6 +4,8 @@ Manage Morgen tasks from Ulauncher - list, search, and create tasks
 """
 
 import logging
+import os
+from logging.handlers import RotatingFileHandler
 from ulauncher.api.client.Extension import Extension
 from ulauncher.api.client.EventListener import EventListener
 from ulauncher.api.shared.event import KeywordQueryEvent, ItemEnterEvent
@@ -30,12 +32,52 @@ from src.date_parser import DateParser, DateParseError
 
 logger = logging.getLogger(__name__)
 
+_LOG_FILE_NAME = "runtime.log"
+
+
+def _setup_file_logging():
+    """
+    Attach a rotating file handler so logs persist outside `ulauncher -v`.
+
+    Safe to call multiple times; it will only add one handler per log file path.
+    """
+    try:
+        base_dir = os.path.dirname(__file__)
+        log_dir = os.path.join(base_dir, "logs")
+        os.makedirs(log_dir, exist_ok=True)
+        log_path = os.path.join(log_dir, _LOG_FILE_NAME)
+
+        root = logging.getLogger()
+
+        for handler in root.handlers:
+            if isinstance(handler, RotatingFileHandler) and getattr(handler, "baseFilename", None) == log_path:
+                return
+
+        handler = RotatingFileHandler(
+            log_path,
+            maxBytes=1_000_000,
+            backupCount=3,
+            encoding="utf-8",
+        )
+        handler.setLevel(logging.INFO)
+        handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s"))
+        root.addHandler(handler)
+
+        if root.level > logging.INFO:
+            root.setLevel(logging.INFO)
+
+        logger.info("File logging enabled: %s", log_path)
+    except Exception:
+        # Logging should never break extension execution.
+        pass
+
 
 class MorgenTasksExtension(Extension):
     """Main extension class for Morgen Tasks"""
 
     def __init__(self):
         super(MorgenTasksExtension, self).__init__()
+        _setup_file_logging()
         self.subscribe(KeywordQueryEvent, KeywordQueryEventListener())
         self.subscribe(ItemEnterEvent, ItemEnterEventListener())
         self.cache = None

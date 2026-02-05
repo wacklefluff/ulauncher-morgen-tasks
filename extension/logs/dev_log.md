@@ -47,6 +47,19 @@
 
 ---
 
+## 2026-02-05 (Session 8)
+
+**Goals**:
+- Phase 6 polish: add file-based runtime logging
+
+**Accomplished**:
+- Added rotating file logging to `extension/logs/runtime.log`
+
+**Notes**:
+- Add a numbered manual test plan for v0.6.1 to verify runtime log creation and content.
+
+---
+
 ## 2026-02-05 (Session 4)
 
 **Goals**:
