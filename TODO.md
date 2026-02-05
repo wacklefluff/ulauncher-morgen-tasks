@@ -32,6 +32,12 @@ Current task list and development roadmap.
   - [ ] Log API errors to file
   - [ ] Log cache hits/misses
 
+- [ ] Update logs and commit
+  - [x] Update `CHANGELOG.md` to v0.6.0
+  - [x] Git commits:
+    - "feat: add help and clear cache commands"
+    - "fix: don't trigger help on search queries"
+
 ### Phase 5: Caching & Performance (OPTIONAL NEXT)
 
 - [ ] Consider background refresh

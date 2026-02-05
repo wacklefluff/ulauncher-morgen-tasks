@@ -43,6 +43,7 @@
 **Accomplished**:
 - Fixed `mg help <query>` so it searches instead of opening help (help now triggers only on `mg help`, `mg ?`, or `mg h`)
 - Updated `development/research/test_plan_v0.6.0_2026-02-05.md` with regression test `H10`
+- Verified `H10` manually (PASS)
 
 ---
 
