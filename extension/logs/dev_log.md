@@ -96,6 +96,19 @@
 
 ---
 
+## 2026-02-05 (Session 12)
+
+**Goals**:
+- Phase 6 polish: quick access to runtime logs
+
+**Accomplished**:
+- Added UI items to open/copy the runtime log path from help and error screens
+
+**Notes**:
+- Add a numbered test plan for v0.6.4 to verify OpenAction/CopyToClipboardAction availability in the user environment.
+
+---
+
 ## 2026-02-05 (Session 4)
 
 **Goals**:

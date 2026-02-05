@@ -20,6 +20,11 @@ try:
 except Exception:  # pragma: no cover - optional Ulauncher action
     CopyToClipboardAction = None
 
+try:
+    from ulauncher.api.shared.action.OpenAction import OpenAction
+except Exception:  # pragma: no cover - optional Ulauncher action
+    OpenAction = None
+
 from src.morgen_api import (
     MorgenAPIClient,
     MorgenAPIError,
@@ -307,6 +312,8 @@ class KeywordQueryEventListener(EventListener):
             on_enter=HideWindowAction(),
         ))
 
+        items.extend(self._runtime_log_access_items())
+
         return items
 
     def _maybe_clear_cache_flow(self, raw_query: str, extension):
@@ -584,6 +591,7 @@ class KeywordQueryEventListener(EventListener):
                 on_enter=HideWindowAction(),
             )
         ]
+        items.extend(self._runtime_log_access_items())
         items.extend(self._suggestion_items(suggestions))
         return items
 
@@ -598,6 +606,34 @@ class KeywordQueryEventListener(EventListener):
                 description=str(suggestion),
                 on_enter=HideWindowAction(),
             ))
+        return items
+
+    def _runtime_log_access_items(self):
+        items = []
+        abs_path = os.path.join(os.path.dirname(__file__), "logs", _LOG_FILE_NAME)
+
+        if OpenAction is not None:
+            try:
+                items.append(ExtensionResultItem(
+                    icon="images/icon.png",
+                    name="Open runtime log",
+                    description=abs_path,
+                    on_enter=OpenAction(abs_path),
+                ))
+            except Exception:
+                pass
+
+        if CopyToClipboardAction is not None:
+            try:
+                items.append(ExtensionResultItem(
+                    icon="images/icon.png",
+                    name="Copy log path",
+                    description=abs_path,
+                    on_enter=CopyToClipboardAction(abs_path),
+                ))
+            except Exception:
+                pass
+
         return items
 
     def _refresh_prefix_notice(self, extension):
