@@ -38,6 +38,7 @@ Report failures by **test ID** (e.g. `L04`).
 
 ## Rotation (Optional)
 
-- **L08** — Generate lots of log output (repeat `mg` queries) until the log exceeds ~1MB.
-  - Expected: rotated files appear (e.g. `runtime.log.1`, `runtime.log.2`) and the extension still works.
-
+- **L08** — Fill the log close to 1MB using the helper script, then trigger one more log line:
+  1) Run: `python development/tools/fill_runtime_log.py --target-kib 990 --truncate`  
+  2) Trigger the extension once (e.g. run `mg`) to write a new log entry.  
+  - Expected: rotated files appear (e.g. `extension/logs/runtime.log.1`) and the extension still works.
