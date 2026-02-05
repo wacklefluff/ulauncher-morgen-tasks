@@ -11,6 +11,11 @@ from ulauncher.api.shared.item.ExtensionResultItem import ExtensionResultItem
 from ulauncher.api.shared.action.RenderResultListAction import RenderResultListAction
 from ulauncher.api.shared.action.HideWindowAction import HideWindowAction
 
+try:
+    from ulauncher.api.shared.action.CopyToClipboardAction import CopyToClipboardAction
+except Exception:  # pragma: no cover - optional Ulauncher action
+    CopyToClipboardAction = None
+
 from src.morgen_api import (
     MorgenAPIClient,
     MorgenAPIError,
@@ -19,6 +24,7 @@ from src.morgen_api import (
     MorgenNetworkError,
 )
 from src.cache import TaskCache
+from src.formatter import TaskFormatter
 
 logger = logging.getLogger(__name__)
 
@@ -39,8 +45,8 @@ class KeywordQueryEventListener(EventListener):
 
     def on_event(self, event, extension):
         """Handle keyword query event"""
-        query = event.get_argument() or ""
-        logger.info("Keyword triggered with query: '%s'", query)
+        raw_query = (event.get_argument() or "").strip()
+        logger.info("Keyword triggered with query: '%s'", raw_query)
 
         # Get preferences
         api_key = extension.preferences.get("api_key", "").strip()
@@ -69,49 +75,42 @@ class KeywordQueryEventListener(EventListener):
             logger.info("API client initialized (cache TTL: %ds)", cache_ttl)
 
         items = []
+        formatter = TaskFormatter()
+
+        force_refresh, query = self._parse_query(raw_query)
 
         try:
-            # Cache-first: check cache before making API call
-            tasks = extension.cache.get_tasks()
+            tasks, cache_status = self._get_tasks(extension, force_refresh=force_refresh)
 
-            if tasks is not None:
-                cache_status = f"cached {extension.cache.get_age_display()}"
-                logger.info("Using cached tasks: %d tasks", len(tasks))
-            else:
-                logger.info("Cache miss, fetching from API...")
-                response = extension.api_client.list_tasks(limit=100)
-                extension.cache.set_tasks(response)
-                tasks = response.get("data", {}).get("tasks", [])
-                cache_status = "fresh"
+            # Search filtering (title + description)
+            filtered_tasks = self._filter_tasks(tasks, query)
 
-            # Header item: task count + cache status
+            # Header item: task count + cache status (+ quick help)
+            enter_hint = "Enter: copy task ID" if CopyToClipboardAction is not None else "Enter: close"
             items.append(ExtensionResultItem(
                 icon='images/icon.png',
-                name=f'Morgen Tasks ({len(tasks)})',
-                description=f'Cache: {cache_status}',
+                name=f'Morgen Tasks ({len(filtered_tasks)})',
+                description=f'Cache: {cache_status} | {enter_hint} | "refresh" or "!" to refresh',
                 on_enter=HideWindowAction()
             ))
 
-            # Show first 5 tasks (Phase 2 proof-of-concept; full formatting in Phase 3)
-            for task in tasks[:5]:
-                title = task.get("title", "Untitled")
-                due = task.get("due", "No due date")
-                priority = task.get("priority", 0)
-
+            if not filtered_tasks:
                 items.append(ExtensionResultItem(
                     icon='images/icon.png',
-                    name=title,
-                    description=f'Due: {due} | Priority: {priority}',
+                    name='No tasks found',
+                    description='Try a different search term, or run "mg refresh" to fetch latest tasks.',
                     on_enter=HideWindowAction()
                 ))
-
-            if len(tasks) > 5:
-                items.append(ExtensionResultItem(
-                    icon='images/icon.png',
-                    name=f'... and {len(tasks) - 5} more tasks',
-                    description='Full list and search coming in Phase 3',
-                    on_enter=HideWindowAction()
-                ))
+            else:
+                for task in filtered_tasks:
+                    task_id = task.get("id") or ""
+                    on_enter = self._get_task_action(task_id)
+                    items.append(ExtensionResultItem(
+                        icon='images/icon.png',
+                        name=formatter.format_for_display(task),
+                        description=formatter.format_subtitle(task),
+                        on_enter=on_enter
+                    ))
 
         except MorgenAuthError:
             logger.error("Authentication error")
@@ -124,11 +123,11 @@ class KeywordQueryEventListener(EventListener):
 
         except MorgenRateLimitError:
             logger.warning("Rate limit exceeded")
-            items.extend(self._fallback_to_cache(extension, "Rate limit exceeded"))
+            items.extend(self._fallback_to_cache(extension, "Rate limit exceeded", query=query))
 
         except MorgenNetworkError as e:
             logger.error("Network error: %s", e)
-            items.extend(self._fallback_to_cache(extension, "Cannot reach Morgen API"))
+            items.extend(self._fallback_to_cache(extension, "Cannot reach Morgen API", query=query))
 
         except MorgenAPIError as e:
             logger.error("API error: %s", e)
@@ -150,26 +149,112 @@ class KeywordQueryEventListener(EventListener):
 
         return RenderResultListAction(items)
 
-    def _fallback_to_cache(self, extension, error_msg):
+    def _parse_query(self, raw_query: str):
+        """
+        Parse user query for force refresh and search term.
+
+        Supported:
+          - "!" or "! <query>" (force refresh)
+          - "refresh" or "refresh <query>" (force refresh)
+          - otherwise: search query (or empty to list all)
+        """
+        if not raw_query:
+            return False, ""
+
+        if raw_query.startswith("!"):
+            return True, raw_query[1:].strip()
+
+        parts = raw_query.split(None, 1)
+        if parts and parts[0].lower() == "refresh":
+            return True, parts[1].strip() if len(parts) > 1 else ""
+
+        return False, raw_query
+
+    def _get_tasks(self, extension, force_refresh: bool):
+        # Cache-first: check cache before making API call
+        if force_refresh and extension.cache:
+            extension.cache.invalidate()
+
+        tasks = extension.cache.get_tasks() if extension.cache and not force_refresh else None
+        if tasks is not None:
+            cache_status = f"cached {extension.cache.get_age_display()}"
+            logger.info("Using cached tasks: %d tasks", len(tasks))
+            return tasks, cache_status
+
+        logger.info("Fetching tasks from API%s...", " (force refresh)" if force_refresh else "")
+        response = extension.api_client.list_tasks(limit=100)
+        if extension.cache:
+            extension.cache.set_tasks(response)
+            cache_status = "refreshed" if force_refresh else "fresh"
+        else:
+            cache_status = "fresh"
+        tasks = response.get("data", {}).get("tasks", [])
+        return tasks, cache_status
+
+    def _filter_tasks(self, tasks, query: str):
+        if not query:
+            return tasks
+
+        q = query.lower()
+        filtered = []
+        for task in tasks:
+            title = (task.get("title") or "").lower()
+            description = (task.get("description") or "").lower()
+            if q in title or q in description:
+                filtered.append(task)
+        return filtered
+
+    def _get_task_action(self, task_id: str):
+        if task_id and CopyToClipboardAction is not None:
+            try:
+                return CopyToClipboardAction(task_id)
+            except Exception:
+                return HideWindowAction()
+        return HideWindowAction()
+
+    def _fallback_to_cache(self, extension, error_msg, query=""):
         """Try to show cached data on network/rate-limit errors."""
         items = []
         cached = extension.cache.get_full_response() if extension.cache else None
+        formatter = TaskFormatter()
 
-        if cached:
-            tasks = cached.get("data", {}).get("tasks", [])
-            age = extension.cache.get_age_display()
-            items.append(ExtensionResultItem(
-                icon='images/icon.png',
-                name=f'{error_msg} — showing cached data',
-                description=f'{len(tasks)} tasks (cached {age})',
-                on_enter=HideWindowAction()
-            ))
-        else:
+        if not cached:
             items.append(ExtensionResultItem(
                 icon='images/icon.png',
                 name=error_msg,
                 description='No cached data available. Try again later.',
                 on_enter=HideWindowAction()
+            ))
+            return items
+
+        tasks = cached.get("data", {}).get("tasks", [])
+        filtered_tasks = self._filter_tasks(tasks, query)
+        age = extension.cache.get_age_display() if extension.cache else "unknown"
+
+        items.append(ExtensionResultItem(
+            icon='images/icon.png',
+            name=f'{error_msg} — showing cached data',
+            description=f'{len(filtered_tasks)} tasks (cache: {age})',
+            on_enter=HideWindowAction()
+        ))
+
+        if not filtered_tasks:
+            items.append(ExtensionResultItem(
+                icon='images/icon.png',
+                name='No tasks found',
+                description='Try a different search term, or run "mg refresh" later.',
+                on_enter=HideWindowAction()
+            ))
+            return items
+
+        for task in filtered_tasks:
+            task_id = task.get("id") or ""
+            on_enter = self._get_task_action(task_id)
+            items.append(ExtensionResultItem(
+                icon='images/icon.png',
+                name=formatter.format_for_display(task),
+                description=formatter.format_subtitle(task),
+                on_enter=on_enter
             ))
 
         return items

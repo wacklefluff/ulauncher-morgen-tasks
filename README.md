@@ -8,15 +8,19 @@ This project integrates Morgen's task management system with Ulauncher, a fast a
 
 ## Features
 
-### Current (v0.1.0 - Phase 1 Complete)
+### Current (v0.3.0 - Phase 3 Complete)
 - ✅ Basic Ulauncher extension structure
 - ✅ Keyword trigger (`mg` by default)
 - ✅ API key configuration
-- ✅ Extension responds to user input
+- ✅ Morgen API integration with caching (cache-first to minimize API points)
+- ✅ List all tasks (shows cached vs fresh status)
+- ✅ Search tasks by title/description
+- ✅ Force refresh (`mg refresh` or `mg !`) to bypass cache
+- ✅ Copy task ID on Enter (for debugging)
 
 ### Planned
-- 🔄 **Phase 2**: API Integration & Authentication
-- 🔄 **Phase 3**: List and search tasks
+- ✅ **Phase 2**: API Integration & Authentication
+- ✅ **Phase 3**: List and search tasks
 - 🔄 **Phase 4**: Create tasks with natural language dates
 - 🔄 **Phase 5**: Caching & performance optimization
 - 🔄 **Phase 6**: Polish & error handling
@@ -129,18 +133,19 @@ See **CLAUDE.md** for detailed development setup and workflow.
 
 ## Development Status
 
-**Current Version**: v0.1.0 (Phase 1 Complete)
+**Current Version**: v0.3.0 (Phase 3 Complete)
 **Current Branch**: `develop`
-**Latest Commit**: 53ce2b2
 
 ### Completed Phases
 
 - ✅ **Phase 0** (v0.0.1): Project structure and git setup
 - ✅ **Phase 1** (v0.1.0): Basic extension structure
+- ✅ **Phase 2** (v0.2.0): Morgen API integration and caching
+- ✅ **Phase 3** (v0.3.0): List/search tasks + force refresh
 
 ### Next Phase
 
-- 🔄 **Phase 2**: Morgen API integration and authentication
+- 🔄 **Phase 4**: Create tasks
 
 For detailed progress, see `extension/logs/dev_log.md`.
 

@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-02-05 (Phase 3 Complete)
+
+### Added
+- Task display formatter (`extension/src/formatter.py`)
+  - `TaskFormatter.format_for_display()` and `TaskFormatter.format_subtitle()`
+  - `get_priority_icon()` helper
+- Task listing and search in `extension/main.py`
+  - Shows all tasks when no query is provided
+  - Filters tasks by title/description when a query is provided
+  - Force refresh command via `mg refresh` or `mg !` (bypasses cache)
+  - Enter on a task copies its ID (when supported by Ulauncher)
+
 ## [0.2.0] - 2026-02-05 (Phase 2 Complete)
 
 ### Added

@@ -1,5 +1,30 @@
 # Development Log
 
+## 2026-02-05 (Session 4)
+
+**Goals**:
+- Implement Phase 3: list/search tasks UX
+- Add force refresh command to bypass cache
+
+**Accomplished**:
+- Created `extension/src/formatter.py`
+  - Added `TaskFormatter` with `format_for_display()` and `format_subtitle()`
+  - Added `get_priority_icon()` helper
+- Updated `extension/main.py` (Phase 3)
+  - Lists all tasks when no query is provided
+  - Filters tasks by query (title/description)
+  - Force refresh via `mg refresh` or `mg !` (supports `!<query>` and `refresh <query>`)
+  - Handles empty result sets gracefully
+  - Shows cache status in header item
+  - Enter on a task copies its ID when supported (fallbacks to close)
+  - Improved fallback behavior to show cached tasks on rate-limit/network errors
+- Updated `TODO.md` and `CHANGELOG.md` for v0.3.0
+
+**Notes**:
+- Manual testing still needed in Ulauncher (`pkill ulauncher && ulauncher -v`)
+
+---
+
 ## 2026-02-05 (Session 3)
 
 **Goals**:

@@ -3,33 +3,33 @@
 Current task list and development roadmap.
 
 **Last Updated**: 2026-02-05
-**Current Version**: v0.2.0 (Phase 2 Complete)
+**Current Version**: v0.3.0 (Phase 3 Complete)
 **Current Branch**: `develop`
 
 ## Immediate Next Steps
 
-### Phase 3: List/Search Tasks (NEXT)
+### Phase 3: List/Search Tasks (COMPLETE)
 
-- [ ] Create `src/formatter.py` - Display formatting
-  - [ ] Implement `TaskFormatter` class
-  - [ ] Create `format_for_display(task)` method
-  - [ ] Create `format_subtitle(task)` method (due date, priority)
-  - [ ] Create `get_priority_icon(priority)` helper
+- [x] Create `src/formatter.py` - Display formatting
+  - [x] Implement `TaskFormatter` class
+  - [x] Create `format_for_display(task)` method
+  - [x] Create `format_subtitle(task)` method (due date, priority)
+  - [x] Create `get_priority_icon(priority)` helper
 
-- [ ] Update `main.py` to display tasks
-  - [ ] Show all tasks when no query provided
-  - [ ] Implement search filtering by query
-  - [ ] Return `RenderResultListAction` with task items
-  - [ ] Handle empty task list
-  - [ ] Show cache status in results
+- [x] Update `main.py` to display tasks
+  - [x] Show all tasks when no query provided
+  - [x] Implement search filtering by query
+  - [x] Return `RenderResultListAction` with task items
+  - [x] Handle empty task list
+  - [x] Show cache status in results
 
-- [ ] Add force refresh command
-  - [ ] Implement `mg refresh` or `mg !` to bypass cache
-  - [ ] Invalidate cache and fetch fresh data
-  - [ ] Show "Refreshed" confirmation
+- [x] Add force refresh command
+  - [x] Implement `mg refresh` or `mg !` to bypass cache
+  - [x] Invalidate cache and fetch fresh data
+  - [x] Show "Refreshed" confirmation
 
 - [ ] Add task actions
-  - [ ] Copy task ID on click (for debugging)
+  - [x] Copy task ID on click (for debugging)
   - [ ] Consider opening Morgen app (if feasible)
 
 - [ ] Test list/search functionality
@@ -40,7 +40,7 @@ Current task list and development roadmap.
   - [ ] Test cache indicators
 
 - [ ] Update logs and commit
-  - [ ] Update `CHANGELOG.md` to v0.3.0
+  - [x] Update `CHANGELOG.md` to v0.3.0
   - [ ] Git commit: "feat: list and search tasks"
 
 ## Phase 4: Create Tasks (After Phase 3)

@@ -31,22 +31,16 @@ The extension is currently symlinked from this development directory:
 
 ## Usage
 
-### Phase 1 (Current - v0.1.0)
+### Current (v0.3.0)
 
-Basic extension that responds to keyword:
-- Type `mg` to test the extension
-- Shows welcome message if API key not configured
-- Shows success message if API key is configured
+- `mg` - List tasks (uses cache by default)
+- `mg <search term>` - Search tasks by title/description
+- `mg !` - Force refresh (bypass cache)
+- `mg !<search term>` - Force refresh + search
+- `mg refresh` - Force refresh (bypass cache)
+- Press Enter on a task to copy its task ID (for debugging; falls back to closing if not supported)
 
 ### Planned Features
-
-**Phase 2** - API Integration
-- Connect to Morgen API
-- Fetch and cache tasks
-
-**Phase 3** - List/Search Tasks
-- `mg` - Show all tasks
-- `mg search term` - Search tasks
 
 **Phase 4** - Create Tasks
 - `mg new Buy milk` - Create task
@@ -102,8 +96,8 @@ See `logs/dev_log.md` for detailed development progress.
 
 ## Current Status
 
-**Version**: 0.1.0 (Phase 1 complete)
-**Status**: Basic extension structure working
+**Version**: 0.3.0 (Phase 3 complete)
+**Status**: List/search tasks working (with caching + manual refresh)
 
 ## Resources
 
