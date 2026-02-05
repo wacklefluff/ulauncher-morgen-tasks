@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-02-05 (Phase 6 Started)
+
+### Added
+- Help and cache housekeeping commands in `extension/main.py`
+  - `mg help` / `mg ?` — show command reference
+  - `mg clear` — clear local task cache
+
 ## [0.5.0] - 2026-02-05 (Phase 5 Started)
 
 ### Added

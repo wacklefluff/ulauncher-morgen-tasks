@@ -80,6 +80,15 @@ class KeywordQueryEventListener(EventListener):
         items = []
         formatter = TaskFormatter()
 
+        # Help / housekeeping commands
+        help_items = self._maybe_build_help_flow(raw_query)
+        if help_items is not None:
+            return RenderResultListAction(help_items)
+
+        clear_items = self._maybe_clear_cache_flow(raw_query, extension)
+        if clear_items is not None:
+            return RenderResultListAction(clear_items)
+
         # Phase 4: create task flow (mg new ...)
         create_items = self._maybe_build_create_flow(raw_query)
         if create_items is not None:
@@ -98,7 +107,7 @@ class KeywordQueryEventListener(EventListener):
             items.append(ExtensionResultItem(
                 icon='images/icon.png',
                 name=f'Morgen Tasks ({len(filtered_tasks)})',
-                description=f'Cache: {cache_status} | {enter_hint} | "refresh" or "!" to refresh',
+                description=f'Cache: {cache_status} | {enter_hint} | "help" for commands | "refresh"/"!" to refresh',
                 on_enter=HideWindowAction()
             ))
 
@@ -156,6 +165,85 @@ class KeywordQueryEventListener(EventListener):
             ))
 
         return RenderResultListAction(items)
+
+    def _maybe_build_help_flow(self, raw_query: str):
+        if not raw_query:
+            return None
+
+        normalized = raw_query.strip().lower()
+        parts = normalized.split(None, 1)
+        head = parts[0] if parts else ""
+        if head not in {"help", "?", "h"}:
+            return None
+
+        examples = [
+            ("List tasks", "mg"),
+            ("Search tasks", "mg <query>"),
+            ("Force refresh", "mg !   or   mg refresh"),
+            ("Create task", "mg new <title> [@due] [!priority]"),
+            ("Clear cache", "mg clear"),
+        ]
+
+        due_examples = [
+            "@today",
+            "@tomorrow",
+            "@next-mon",
+            "@2026-02-10",
+            "@2026-02-10T15:30",
+            "@15:30",
+            "@3pm",
+        ]
+
+        items = [
+            ExtensionResultItem(
+                icon="images/icon.png",
+                name="Morgen Tasks — Help",
+                description='Commands and examples. Tip: type "mg" then the example.',
+                on_enter=HideWindowAction(),
+            )
+        ]
+
+        for label, example in examples:
+            items.append(ExtensionResultItem(
+                icon="images/icon.png",
+                name=label,
+                description=example,
+                on_enter=HideWindowAction(),
+            ))
+
+        items.append(ExtensionResultItem(
+            icon="images/icon.png",
+            name="Due date formats",
+            description=" ".join(due_examples),
+            on_enter=HideWindowAction(),
+        ))
+
+        enter_hint = "copies task ID" if CopyToClipboardAction is not None else "closes the window"
+        items.append(ExtensionResultItem(
+            icon="images/icon.png",
+            name="Task item Enter behavior",
+            description=f"Pressing Enter on a task {enter_hint}.",
+            on_enter=HideWindowAction(),
+        ))
+
+        return items
+
+    def _maybe_clear_cache_flow(self, raw_query: str, extension):
+        if not raw_query:
+            return None
+
+        normalized = raw_query.strip().lower()
+        if normalized in {"clear", "cache-clear", "cacheclear", "reset"} or normalized == "cache clear":
+            if extension.cache:
+                extension.cache.invalidate()
+            return [ExtensionResultItem(
+                icon="images/icon.png",
+                name="Cache cleared",
+                description='Run "mg" to reload tasks (or "mg refresh" to force an API fetch).',
+                on_enter=HideWindowAction(),
+            )]
+
+        return None
 
     def _maybe_build_create_flow(self, raw_query: str):
         """

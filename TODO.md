@@ -3,7 +3,7 @@
 Current task list and development roadmap.
 
 **Last Updated**: 2026-02-05
-**Current Version**: v0.5.0 (Phase 5 Started)
+**Current Version**: v0.6.0 (Phase 6 Started)
 **Current Branch**: `develop`
 
 ## Immediate Next Steps

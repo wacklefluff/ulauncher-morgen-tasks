@@ -31,7 +31,7 @@ The extension is currently symlinked from this development directory:
 
 ## Usage
 
-### Current (v0.5.0)
+### Current (v0.6.0)
 
 - `mg` - List tasks (uses cache by default)
 - `mg <search term>` - Search tasks by title/description
@@ -96,7 +96,7 @@ See `logs/dev_log.md` for detailed development progress.
 
 ## Current Status
 
-**Version**: 0.5.0 (Phase 5 started)
+**Version**: 0.6.0 (Phase 6 started)
 **Status**: List/search tasks working (with caching + manual refresh)
 
 ## Resources

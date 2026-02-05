@@ -8,7 +8,7 @@ This project integrates Morgen's task management system with Ulauncher, a fast a
 
 ## Features
 
-### Current (v0.5.0 - Phase 5 Started)
+### Current (v0.6.0 - Phase 6 Started)
 - ✅ Basic Ulauncher extension structure
 - ✅ Keyword trigger (`mg` by default)
 - ✅ API key configuration
@@ -134,7 +134,7 @@ See **CLAUDE.md** for detailed development setup and workflow.
 
 ## Development Status
 
-**Current Version**: v0.5.0 (Phase 5 Started)
+**Current Version**: v0.6.0 (Phase 6 Started)
 **Current Branch**: `develop`
 
 ### Completed Phases
@@ -145,6 +145,7 @@ See **CLAUDE.md** for detailed development setup and workflow.
 - ✅ **Phase 3** (v0.3.0): List/search tasks + force refresh
 - ✅ **Phase 4** (v0.4.0): Create tasks (`mg new ...`) with due parsing
 - 🔄 **Phase 5** (v0.5.0): Improve caching and performance (disk-persistent cache)
+- 🔄 **Phase 6** (v0.6.0): Polish UX (help, clearer commands)
 
 ### Next Phase
 
