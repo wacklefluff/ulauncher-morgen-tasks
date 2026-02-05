@@ -58,11 +58,11 @@ Use this checklist **every time** you implement a feature or fix (not just once 
   - [x] Log API errors to file (+v0.6.1)
   - [x] Log cache hits/misses (+v0.6.1)
 
-- [ ] Update logs and commit (+v0.6.2)
-  - [ ] Update `CHANGELOG.md` (+v0.6.2)
-  - [ ] Update `extension/logs/dev_log.md` (+v0.6.2)
-  - [ ] Write/update manual test plan (+v0.6.2)
-  - [ ] Commit: "fix: make refresh one-shot"
+- [x] Update logs and commit (+v0.6.2)
+  - [x] Update `CHANGELOG.md` (+v0.6.2)
+  - [x] Update `extension/logs/dev_log.md` (+v0.6.2)
+  - [x] Write/update manual test plan (+v0.6.2)
+  - [x] Commit: "fix: make refresh one-shot"
 
 ### Phase 5: Caching & Performance (OPTIONAL NEXT)
 
