@@ -60,6 +60,20 @@
 
 ---
 
+## 2026-02-05 (Session 9)
+
+**Goals**:
+- Prevent accidental rate limiting when using `mg refresh` / `mg !`
+
+**Accomplished**:
+- Made force refresh one-shot: only exact `mg refresh` or `mg !` triggers refresh
+- Added a UI notice when the refresh prefix is detected with extra text (to clarify behavior)
+
+**Notes**:
+- Add a numbered test plan for v0.6.2 that covers one-shot refresh while typing.
+
+---
+
 ## 2026-02-05 (Session 4)
 
 **Goals**:

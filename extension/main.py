@@ -5,6 +5,7 @@ Manage Morgen tasks from Ulauncher - list, search, and create tasks
 
 import logging
 import os
+import time
 from logging.handlers import RotatingFileHandler
 from ulauncher.api.client.Extension import Extension
 from ulauncher.api.client.EventListener import EventListener
@@ -82,6 +83,7 @@ class MorgenTasksExtension(Extension):
         self.subscribe(ItemEnterEvent, ItemEnterEventListener())
         self.cache = None
         self.api_client = None
+        self.last_manual_refresh_at = 0.0
         logger.info("Morgen Tasks Extension initialized")
 
 
@@ -136,13 +138,16 @@ class KeywordQueryEventListener(EventListener):
         if create_items is not None:
             return RenderResultListAction(create_items)
 
-        force_refresh, query = self._parse_query(raw_query)
+        force_refresh, query, refresh_prefix_used = self._parse_query(raw_query)
 
         try:
             tasks, cache_status = self._get_tasks(extension, force_refresh=force_refresh)
 
             # Search filtering (title + description)
             filtered_tasks = self._filter_tasks(tasks, query)
+
+            if refresh_prefix_used:
+                items.append(self._refresh_prefix_notice(extension))
 
             # Header item: task count + cache status (+ quick help)
             enter_hint = "Enter: copy task ID" if CopyToClipboardAction is not None else "Enter: close"
@@ -413,21 +418,31 @@ class KeywordQueryEventListener(EventListener):
         Parse user query for force refresh and search term.
 
         Supported:
-          - "!" or "! <query>" (force refresh)
-          - "refresh" or "refresh <query>" (force refresh)
+          - "!" (force refresh; one-shot)
+          - "refresh" (force refresh; one-shot)
+          - Any extra text after "!" / "refresh" is treated as normal search,
+            to avoid accidentally force-refreshing on every keystroke.
           - otherwise: search query (or empty to list all)
         """
         if not raw_query:
-            return False, ""
+            return False, "", False
 
-        if raw_query.startswith("!"):
-            return True, raw_query[1:].strip()
+        stripped = raw_query.strip()
+        if stripped == "!":
+            return True, "", False
 
-        parts = raw_query.split(None, 1)
+        if stripped.startswith("!"):
+            # Do not force refresh if user keeps typing after "!"
+            return False, stripped[1:].strip(), True
+
+        parts = stripped.split(None, 1)
         if parts and parts[0].lower() == "refresh":
-            return True, parts[1].strip() if len(parts) > 1 else ""
+            if len(parts) == 1:
+                return True, "", False
+            # Do not force refresh if user keeps typing after "refresh"
+            return False, parts[1].strip(), True
 
-        return False, raw_query
+        return False, raw_query, False
 
     def _get_tasks(self, extension, force_refresh: bool):
         # Cache-first: check cache before making API call
@@ -447,6 +462,8 @@ class KeywordQueryEventListener(EventListener):
             cache_status = "refreshed" if force_refresh else "fresh"
         else:
             cache_status = "fresh"
+        if force_refresh:
+            extension.last_manual_refresh_at = time.time()
         tasks = response.get("data", {}).get("tasks", [])
         return tasks, cache_status
 
@@ -517,6 +534,23 @@ class KeywordQueryEventListener(EventListener):
             ))
 
         return items
+
+    def _refresh_prefix_notice(self, extension):
+        now = time.time()
+        recently_refreshed = bool(extension.last_manual_refresh_at and (now - extension.last_manual_refresh_at) < 15)
+        if recently_refreshed:
+            return ExtensionResultItem(
+                icon='images/icon.png',
+                name='Cache refreshed (one-shot)',
+                description='You kept typing after "refresh"/"!": now searching without refreshing each keystroke.',
+                on_enter=HideWindowAction()
+            )
+        return ExtensionResultItem(
+            icon='images/icon.png',
+            name='Refresh is one-shot',
+            description='Only exact "mg refresh" or "mg !" refreshes. Remove the prefix to search normally.',
+            on_enter=HideWindowAction()
+        )
 
 
 class ItemEnterEventListener(EventListener):
