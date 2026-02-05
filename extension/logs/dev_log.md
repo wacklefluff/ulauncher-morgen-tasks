@@ -85,6 +85,17 @@
 
 ---
 
+## 2026-02-05 (Session 11)
+
+**Goals**:
+- Phase 6 polish: improve error messages and runtime logging
+
+**Accomplished**:
+- Added more actionable UI error messages (auth/network/rate limit/unexpected) with tips and a pointer to `extension/logs/runtime.log`
+- Added additional runtime log lines around cache/API actions and create-task outcomes
+
+---
+
 ## 2026-02-05 (Session 4)
 
 **Goals**:

@@ -34,6 +34,7 @@ from src.date_parser import DateParser, DateParseError
 logger = logging.getLogger(__name__)
 
 _LOG_FILE_NAME = "runtime.log"
+_RUNTIME_LOG_HINT = "extension/logs/runtime.log"
 
 
 def _setup_file_logging():
@@ -106,11 +107,12 @@ class KeywordQueryEventListener(EventListener):
 
         # No API key → welcome message
         if not api_key:
+            logger.warning("Missing API key (showing welcome screen)")
             return RenderResultListAction([
                 ExtensionResultItem(
                     icon='images/icon.png',
                     name='Welcome to Morgen Tasks!',
-                    description='Please configure your API key in extension preferences',
+                    description=f'Configure your API key in extension preferences. Logs: {_RUNTIME_LOG_HINT}',
                     on_enter=HideWindowAction()
                 )
             ])
@@ -127,15 +129,18 @@ class KeywordQueryEventListener(EventListener):
         # Help / housekeeping commands
         help_items = self._maybe_build_help_flow(raw_query)
         if help_items is not None:
+            logger.info("Showing help view")
             return RenderResultListAction(help_items)
 
         clear_items = self._maybe_clear_cache_flow(raw_query, extension)
         if clear_items is not None:
+            logger.info("Cache clear requested")
             return RenderResultListAction(clear_items)
 
         # Phase 4: create task flow (mg new ...)
         create_items = self._maybe_build_create_flow(raw_query)
         if create_items is not None:
+            logger.info("Showing create-task preview")
             return RenderResultListAction(create_items)
 
         force_refresh, query, refresh_prefix_used = self._parse_query(raw_query)
@@ -177,38 +182,60 @@ class KeywordQueryEventListener(EventListener):
                     ))
 
         except MorgenAuthError:
-            logger.error("Authentication error")
-            items.append(ExtensionResultItem(
-                icon='images/icon.png',
-                name='Authentication Failed',
-                description='Invalid API key. Check extension preferences.',
-                on_enter=HideWindowAction()
+            logger.warning("Authentication failed (invalid API key)")
+            items.extend(self._error_items(
+                title="Authentication Failed",
+                description="Your API key was rejected by Morgen.",
+                suggestions=[
+                    "Open extension preferences and set a valid API key.",
+                    'Then run "mg refresh" (one-shot) to fetch tasks.',
+                    f"See logs: {_RUNTIME_LOG_HINT}",
+                ],
             ))
 
         except MorgenRateLimitError:
-            logger.warning("Rate limit exceeded")
-            items.extend(self._fallback_to_cache(extension, "Rate limit exceeded", query=query))
+            logger.warning("Rate limit exceeded (429)")
+            items.extend(self._fallback_to_cache(
+                extension,
+                "Rate limit exceeded",
+                query=query,
+                suggestions=[
+                    "Wait a minute and try again.",
+                    "Avoid using refresh repeatedly; refresh is one-shot.",
+                    'Use cached results, or increase "Cache Duration" preference.',
+                ],
+            ))
 
         except MorgenNetworkError as e:
-            logger.error("Network error: %s", e)
-            items.extend(self._fallback_to_cache(extension, "Cannot reach Morgen API", query=query))
+            logger.warning("Network error: %s", e)
+            items.extend(self._fallback_to_cache(
+                extension,
+                "Cannot reach Morgen API",
+                query=query,
+                suggestions=[
+                    "Check your internet connection/VPN.",
+                    'Try "mg" again, or use cached results if available.',
+                    f"See logs: {_RUNTIME_LOG_HINT}",
+                ],
+            ))
 
         except MorgenAPIError as e:
-            logger.error("API error: %s", e)
-            items.append(ExtensionResultItem(
-                icon='images/icon.png',
-                name='Morgen API Error',
-                description=str(e.message),
-                on_enter=HideWindowAction()
+            logger.warning("API error: %s", getattr(e, "message", e))
+            items.extend(self._error_items(
+                title="Morgen API Error",
+                description=str(getattr(e, "message", e)),
+                suggestions=[f"See logs: {_RUNTIME_LOG_HINT}"],
             ))
 
         except Exception as e:
-            logger.error("Unexpected error: %s", e, exc_info=True)
-            items.append(ExtensionResultItem(
-                icon='images/icon.png',
-                name='Unexpected Error',
+            logger.exception("Unexpected error")
+            items.extend(self._error_items(
+                title="Unexpected Error",
                 description=str(e),
-                on_enter=HideWindowAction()
+                suggestions=[
+                    'Try "mg clear" then "mg refresh".',
+                    f"See logs: {_RUNTIME_LOG_HINT}",
+                ],
             ))
 
         return RenderResultListAction(items)
@@ -270,6 +297,13 @@ class KeywordQueryEventListener(EventListener):
             icon="images/icon.png",
             name="Task item Enter behavior",
             description=f"Pressing Enter on a task {enter_hint}.",
+            on_enter=HideWindowAction(),
+        ))
+
+        items.append(ExtensionResultItem(
+            icon="images/icon.png",
+            name="Runtime logs",
+            description=_RUNTIME_LOG_HINT,
             on_enter=HideWindowAction(),
         ))
 
@@ -447,12 +481,13 @@ class KeywordQueryEventListener(EventListener):
     def _get_tasks(self, extension, force_refresh: bool):
         # Cache-first: check cache before making API call
         if force_refresh and extension.cache:
+            logger.info("Force refresh requested (invalidating cache)")
             extension.cache.invalidate()
 
         tasks = extension.cache.get_tasks() if extension.cache and not force_refresh else None
         if tasks is not None:
             cache_status = f"cached {extension.cache.get_age_display()}"
-            logger.info("Using cached tasks: %d tasks", len(tasks))
+            logger.info("Using cached tasks: %d tasks (age=%s)", len(tasks), extension.cache.get_age_display())
             return tasks, cache_status
 
         logger.info("Fetching tasks from API%s...", " (force refresh)" if force_refresh else "")
@@ -465,6 +500,7 @@ class KeywordQueryEventListener(EventListener):
         if force_refresh:
             extension.last_manual_refresh_at = time.time()
         tasks = response.get("data", {}).get("tasks", [])
+        logger.info("API tasks loaded: %d tasks", len(tasks))
         return tasks, cache_status
 
     def _filter_tasks(self, tasks, query: str):
@@ -488,24 +524,27 @@ class KeywordQueryEventListener(EventListener):
                 return HideWindowAction()
         return HideWindowAction()
 
-    def _fallback_to_cache(self, extension, error_msg, query=""):
+    def _fallback_to_cache(self, extension, error_msg, query="", suggestions=None):
         """Try to show cached data on network/rate-limit errors."""
         items = []
         cached = extension.cache.get_full_response() if extension.cache else None
         formatter = TaskFormatter()
 
         if not cached:
+            logger.info("No cached response available for fallback")
             items.append(ExtensionResultItem(
                 icon='images/icon.png',
                 name=error_msg,
                 description='No cached data available. Try again later.',
                 on_enter=HideWindowAction()
             ))
+            items.extend(self._suggestion_items(suggestions))
             return items
 
         tasks = cached.get("data", {}).get("tasks", [])
         filtered_tasks = self._filter_tasks(tasks, query)
         age = extension.cache.get_age_display() if extension.cache else "unknown"
+        logger.info("Fallback to cached response: %d tasks (cache age=%s)", len(tasks), age)
 
         items.append(ExtensionResultItem(
             icon='images/icon.png',
@@ -513,6 +552,7 @@ class KeywordQueryEventListener(EventListener):
             description=f'{len(filtered_tasks)} tasks (cache: {age})',
             on_enter=HideWindowAction()
         ))
+        items.extend(self._suggestion_items(suggestions))
 
         if not filtered_tasks:
             items.append(ExtensionResultItem(
@@ -533,6 +573,31 @@ class KeywordQueryEventListener(EventListener):
                 on_enter=on_enter
             ))
 
+        return items
+
+    def _error_items(self, title: str, description: str, suggestions=None):
+        items = [
+            ExtensionResultItem(
+                icon="images/icon.png",
+                name=title,
+                description=description,
+                on_enter=HideWindowAction(),
+            )
+        ]
+        items.extend(self._suggestion_items(suggestions))
+        return items
+
+    def _suggestion_items(self, suggestions):
+        if not suggestions:
+            return []
+        items = []
+        for suggestion in suggestions:
+            items.append(ExtensionResultItem(
+                icon="images/icon.png",
+                name="Tip",
+                description=str(suggestion),
+                on_enter=HideWindowAction(),
+            ))
         return items
 
     def _refresh_prefix_notice(self, extension):
@@ -587,7 +652,7 @@ class ItemEnterEventListener(EventListener):
             return RenderResultListAction([ExtensionResultItem(
                 icon='images/icon.png',
                 name='Cannot create task',
-                description='Missing API key. Set it in extension preferences.',
+                description=f'Missing API key. Set it in extension preferences. Logs: {_RUNTIME_LOG_HINT}',
                 on_enter=HideWindowAction()
             )])
 
@@ -605,6 +670,7 @@ class ItemEnterEventListener(EventListener):
                 extension.cache.invalidate()
 
             description = f"Created (id: {task_id})" if task_id else "Created"
+            logger.info("Task created (id=%s)", task_id or "unknown")
             return RenderResultListAction([ExtensionResultItem(
                 icon='images/icon.png',
                 name='Task created',
@@ -613,6 +679,7 @@ class ItemEnterEventListener(EventListener):
             )])
 
         except MorgenAuthError:
+            logger.warning("Create task failed: auth error")
             return RenderResultListAction([ExtensionResultItem(
                 icon='images/icon.png',
                 name='Authentication Failed',
@@ -621,26 +688,29 @@ class ItemEnterEventListener(EventListener):
             )])
 
         except MorgenRateLimitError:
+            logger.warning("Create task failed: rate limit")
             return RenderResultListAction([ExtensionResultItem(
                 icon='images/icon.png',
                 name='Rate limit exceeded',
-                description='Try again later.',
+                description=f'Try again later. Logs: {_RUNTIME_LOG_HINT}',
                 on_enter=HideWindowAction()
             )])
 
         except (MorgenNetworkError, MorgenAPIError) as e:
+            logger.warning("Create task failed: %s", getattr(e, "message", e))
             return RenderResultListAction([ExtensionResultItem(
                 icon='images/icon.png',
                 name='Create failed',
-                description=str(getattr(e, "message", e)),
+                description=f'{str(getattr(e, "message", e))} (see {_RUNTIME_LOG_HINT})',
                 on_enter=HideWindowAction()
             )])
 
         except Exception as e:
+            logger.exception("Create task failed: unexpected error")
             return RenderResultListAction([ExtensionResultItem(
                 icon='images/icon.png',
                 name='Unexpected error',
-                description=str(e),
+                description=f'{str(e)} (see {_RUNTIME_LOG_HINT})',
                 on_enter=HideWindowAction()
             )])
 

@@ -3,7 +3,7 @@
 Current task list and development roadmap.
 
 **Last Updated**: 2026-02-05
-**Current Version**: v0.6.2 (Phase 6 Started)
+**Current Version**: v0.6.3 (Phase 6 Started)
 **Current Branch**: `develop`
 
 ## Release Checklist (Repeat Every Feature/Fix)
@@ -29,16 +29,17 @@ Use this checklist **every time** you implement a feature or fix (not just once 
 - v0.6.0 — help + clear cache commands (see Phase 6; commit: `feat: add help and clear cache commands`)
 - v0.6.1 — file-based runtime logging (see Phase 6; commit: `feat: add file-based runtime logging`)
 - v0.6.2 — one-shot refresh (prevents accidental rate limit while typing)
+- v0.6.3 — improved errors + runtime logging tips
 
 ## Immediate Next Steps
 
 ### Phase 6: Polish & Error Handling (NEXT)
 
 - [ ] Enhance error messages
-  - [ ] Network errors
-  - [ ] Auth errors
-  - [ ] Rate limit errors
-  - [ ] Empty results
+  - [x] Network errors (+v0.6.3)
+  - [x] Auth errors (+v0.6.3)
+  - [x] Rate limit errors (+v0.6.3)
+  - [x] Empty results (+v0.6.3)
 
 - [ ] Improve UI
   - [ ] Better icons for priority levels
@@ -57,12 +58,13 @@ Use this checklist **every time** you implement a feature or fix (not just once 
 - [ ] Add logging
   - [x] Log API errors to file (+v0.6.1)
   - [x] Log cache hits/misses (+v0.6.1)
+  - [x] Add richer runtime logging events (+v0.6.3)
 
-- [x] Update logs and commit (+v0.6.2)
-  - [x] Update `CHANGELOG.md` (+v0.6.2)
-  - [x] Update `extension/logs/dev_log.md` (+v0.6.2)
-  - [x] Write/update manual test plan (+v0.6.2)
-  - [x] Commit: "fix: make refresh one-shot"
+- [ ] Update logs and commit (+v0.6.3)
+  - [ ] Update `CHANGELOG.md` (+v0.6.3)
+  - [ ] Update `extension/logs/dev_log.md` (+v0.6.3)
+  - [ ] Write/update manual test plan (+v0.6.3)
+  - [ ] Commit: "feat: improve error messages and runtime logging"
 
 ### Phase 5: Caching & Performance (OPTIONAL NEXT)
 
