@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/*.log
+
+# Cache
+*.cache
+cache/
+.cache/
+
+# Sensitive data
+*.key
+*.secret
+*_credentials.json
+api_keys.txt
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Development
+development/scratch/
+*.tmp
+*.bak
