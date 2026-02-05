@@ -8,13 +8,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Project structure and git repository initialization
-- Development environment setup
+- README with installation and usage instructions
 
-## [0.1.0] - 2026-02-05
+## [0.1.0] - 2026-02-05 (Phase 1 Complete)
+
+### Added
+- Basic Ulauncher extension structure
+- manifest.json with keyword and API key preferences
+- main.py with Extension and EventListener classes
+- versions.json for API version mapping
+- Extension responds to keyword trigger
+- Welcome message display
+- API key configuration detection
+
+## [0.0.1] - 2026-02-05 (Phase 0 Complete)
 
 ### Added
 - Initial project structure
-- Git repository with main branch
+- Git repository with develop and main branches
 - .gitignore for Python, logs, and sensitive data
 - Directory structure for extension and development tracking
+- Placeholder icon
+- Development logs (dev_log.md, issues.md, improvements.md)
+- Symlink to Ulauncher extensions directory
