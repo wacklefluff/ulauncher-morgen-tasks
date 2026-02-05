@@ -109,6 +109,17 @@
 
 ---
 
+## 2026-02-05 (Session 13)
+
+**Goals**:
+- Fix missing log access actions on certain screens
+
+**Accomplished**:
+- Added “Open runtime log” / “Copy log path” items to the welcome (missing API key) screen
+- Added log access items to no-cache fallback error screen and create-task missing-API-key screen
+
+---
+
 ## 2026-02-05 (Session 4)
 
 **Goals**:

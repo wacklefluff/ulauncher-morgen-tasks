@@ -3,7 +3,7 @@
 Current task list and development roadmap.
 
 **Last Updated**: 2026-02-05
-**Current Version**: v0.6.4 (Phase 6 Started)
+**Current Version**: v0.6.5 (Phase 6 Started)
 **Current Branch**: `develop`
 
 ## Release Checklist (Repeat Every Feature/Fix)
@@ -31,6 +31,7 @@ Use this checklist **every time** you implement a feature or fix (not just once 
 - v0.6.2 — one-shot refresh (prevents accidental rate limit while typing)
 - v0.6.3 — improved errors + runtime logging tips
 - v0.6.4 — open/copy runtime log from UI
+- v0.6.5 — show log access on welcome/error fallbacks
 
 ## Immediate Next Steps
 
@@ -51,6 +52,7 @@ Use this checklist **every time** you implement a feature or fix (not just once 
   - [x] Fix help/search edge case (+v0.6.0)
   - [x] Make refresh one-shot (+v0.6.2)
   - [x] Add quick access to runtime log (+v0.6.4)
+  - [x] Show log access on welcome/errors (+v0.6.5)
 
 - [ ] Write documentation
   - [ ] Complete README.md
@@ -62,11 +64,11 @@ Use this checklist **every time** you implement a feature or fix (not just once 
   - [x] Log cache hits/misses (+v0.6.1)
   - [x] Add richer runtime logging events (+v0.6.3)
 
-- [ ] Update logs and commit (+v0.6.4)
-  - [ ] Update `CHANGELOG.md` (+v0.6.4)
-  - [ ] Update `extension/logs/dev_log.md` (+v0.6.4)
-  - [ ] Write/update manual test plan (+v0.6.4)
-  - [ ] Commit: "feat: add UI actions to open logs"
+- [ ] Update logs and commit (+v0.6.5)
+  - [ ] Update `CHANGELOG.md` (+v0.6.5)
+  - [ ] Update `extension/logs/dev_log.md` (+v0.6.5)
+  - [ ] Write/update manual test plan (+v0.6.5)
+  - [ ] Commit: "fix: show log actions on welcome/errors"
 
 ### Phase 5: Caching & Performance (OPTIONAL NEXT)
 

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.5] - 2026-02-05
+
+### Fixed
+- Log access actions now also appear on the welcome/missing-API-key screen and other fallback error screens.
+
 ## [0.6.4] - 2026-02-05
 
 ### Added

@@ -119,7 +119,8 @@ class KeywordQueryEventListener(EventListener):
                     name='Welcome to Morgen Tasks!',
                     description=f'Configure your API key in extension preferences. Logs: {_RUNTIME_LOG_HINT}',
                     on_enter=HideWindowAction()
-                )
+                ),
+                *self._runtime_log_access_items(),
             ])
 
         # Lazy-init client and cache; re-create if API key changed
@@ -545,6 +546,7 @@ class KeywordQueryEventListener(EventListener):
                 description='No cached data available. Try again later.',
                 on_enter=HideWindowAction()
             ))
+            items.extend(self._runtime_log_access_items())
             items.extend(self._suggestion_items(suggestions))
             return items
 
@@ -685,12 +687,37 @@ class ItemEnterEventListener(EventListener):
             cache_ttl = 600
 
         if not api_key:
-            return RenderResultListAction([ExtensionResultItem(
+            items = [ExtensionResultItem(
                 icon='images/icon.png',
                 name='Cannot create task',
                 description=f'Missing API key. Set it in extension preferences. Logs: {_RUNTIME_LOG_HINT}',
                 on_enter=HideWindowAction()
-            )])
+            )]
+
+            abs_path = os.path.join(os.path.dirname(__file__), "logs", _LOG_FILE_NAME)
+            if OpenAction is not None:
+                try:
+                    items.append(ExtensionResultItem(
+                        icon="images/icon.png",
+                        name="Open runtime log",
+                        description=abs_path,
+                        on_enter=OpenAction(abs_path),
+                    ))
+                except Exception:
+                    pass
+
+            if CopyToClipboardAction is not None:
+                try:
+                    items.append(ExtensionResultItem(
+                        icon="images/icon.png",
+                        name="Copy log path",
+                        description=abs_path,
+                        on_enter=CopyToClipboardAction(abs_path),
+                    ))
+                except Exception:
+                    pass
+
+            return RenderResultListAction(items)
 
         # Ensure client/cache are initialized
         if extension.api_client is None or extension.api_client.api_key != api_key:
