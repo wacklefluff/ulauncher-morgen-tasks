@@ -33,11 +33,11 @@ Current task list and development roadmap.
   - [ ] Consider opening Morgen app (if feasible)
 
 - [ ] Test list/search functionality
-  - [ ] Test listing all tasks
-  - [ ] Test searching by title
-  - [ ] Test searching by description
-  - [ ] Test with no tasks
-  - [ ] Test cache indicators
+  - [x] Test listing all tasks
+  - [x] Test searching by title
+  - [x] Test searching by description
+  - [x] Test with no tasks
+  - [x] Test cache indicators
 
 - [ ] Update logs and commit
   - [x] Update `CHANGELOG.md` to v0.3.0
@@ -70,12 +70,12 @@ Current task list and development roadmap.
   - [x] Invalidate cache after creation
 
 - [ ] Test task creation
-  - [ ] Create task with title only
-  - [ ] Create task with due date
-  - [ ] Create task with priority
-  - [ ] Create task with date and priority
-  - [ ] Test invalid date inputs
-  - [ ] Verify cache invalidation
+  - [x] Create task with title only
+  - [x] Create task with due date
+  - [x] Create task with priority
+  - [x] Create task with date and priority
+  - [x] Test invalid date inputs
+  - [x] Verify cache invalidation
 
 - [ ] Update logs and commit
   - [x] Update `CHANGELOG.md` to v0.4.0
@@ -132,6 +132,7 @@ Current task list and development roadmap.
   - [ ] Test error scenarios
   - [ ] Test offline behavior
   - [ ] Test with empty task list
+  - [ ] Follow manual test plan protocol (numbered tests + saved `.md` plan in `development/research/`)
 
 - [ ] Write unit tests
   - [ ] Tests for date parser

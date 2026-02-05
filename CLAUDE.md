@@ -374,6 +374,15 @@ ulauncher -v
 - Changes not appearing → Restart Ulauncher
 - API errors → Check logs and error messages
 
+#### Manual Test Requests (Protocol)
+
+When asking the user to perform manual tests:
+
+- Provide a **detailed, numbered** test list with stable IDs (e.g. `T01`, `T02`, ...).
+- Also document the test plan in a markdown file for future reference:
+  - `development/research/test_plan_<version>_<YYYY-MM-DD>.md`
+- If something fails, ask the user to report the **test ID** that failed.
+
 ### 7. Git Workflow
 
 **Branch Strategy**:

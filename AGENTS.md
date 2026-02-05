@@ -233,6 +233,15 @@ ulauncher -v
 cat ~/.local/share/ulauncher/last.log
 ```
 
+### Manual Test Requests (Protocol)
+
+When asking the user to run manual tests:
+
+1. Always provide a **numbered** test list with stable IDs (e.g. `T01`, `T02`, ...).
+2. Always write the test plan to a `.md` file for reference:
+   - `development/research/test_plan_<version>_<YYYY-MM-DD>.md`
+3. In follow-ups, reference failures by **test ID** so issues are easy to report and reproduce.
+
 ## Git Commits
 
 Format: `type: description`
