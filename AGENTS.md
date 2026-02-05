@@ -215,7 +215,7 @@ cat TODO.md
 
 3. **End Session**:
    - Update `dev_log.md` with accomplishments
-   - Update `TODO.md` (check off tasks)
+   - Update `TODO.md` (check off tasks + refresh context)
    - Commit: `git add -A && git commit -m "type: description"`
 
 ## Testing
@@ -241,6 +241,14 @@ When asking the user to run manual tests:
 2. Always write the test plan to a `.md` file for reference:
    - `development/research/test_plan_<version>_<YYYY-MM-DD>.md`
 3. In follow-ups, reference failures by **test ID** so issues are easy to report and reproduce.
+
+### Updating `TODO.md` (Protocol)
+
+Whenever you modify `TODO.md`, also update the file’s *context*:
+
+1. Check off any tasks that are now completed (including manual test items).
+2. Update **Immediate Next Steps** so it reflects what the user should do *next* (not already-finished phases).
+3. Keep the version/status lines accurate (current version/phase, last updated date).
 
 ## Git Commits
 

@@ -156,6 +156,9 @@ Latest commit: 53ce2b2 - docs: update dev log with Phase 0 and Phase 1 completio
 2. **Update TODO.md**:
    - Check off completed tasks
    - Add new tasks if discovered
+   - Refresh the file’s context:
+     - Update **Immediate Next Steps** to reflect what to do next
+     - Ensure version/status lines are accurate
 
 3. **Commit all changes**:
    ```bash

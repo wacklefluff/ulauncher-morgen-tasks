@@ -8,6 +8,37 @@ Current task list and development roadmap.
 
 ## Immediate Next Steps
 
+### Phase 6: Polish & Error Handling (NEXT)
+
+- [ ] Enhance error messages
+  - [ ] Network errors
+  - [ ] Auth errors
+  - [ ] Rate limit errors
+  - [ ] Empty results
+
+- [ ] Improve UI
+  - [ ] Better icons for priority levels
+  - [ ] Color-code overdue tasks
+  - [x] Show task count
+  - [x] Add help command
+  - [x] Add clear-cache command
+
+- [ ] Write documentation
+  - [ ] Complete README.md
+  - [ ] Create docs/USER_GUIDE.md
+  - [ ] Create docs/API_REFERENCE.md
+
+- [ ] Add logging
+  - [ ] Log API errors to file
+  - [ ] Log cache hits/misses
+
+### Phase 5: Caching & Performance (OPTIONAL NEXT)
+
+- [ ] Consider background refresh
+- [ ] Performance optimizations (search/lazy-load/profiling)
+
+---
+
 ### Phase 3: List/Search Tasks (COMPLETE)
 
 - [x] Create `src/formatter.py` - Display formatting
@@ -96,8 +127,8 @@ Current task list and development roadmap.
   - [ ] Profile performance
 
 - [ ] Update logs and commit
-  - [ ] Update `CHANGELOG.md` to v0.5.0
-  - [ ] Git commit: "perf: improve caching and performance"
+  - [x] Update `CHANGELOG.md` to v0.5.0
+  - [x] Git commit: "perf: persist task cache to disk"
 
 ## Phase 6: Polish & Error Handling (After Phase 5)
 
@@ -110,8 +141,9 @@ Current task list and development roadmap.
 - [ ] Improve UI
   - [ ] Better icons for priority levels
   - [ ] Color-code overdue tasks
-  - [ ] Show task count
-  - [ ] Add help command
+  - [x] Show task count
+  - [x] Add help command
+  - [x] Add clear-cache command
 
 - [ ] Write documentation
   - [ ] Complete README.md
@@ -123,8 +155,8 @@ Current task list and development roadmap.
   - [ ] Log cache hits/misses
 
 - [ ] Update logs and commit
-  - [ ] Update `CHANGELOG.md` to v0.6.0
-  - [ ] Git commit: "docs: add user guide and polish UX"
+  - [x] Update `CHANGELOG.md` to v0.6.0
+  - [x] Git commit: "feat: add help and clear cache commands"
 
 ## Phase 7: Testing & Release (After Phase 6)
 
