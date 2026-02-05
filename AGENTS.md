@@ -249,6 +249,8 @@ Whenever you modify `TODO.md`, also update the file’s *context*:
 1. Check off any tasks that are now completed (including manual test items).
 2. Update **Immediate Next Steps** so it reflects what the user should do *next* (not already-finished phases).
 3. Keep the version/status lines accurate (current version/phase, last updated date).
+4. Use the **Release Checklist** in `TODO.md` for every feature/fix (don’t treat “logs + commit” as a one-time per-phase step).
+5. Append a version tag when a task is completed, e.g. `(+v0.6.0)`.
 
 ## Git Commits
 

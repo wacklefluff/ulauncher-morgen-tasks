@@ -6,6 +6,28 @@ Current task list and development roadmap.
 **Current Version**: v0.6.0 (Phase 6 Started)
 **Current Branch**: `develop`
 
+## Release Checklist (Repeat Every Feature/Fix)
+
+Use this checklist **every time** you implement a feature or fix (not just once per phase).
+
+- [ ] Update `CHANGELOG.md` (add/move items into the correct version section)
+- [ ] Update `extension/logs/dev_log.md` (include test IDs + PASS/FAIL)
+- [ ] Update `TODO.md` context
+  - [ ] Check off completed tasks
+  - [ ] Refresh **Immediate Next Steps** to reflect what’s next
+- [ ] Write/update a numbered manual test plan: `development/research/test_plan_vX.Y.Z_YYYY-MM-DD.md`
+- [ ] Run manual tests and record results by test ID
+- [ ] Commit (and include the version in the commit message when appropriate)
+
+**Version tags**: When marking a task done, append the version it shipped in, e.g. `(+v0.6.0)`.
+
+## Release History
+
+- v0.3.0 — list/search/refresh tasks (see Phase 3; commit: `feat: list and search tasks`)
+- v0.4.0 — create tasks + due parsing (see Phase 4; commit: `feat: create tasks with date parsing`)
+- v0.5.0 — disk-persistent cache (see Phase 5; commit: `perf: persist task cache to disk`)
+- v0.6.0 — help + clear cache commands (see Phase 6; commit: `feat: add help and clear cache commands`)
+
 ## Immediate Next Steps
 
 ### Phase 6: Polish & Error Handling (NEXT)
@@ -19,9 +41,10 @@ Current task list and development roadmap.
 - [ ] Improve UI
   - [ ] Better icons for priority levels
   - [ ] Color-code overdue tasks
-  - [x] Show task count
-  - [x] Add help command
-  - [x] Add clear-cache command
+  - [x] Show task count (+v0.6.0)
+  - [x] Add help command (+v0.6.0)
+  - [x] Add clear-cache command (+v0.6.0)
+  - [x] Fix help/search edge case (+v0.6.0)
 
 - [ ] Write documentation
   - [ ] Complete README.md
@@ -32,12 +55,6 @@ Current task list and development roadmap.
   - [ ] Log API errors to file
   - [ ] Log cache hits/misses
 
-- [ ] Update logs and commit
-  - [x] Update `CHANGELOG.md` to v0.6.0
-  - [x] Git commits:
-    - "feat: add help and clear cache commands"
-    - "fix: don't trigger help on search queries"
-
 ### Phase 5: Caching & Performance (OPTIONAL NEXT)
 
 - [ ] Consider background refresh
@@ -47,20 +64,20 @@ Current task list and development roadmap.
 
 ### Phase 3: List/Search Tasks (COMPLETE)
 
-- [x] Create `src/formatter.py` - Display formatting
+- [x] Create `src/formatter.py` - Display formatting (+v0.3.0)
   - [x] Implement `TaskFormatter` class
   - [x] Create `format_for_display(task)` method
   - [x] Create `format_subtitle(task)` method (due date, priority)
   - [x] Create `get_priority_icon(priority)` helper
 
-- [x] Update `main.py` to display tasks
+- [x] Update `main.py` to display tasks (+v0.3.0)
   - [x] Show all tasks when no query provided
   - [x] Implement search filtering by query
   - [x] Return `RenderResultListAction` with task items
   - [x] Handle empty task list
   - [x] Show cache status in results
 
-- [x] Add force refresh command
+- [x] Add force refresh command (+v0.3.0)
   - [x] Implement `mg refresh` or `mg !` to bypass cache
   - [x] Invalidate cache and fetch fresh data
   - [x] Show "Refreshed" confirmation
@@ -76,13 +93,9 @@ Current task list and development roadmap.
   - [x] Test with no tasks
   - [x] Test cache indicators
 
-- [ ] Update logs and commit
-  - [x] Update `CHANGELOG.md` to v0.3.0
-  - [x] Git commit: "feat: list and search tasks"
-
 ## Phase 4: Create Tasks (After Phase 3)
 
-- [x] Create `src/date_parser.py` - Natural language date parsing
+- [x] Create `src/date_parser.py` - Natural language date parsing (+v0.4.0)
   - [x] Implement `DateParser` class
   - [x] Parse "today", "tomorrow", "next week"
   - [x] Parse specific dates
@@ -90,13 +103,13 @@ Current task list and development roadmap.
   - [x] Convert to Morgen format: `YYYY-MM-DDTHH:mm:ss`
   - [x] Handle invalid dates
 
-- [x] Implement task creation command syntax
+- [x] Implement task creation command syntax (+v0.4.0)
   - [x] Parse `mg new <title>` command
   - [x] Parse `@<date>` for due dates
   - [x] Parse `!<priority>` for priority (1-9)
   - [ ] Future: Parse `#<tag>` for tags
 
-- [x] Update `main.py` for task creation
+- [x] Update `main.py` for task creation (+v0.4.0)
   - [x] Detect "new" keyword in query
   - [x] Parse task components (title, date, priority)
   - [x] Show preview before creation
@@ -114,13 +127,9 @@ Current task list and development roadmap.
   - [x] Test invalid date inputs
   - [x] Verify cache invalidation
 
-- [ ] Update logs and commit
-  - [x] Update `CHANGELOG.md` to v0.4.0
-  - [x] Git commit: "feat: create tasks with date parsing"
-
 ## Phase 5: Caching & Performance (After Phase 4)
 
-- [ ] Optimize caching strategy
+- [x] Optimize caching strategy (+v0.5.0)
   - [x] Implement 10-minute cache by default
   - [x] Add cache age indicators
   - [x] Add manual refresh option
@@ -131,10 +140,6 @@ Current task list and development roadmap.
   - [ ] Optimize search in cached data
   - [ ] Lazy load task details
   - [ ] Profile performance
-
-- [ ] Update logs and commit
-  - [x] Update `CHANGELOG.md` to v0.5.0
-  - [x] Git commit: "perf: persist task cache to disk"
 
 ## Phase 6: Polish & Error Handling (After Phase 5)
 
@@ -147,9 +152,10 @@ Current task list and development roadmap.
 - [ ] Improve UI
   - [ ] Better icons for priority levels
   - [ ] Color-code overdue tasks
-  - [x] Show task count
-  - [x] Add help command
-  - [x] Add clear-cache command
+  - [x] Show task count (+v0.6.0)
+  - [x] Add help command (+v0.6.0)
+  - [x] Add clear-cache command (+v0.6.0)
+  - [x] Fix help/search edge case (+v0.6.0)
 
 - [ ] Write documentation
   - [ ] Complete README.md
@@ -159,10 +165,6 @@ Current task list and development roadmap.
 - [ ] Add logging
   - [ ] Log API errors to file
   - [ ] Log cache hits/misses
-
-- [ ] Update logs and commit
-  - [x] Update `CHANGELOG.md` to v0.6.0
-  - [x] Git commit: "feat: add help and clear cache commands"
 
 ## Phase 7: Testing & Release (After Phase 6)
 

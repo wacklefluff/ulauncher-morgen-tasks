@@ -159,6 +159,8 @@ Latest commit: 53ce2b2 - docs: update dev log with Phase 0 and Phase 1 completio
    - Refresh the file’s context:
      - Update **Immediate Next Steps** to reflect what to do next
      - Ensure version/status lines are accurate
+   - Use the **Release Checklist** section in `TODO.md` for every feature/fix
+   - Append version tags to completed tasks (e.g. `(+v0.6.0)`)
 
 3. **Commit all changes**:
    ```bash
