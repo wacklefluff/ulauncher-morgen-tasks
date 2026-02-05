@@ -9,6 +9,60 @@ Quick reference guide for AI agents working on the Ulauncher Morgen Tasks Extens
 **Status**: Phase 1 complete ✅ → Phase 2 next 🔄
 **Branch**: `develop`
 
+## Handoff Protocol
+
+### When to Write a Handoff
+Write a handoff file at **natural break points**:
+- After completing a sub-task (e.g., finished one file, moving to next)
+- Before starting a large/risky change
+- When user says "pause", "stop", or "switch agents"
+- If you receive a rate limit error
+- Before context compaction/conversation restart
+
+### Ask User to Check Rate Limits
+At natural break points, ask: *"Should I continue or would you like to check rate limits first?"*
+
+**How users check rate limits:**
+- **Claude Code**: Run `/status` or check "Account and usage..." in settings
+- **Codex CLI**: Run `codex --usage` or check OpenAI dashboard
+- **Gemini CLI**: Check Google AI Studio usage dashboard
+- **GitHub Copilot**: GitHub settings → Copilot → Usage
+
+### Handoff File Format
+Create `development/handoff/handoff_YYYY-MM-DD_HHmm.md`:
+
+```markdown
+# AI Agent Handoff
+
+**Agent**: [Model name]
+**Timestamp**: YYYY-MM-DD HH:mm
+**Reason**: [Natural break / User request / Rate limit / Context limit]
+
+## Current Task
+[What you were working on]
+
+## Progress Made
+- [Completed items]
+
+## Next Steps
+1. [Immediate next action]
+2. [Following actions]
+
+## Files Modified (uncommitted)
+- [List any uncommitted changes]
+
+## Notes for Next Agent
+[Context, gotchas, important information]
+```
+
+### For Continuing Agents
+1. Check `development/handoff/` for recent handoff files
+2. Read the most recent handoff to understand context
+3. Continue from where previous agent stopped
+4. Archive completed handoff file to `development/handoff/archive/`
+
+---
+
 ## What to Do First
 
 1. **Read these files** (in order):
@@ -32,31 +86,32 @@ Quick reference guide for AI agents working on the Ulauncher Morgen Tasks Extens
 
 - ✅ Phase 0: Project setup (v0.0.1)
 - ✅ Phase 1: Basic extension (v0.1.0)
-- 🔄 **Phase 2: API integration (v0.2.0) ← YOU ARE HERE**
-- ⏳ Phase 3: List/search tasks
+- ✅ Phase 2: API integration (v0.2.0)
+- 🔄 **Phase 3: List/search tasks (v0.3.0) ← YOU ARE HERE**
 - ⏳ Phase 4: Create tasks
 - ⏳ Phase 5: Performance
 - ⏳ Phase 6: Polish
 - ⏳ Phase 7: Release
 
-## Next Steps (Phase 2)
+## Next Steps (Phase 3)
 
-Create these files:
+Create/update these files:
 
-1. **`extension/src/morgen_api.py`** - Morgen API client
-   - Class: `MorgenAPIClient`
-   - Methods: `list_tasks()`, `create_task()`
-   - Error handling: network, auth, rate limits
+1. **`extension/src/formatter.py`** - Display formatting
+   - Class: `TaskFormatter`
+   - Methods: `format_for_display(task)`, `format_subtitle(task)`
+   - Helper: `get_priority_icon(priority)`
 
-2. **`extension/src/cache.py`** - Task caching
-   - Class: `TaskCache`
-   - TTL: 600 seconds (10 minutes)
-   - Methods: `get_tasks()`, `set_tasks()`, `invalidate()`
+2. **Update `extension/main.py`**
+   - Show all tasks when no query provided
+   - Implement search filtering by query
+   - Add force refresh command (`mg refresh` or `mg !`)
+   - Handle empty task list gracefully
 
-3. **Update `extension/main.py`**
-   - Import API client
-   - Test API connection
-   - Display results or errors
+3. **Test list/search functionality**
+   - Test listing all tasks
+   - Test search by title/description
+   - Test force refresh bypasses cache
 
 ## Key Files
 
@@ -206,18 +261,20 @@ git commit -m "feat: implement Morgen API client with caching"
 | API errors | Verify API key in preferences |
 | Import errors | Check file paths and module names |
 
-## Phase 2 Checklist
+## Phase 3 Checklist
 
-- [ ] Create `extension/src/morgen_api.py`
-- [ ] Create `extension/src/cache.py`
-- [ ] Update `extension/main.py` to use API client
-- [ ] Test with valid API key
-- [ ] Test with invalid API key
-- [ ] Test error handling
+- [ ] Create `extension/src/formatter.py`
+- [ ] Update `extension/main.py` to display all tasks
+- [ ] Implement search filtering by query
+- [ ] Add force refresh command
+- [ ] Handle empty task list
+- [ ] Test listing all tasks
+- [ ] Test search functionality
+- [ ] Test force refresh
 - [ ] Update `extension/logs/dev_log.md`
 - [ ] Update `TODO.md`
-- [ ] Update `CHANGELOG.md` to v0.2.0
-- [ ] Commit: `git commit -m "feat: Morgen API integration"`
+- [ ] Update `CHANGELOG.md` to v0.3.0
+- [ ] Commit: `git commit -m "feat: list and search tasks"`
 
 ## Resources
 

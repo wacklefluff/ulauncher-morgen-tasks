@@ -6,8 +6,70 @@ This document explains how AI agents (like Claude) should work on this project. 
 
 **What**: Ulauncher extension for managing Morgen tasks
 **Goal**: Allow users to list, search, and create Morgen tasks from Ulauncher
-**Current Status**: Phase 1 complete (v0.1.0) - Basic extension structure working
-**Next Phase**: Phase 2 - Morgen API integration
+**Current Status**: Phase 2 complete (v0.2.0) - API integration working
+**Next Phase**: Phase 3 - List/search tasks
+
+## Handoff Protocol
+
+### When to Write a Handoff
+Write a handoff file at **natural break points**:
+- After completing a sub-task (e.g., finished one file, moving to next)
+- Before starting a large or risky change
+- When user says "pause", "stop", or "switch agents"
+- If you receive a rate limit error
+- Before context compaction or conversation restart
+
+### Ask User to Check Rate Limits
+At natural break points, ask: *"Should I continue or would you like to check rate limits first?"*
+
+**How users check rate limits:**
+- **Claude Code**: Run `/status` or check "Account and usage..." in settings
+- **Codex CLI**: Run `codex --usage` or check OpenAI dashboard
+- **Gemini CLI**: Check Google AI Studio usage dashboard
+- **GitHub Copilot**: GitHub settings → Copilot → Usage
+
+### Handoff File Location
+`development/handoff/handoff_YYYY-MM-DD_HHmm.md`
+
+### Handoff File Format
+```markdown
+# AI Agent Handoff
+
+**Agent**: [Model name, e.g., Claude Opus 4.5]
+**Timestamp**: YYYY-MM-DD HH:mm
+**Reason**: [Natural break / User request / Rate limit / Context limit]
+
+## Current Task
+[What you were working on]
+
+## Progress Made
+- [Completed items]
+
+## Next Steps
+1. [Immediate next action]
+2. [Following actions]
+
+## Files Modified (uncommitted)
+- [List any uncommitted changes]
+
+## Notes for Next Agent
+[Context, gotchas, important information]
+```
+
+### For Agents Continuing Work
+When starting a session:
+1. **Check `development/handoff/`** for recent handoff files
+2. **Read the most recent handoff** to understand context
+3. **Continue from where previous agent stopped**
+4. **Archive completed handoff** to `development/handoff/archive/`
+
+### Why This Matters
+- Seamless handoff between different AI models
+- Prevents lost work on interruptions
+- Enables continuous development across sessions
+- Preserves context for the next agent
+
+---
 
 ## Quick Start for AI Agents
 
@@ -400,24 +462,22 @@ python3Packages.requests
 
 ### 11. What to Do Next
 
-**If starting Phase 2**:
+**If starting Phase 3** (List/Search Tasks):
 
-1. Read the Phase 2 plan in `development/research/`
-2. Create `extension/src/morgen_api.py`:
-   - MorgenAPIClient class
-   - __init__(api_key)
-   - list_tasks() method
-   - create_task() method
-   - Error handling
-3. Create `extension/src/cache.py`:
-   - TaskCache class
-   - get_tasks() with TTL
-   - set_tasks()
-   - invalidate()
-4. Update `extension/main.py` to test API
-5. Test with Ulauncher
-6. Update logs
-7. Commit changes
+1. Check for handoff files in `development/handoff/`
+2. Create `extension/src/formatter.py`:
+   - TaskFormatter class
+   - format_for_display(task) method
+   - format_subtitle(task) method
+   - get_priority_icon(priority) helper
+3. Update `extension/main.py`:
+   - Show all tasks (not just first 5)
+   - Implement search filtering by query
+   - Add force refresh command (`mg refresh` or `mg !`)
+   - Handle empty task list
+4. Test in Ulauncher
+5. Update logs
+6. Commit changes
 
 **Reference implementation plans**:
 ```bash
@@ -485,14 +545,15 @@ ls development/research/
 Project: Ulauncher Morgen Tasks Extension
 Location: /home/user/Documents/AI/Morgen-Tasks/
 Branch: develop
-Current: Phase 1 complete (v0.1.0)
-Next: Phase 2 - API integration (v0.2.0)
+Current: Phase 2 complete (v0.2.0)
+Next: Phase 3 - List/search tasks (v0.3.0)
 
 Essential Files:
 - TODO.md - What to do next
 - extension/logs/dev_log.md - Session notes
 - extension/main.py - Main code
 - development/research/*.md - Implementation plans
+- development/handoff/ - AI agent handoff files
 
 Test Command:
   pkill ulauncher && ulauncher -v
@@ -500,6 +561,8 @@ Test Command:
 Commit Template:
   git add -A
   git commit -m "feat: description"
+
+Handoff: At break points, ask user about rate limits, write to development/handoff/
 ```
 
 ---

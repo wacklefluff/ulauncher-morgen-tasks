@@ -23,6 +23,11 @@ Current task list and development roadmap.
   - [ ] Handle empty task list
   - [ ] Show cache status in results
 
+- [ ] Add force refresh command
+  - [ ] Implement `mg refresh` or `mg !` to bypass cache
+  - [ ] Invalidate cache and fetch fresh data
+  - [ ] Show "Refreshed" confirmation
+
 - [ ] Add task actions
   - [ ] Copy task ID on click (for debugging)
   - [ ] Consider opening Morgen app (if feasible)
