@@ -41,7 +41,7 @@ Current task list and development roadmap.
 
 - [ ] Update logs and commit
   - [x] Update `CHANGELOG.md` to v0.3.0
-  - [ ] Git commit: "feat: list and search tasks"
+  - [x] Git commit: "feat: list and search tasks"
 
 ## Phase 4: Create Tasks (After Phase 3)
 
