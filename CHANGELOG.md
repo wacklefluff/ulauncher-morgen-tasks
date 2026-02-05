@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Help command no longer overrides searches when the query starts with “help” (e.g. `mg help regression` now searches).
+
 ## [0.6.0] - 2026-02-05 (Phase 6 Started)
 
 ### Added

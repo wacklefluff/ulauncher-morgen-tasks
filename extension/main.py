@@ -171,9 +171,9 @@ class KeywordQueryEventListener(EventListener):
             return None
 
         normalized = raw_query.strip().lower()
-        parts = normalized.split(None, 1)
-        head = parts[0] if parts else ""
-        if head not in {"help", "?", "h"}:
+        # Only trigger help when it's the entire query, so searches like
+        # "help regression test" still behave like normal search.
+        if normalized not in {"help", "?", "h"}:
             return None
 
         examples = [

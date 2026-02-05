@@ -21,6 +21,8 @@ Report failures by **test ID** (e.g. `H03`).
   - Expected: help list appears with examples including list/search/refresh/new/clear.
 - **H04** — Run `mg ?`.
   - Expected: same help view as `mg help`.
+- **H10** — Run `mg help regression test`.
+  - Expected: normal search behavior (does not open the help view).
 
 ---
 
@@ -41,4 +43,3 @@ Report failures by **test ID** (e.g. `H03`).
   - Expected: refresh occurs; tasks still render.
 - **H09** — Create task: `mg new Help regression test @tomorrow !3`.
   - Expected: preview + confirm; creation succeeds; searching finds the task.
-
