@@ -443,13 +443,54 @@ class KeywordQueryEventListener(EventListener):
 
         return items
 
+    _PRIORITY_NAMES = {
+        "high": 1, "hi": 1, "h": 1, "urgent": 1,
+        "medium": 5, "med": 5, "m": 5, "normal": 5,
+        "low": 9, "lo": 9, "l": 9,
+    }
+
+    def _parse_priority_token(self, token: str):
+        """
+        Parse a !-prefixed priority token.
+
+        Returns (priority_int, error_str|None).
+        - "!" alone → medium (5)
+        - "!!" → high (1)
+        - "!3" → numeric 3
+        - "!high" → named lookup
+        - "!invalid" → (0, "Unknown priority ...")
+        """
+        body = token[1:]  # strip leading "!"
+
+        # "!" alone → medium
+        if not body:
+            return 5, None
+
+        # "!!" → high
+        if body == "!":
+            return 1, None
+
+        # Numeric: "!1" .. "!9"
+        if body.isdigit():
+            p = int(body)
+            if 1 <= p <= 9:
+                return p, None
+            return 0, f"Priority must be 1-9, got {p}"
+
+        # Named: "!high", "!low", etc.
+        name = body.lower()
+        if name in self._PRIORITY_NAMES:
+            return self._PRIORITY_NAMES[name], None
+
+        return 0, f"Unknown priority '{body}'. Use: !high, !medium, !low, or !1-!9"
+
     def _parse_create_args(self, rest: str) -> dict:
         """
         Parse create args from the part after 'new' / 'add'.
 
         Supports:
-          - @<due> (e.g. @today, @tomorrow, @next-mon, @2026-02-10, @2026-02-10T15:30, @15:30)
-          - !<priority> (1..9), e.g. !3
+          - @<due> (e.g. @today, @tomorrow, @friday, @2026-02-10, @15:30)
+          - !<priority>: !high, !medium, !low, !1-!9, !!, !
         """
         tokens = rest.split()
         title_parts = []
@@ -460,11 +501,13 @@ class KeywordQueryEventListener(EventListener):
             if token.startswith("@") and len(token) > 1 and due_token is None:
                 due_token = token[1:]
                 continue
-            if token.startswith("!") and len(token) > 1 and token[1:].isdigit():
-                p = int(token[1:])
-                if 0 <= p <= 9:
+            if token.startswith("!"):
+                p, err = self._parse_priority_token(token)
+                if err:
+                    return {"error": err}
+                if p:
                     priority = p
-                    continue
+                continue
             title_parts.append(token)
 
         title = " ".join(title_parts).strip()
