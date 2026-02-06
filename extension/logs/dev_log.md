@@ -9,6 +9,7 @@
 - Added dev preference `dev_empty_tasks` to simulate a 0-task account (no API calls)
 - Updated empty-state UI message to explain dev-empty behavior when enabled
 - Added manual test plan for the empty-task-list scenario: `development/research/test_plan_v1.0.0_empty_tasks_2026-02-06.md`
+- Manual empty-task-list tests: PASS (E01–E03)
 
 **Files Changed**:
 - `extension/manifest.json` - add dev empty-task-list preference

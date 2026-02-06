@@ -20,7 +20,7 @@
 - Header shows `Morgen Tasks (0)`
 - Shows a `No tasks found` item
 - No API call is made (runtime log should NOT show “Fetching tasks from API...”)
-**Result**: [ ] PASS [ ] FAIL
+**Result**: [X] PASS [ ] FAIL
 **Notes**: ___________
 
 ### E02: Search (Empty)
@@ -28,7 +28,7 @@
 **Expected**:
 - Header shows `Morgen Tasks (0)`
 - Shows a `No tasks found` item
-**Result**: [ ] PASS [ ] FAIL
+**Result**: [X] PASS [ ] FAIL
 **Notes**: ___________
 
 ### E03: Refresh (Empty)
@@ -36,7 +36,7 @@
 **Expected**:
 - Still shows 0 tasks
 - No API call is made (dev-empty is a no-op even with refresh)
-**Result**: [ ] PASS [ ] FAIL
+**Result**: [X] PASS [ ] FAIL
 **Notes**: ___________
 
 ---
@@ -44,4 +44,3 @@
 ## Cleanup
 
 1. Set `Dev: Simulate empty task list (0/1)` back to `0`
-

@@ -45,7 +45,7 @@ Use this checklist **every time** you implement a feature or fix (not just once 
   - [x] Test all commands
   - [x] Test error scenarios
   - [x] Test offline behavior
-  - [ ] Test with empty task list (use dev toggle; see `development/research/test_plan_v1.0.0_empty_tasks_2026-02-06.md`)
+  - [x] Test with empty task list (dev toggle) (+v1.0.0)
   - [x] Follow manual test plan protocol
 
 #### Bugs (Must Fix for v1.0.0)
