@@ -42,17 +42,20 @@
 
 ## P03 — Branch/Tag Compatibility for Ulauncher Install
 
-Ulauncher installs from a GitHub repo using `versions.json`. Many extensions use `master` as the default branch.
+Ulauncher installs from a GitHub repo using `versions.json`. Use `main` as the default branch.
 
-1. Ensure the repo has a `master` branch (recommended for directory listing compatibility):
-   - Make `master` contain `extension/versions.json`
-   - `extension/versions.json` should reference the release tag `v1.0.0`
-2. Keep `develop` for ongoing work; keep `main` if you prefer it for releases.
+1. Ensure `main` contains `extension/versions.json`
+2. `extension/versions.json` should reference the release tag `v1.0.0`
+3. Keep `develop` for ongoing work
 
 Recommended branch model:
-- `master` = install/index branch (stable)
-- `develop` = ongoing development
-- `vX.Y.Z` tags = releases
+- `main` = install/release branch (stable)
+- `develop` = ongoing development (contains `development/`)
+- `vX.Y.Z` tags = releases (the extension installer pins to tags via `versions.json`)
+
+Policy:
+- Only merge `develop` → `main` for releases.
+- Avoid merging `main` → `develop` (because `main` does not contain `development/`).
 
 ---
 
@@ -62,12 +65,11 @@ Recommended branch model:
 2. Add remote:
    - `git remote add origin <YOUR_GITHUB_REPO_URL>`
 3. Push branches (choose which you want public):
-   - `git push -u origin master`
    - `git push -u origin main`
    - `git push -u origin develop`
 4. Push tags:
    - `git push origin --tags`
-5. On GitHub, set the default branch to `master` (recommended for compatibility).
+5. On GitHub, set the default branch to `main`.
 
 ---
 
@@ -114,5 +116,4 @@ Then submit via the official directory method (ext.ulauncher.io) or the currentl
 ## Notes / Decisions Needed
 
 - **GitHub URL**: needed to finalize `developer_url` in `extension/manifest.json`
-- **Default branch**: recommend `master` for extension directory compatibility
-
+- **Default branch**: use `main` (GitHub standard)
