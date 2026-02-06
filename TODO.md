@@ -55,10 +55,10 @@ Reference: `development/research/publish_plan_v1.0.0_2026-02-06.md`
   - [x] `git push origin v1.0.0`
   - [x] Set default branch to `main` on GitHub
 
-- [ ] **P05** Verify install from GitHub URL
-  - [ ] Ulauncher: Preferences → Extensions → “Add extension” → paste repo URL
-  - [ ] Restart: `pkill ulauncher && ulauncher -v`
-  - [ ] Smoke test: list/search, refresh one-shot, create, icon visible
+- [x] **P05** Verify install from GitHub URL (+v1.0.0)
+  - [x] Ulauncher: Preferences → Extensions → "Add extension" → paste repo URL
+  - [x] Restart: `pkill ulauncher && ulauncher -v`
+  - [x] Smoke test: list/search, refresh one-shot, create, icon visible
 
 - [ ] **P06** Submit to Ulauncher directory (optional)
   - [ ] Prepare: repo URL, short description, keywords/category, screenshots, icon
