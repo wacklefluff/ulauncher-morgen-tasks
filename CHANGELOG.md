@@ -8,16 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- (placeholder)
-
-### Changed
-- (placeholder)
-
-### Fixed
-- (placeholder)
-
-### Removed
-- (placeholder)
+- Published to GitHub: https://github.com/wacklefluff/ulauncher-morgen-tasks
 
 ## [1.0.0] - 2026-02-06
 

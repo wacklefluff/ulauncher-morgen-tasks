@@ -47,13 +47,13 @@ Reference: `development/research/publish_plan_v1.0.0_2026-02-06.md`
 - [x] **P02** Icon + screenshots (+v1.0.0)
 - [x] **P03** Branch/tag policy: `main` stable, `develop` includes `development/` (+v1.0.0)
 
-- [ ] **P04** Create GitHub repo + push
-  - [ ] Create empty GitHub repo (no README/license via GitHub UI)
-  - [ ] `git remote add origin <YOUR_GITHUB_REPO_URL>`
-  - [ ] `git push -u origin main`
-  - [ ] `git push -u origin develop`
-  - [ ] `git push origin --tags`
-  - [ ] Set default branch to `main` on GitHub
+- [x] **P04** Create GitHub repo + push (+v1.0.0)
+  - [x] Create empty GitHub repo (no README/license via GitHub UI)
+  - [x] `git remote add origin https://github.com/wacklefluff/ulauncher-morgen-tasks.git`
+  - [x] `git push -u origin main`
+  - [x] `git push -u origin develop`
+  - [x] `git push origin v1.0.0`
+  - [x] Set default branch to `main` on GitHub
 
 - [ ] **P05** Verify install from GitHub URL
   - [ ] Ulauncher: Preferences → Extensions → “Add extension” → paste repo URL
