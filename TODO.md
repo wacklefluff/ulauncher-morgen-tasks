@@ -45,7 +45,7 @@ Use this checklist **every time** you implement a feature or fix (not just once 
   - [x] Test all commands
   - [x] Test error scenarios
   - [x] Test offline behavior
-  - [x] Test with empty task list (dev toggle) (+v1.0.0)
+  - [x] Test with empty task list (empty cache file) (+v1.0.0)
   - [x] Follow manual test plan protocol
 
 #### Bugs (Must Fix for v1.0.0)
@@ -81,7 +81,7 @@ Use this checklist **every time** you implement a feature or fix (not just once 
 
 - [ ] Optional: Publish
   - [ ] Create GitHub repository
-  - [ ] Add screenshots to README
+  - [x] Add screenshots to README (+v1.0.0)
   - [ ] Submit to Ulauncher extensions directory
 
 #### Suggestions (Post v1.0.0)

@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - (placeholder)
 
 ### Removed
-- Dev-only preference to simulate an empty task list (`dev_empty_tasks`)
+- (placeholder)
 
 ## [1.0.0] - 2026-02-06
 
@@ -32,8 +32,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `@yesterday` support in date parser
 - Adaptive display mode: ≤5 results show detailed view, >5 results show up to 15 in fzf-style compact single-line mode (using `ExtensionSmallResultItem`)
 - Comprehensive manual test plan with 60 tests (`development/research/test_plan_v1.0.0_2026-02-06.md`)
-- Dev toggle to simulate an empty task list (`Dev: Simulate empty task list (0/1)`)
 - Unit tests for date parser, formatter, and mocked API client (`extension/tests/`)
+- Updated extension icon (`extension/images/icon.png`)
+- Screenshots added to extension README (`extension/images/screenshots/`)
 
 ### Changed
 - Updated README with current features and usage examples
