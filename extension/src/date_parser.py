@@ -77,6 +77,8 @@ class DateParser:
             return datetime.combine(now.date(), self.default_time)
         if raw in {"tomorrow", "tmr", "tmrw"}:
             return datetime.combine(now.date() + timedelta(days=1), self.default_time)
+        if raw in {"yesterday", "yest"}:
+            return datetime.combine(now.date() - timedelta(days=1), self.default_time)
         if raw in {"nextweek", "next-week"}:
             return datetime.combine(now.date() + timedelta(days=7), self.default_time)
 
@@ -87,6 +89,11 @@ class DateParser:
                 target = _WEEKDAYS[wd]
                 return datetime.combine(self._next_weekday(now.date(), target), self.default_time)
             raise DateParseError(f"Unknown weekday: {wd}")
+
+        # Bare weekday name (e.g. "friday", "mon")
+        if raw in _WEEKDAYS:
+            target = _WEEKDAYS[raw]
+            return datetime.combine(self._next_weekday(now.date(), target), self.default_time)
 
         # If it's a time-only spec, apply to today (or tomorrow if already passed)
         if self._looks_like_time(raw):
