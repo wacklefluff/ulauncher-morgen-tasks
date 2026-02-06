@@ -69,8 +69,8 @@ Use this checklist **every time** you implement a feature or fix (not just once 
 
 - [x] Re-test all failed items (T07, T15-T21, T44, ENH-02)
 - [ ] Write unit tests
-  - [ ] Tests for date parser
-  - [ ] Tests for formatter
+  - [x] Tests for date parser (+v1.0.0)
+  - [x] Tests for formatter (+v1.0.0)
   - [ ] Mock API tests
 
 - [ ] Prepare v1.0.0 release

@@ -18,6 +18,22 @@
 
 ---
 
+## 2026-02-06 (Session 13)
+
+**Goals**:
+- Add unit test coverage for key helpers
+
+**Accomplished**:
+- Added unit tests for `DateParser` (today/tomorrow/yesterday, weekday parsing, time-only rollover, ISO datetime, invalid inputs)
+- Added unit tests for `TaskFormatter` (priority mapping, overdue handling, subtitle truncation)
+
+**Files Changed**:
+- `extension/tests/test_date_parser.py` (new)
+- `extension/tests/test_formatter.py` (new)
+- `TODO.md` - check off unit test items
+
+---
+
 ## 2026-02-06 (Session 11)
 
 **Goals**:
