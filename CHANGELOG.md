@@ -10,9 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - User Guide (`extension/docs/USER_GUIDE.md`)
 - API Reference (`extension/docs/API_REFERENCE.md`)
+- Performance profiling with `_timed()` context manager for debugging
+- Performance test suite (`extension/tests/test_perf.py`)
 
 ### Changed
 - Updated README with current features and usage examples
+- Optimized search with pre-computed lowercase index (~25% faster search)
 
 ## [0.6.6] - 2026-02-06
 

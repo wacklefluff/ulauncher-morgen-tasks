@@ -1,5 +1,33 @@
 # Development Log
 
+## 2026-02-06 (Session 11)
+
+**Goals**:
+- Performance profiling and search optimization
+
+**Accomplished**:
+- Added `_timed()` context manager for profiling key operations (cache lookup, API calls, search, formatting)
+- Implemented pre-computed lowercase search index in `cache.py`:
+  - `_build_search_index()` creates `{task_id: (title_lower, desc_lower)}` on cache store/load
+  - `get_search_index()` returns the index for fast lookups
+  - Index rebuilt automatically when loading from disk
+- Updated `_filter_tasks()` in `main.py` to use the search index
+- Created performance test (`tests/test_perf.py`)
+
+**Performance Results**:
+- Search with 500 tasks, 1000 iterations:
+  - Without index: 217.89ms
+  - With index: 162.33ms
+  - **Improvement: 25.5%**
+
+**Files Changed**:
+- `extension/main.py` - Added timing, updated filter to use index
+- `extension/src/cache.py` - Added search index
+- `extension/tests/test_perf.py` - Performance test (new)
+- `extension/tests/__init__.py` - Test package (new)
+
+---
+
 ## 2026-02-06 (Session 10)
 
 **Goals**:

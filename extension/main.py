@@ -6,6 +6,7 @@ Manage Morgen tasks from Ulauncher - list, search, and create tasks
 import logging
 import os
 import time
+from contextlib import contextmanager
 from logging.handlers import RotatingFileHandler
 from ulauncher.api.client.Extension import Extension
 from ulauncher.api.client.EventListener import EventListener
@@ -39,6 +40,17 @@ from src.date_parser import DateParser, DateParseError
 logger = logging.getLogger(__name__)
 
 _LOG_FILE_NAME = "runtime.log"
+
+
+@contextmanager
+def _timed(label: str):
+    """Context manager for timing code blocks. Logs at DEBUG level."""
+    start = time.perf_counter()
+    try:
+        yield
+    finally:
+        elapsed_ms = (time.perf_counter() - start) * 1000
+        logger.debug("PERF %s: %.2fms", label, elapsed_ms)
 _RUNTIME_LOG_HINT = "extension/logs/runtime.log"
 
 
@@ -155,7 +167,9 @@ class KeywordQueryEventListener(EventListener):
             tasks, cache_status = self._get_tasks(extension, force_refresh=force_refresh)
 
             # Search filtering (title + description)
-            filtered_tasks = self._filter_tasks(tasks, query)
+            search_index = extension.cache.get_search_index() if extension.cache else None
+            with _timed("filter_tasks"):
+                filtered_tasks = self._filter_tasks(tasks, query, search_index=search_index)
 
             if refresh_prefix_used:
                 items.append(self._refresh_prefix_notice(extension))
@@ -177,15 +191,16 @@ class KeywordQueryEventListener(EventListener):
                     on_enter=HideWindowAction()
                 ))
             else:
-                for task in filtered_tasks:
-                    task_id = task.get("id") or ""
-                    on_enter = self._get_task_action(task_id)
-                    items.append(ExtensionResultItem(
-                        icon='images/icon.png',
-                        name=formatter.format_for_display(task),
-                        description=formatter.format_subtitle(task),
-                        on_enter=on_enter
-                    ))
+                with _timed(f"format_{len(filtered_tasks)}_tasks"):
+                    for task in filtered_tasks:
+                        task_id = task.get("id") or ""
+                        on_enter = self._get_task_action(task_id)
+                        items.append(ExtensionResultItem(
+                            icon='images/icon.png',
+                            name=formatter.format_for_display(task),
+                            description=formatter.format_subtitle(task),
+                            on_enter=on_enter
+                        ))
 
         except MorgenAuthError:
             logger.warning("Authentication failed (invalid API key)")
@@ -492,16 +507,19 @@ class KeywordQueryEventListener(EventListener):
             logger.info("Force refresh requested (invalidating cache)")
             extension.cache.invalidate()
 
-        tasks = extension.cache.get_tasks() if extension.cache and not force_refresh else None
+        with _timed("cache_lookup"):
+            tasks = extension.cache.get_tasks() if extension.cache and not force_refresh else None
         if tasks is not None:
             cache_status = f"cached {extension.cache.get_age_display()}"
             logger.info("Using cached tasks: %d tasks (age=%s)", len(tasks), extension.cache.get_age_display())
             return tasks, cache_status
 
         logger.info("Fetching tasks from API%s...", " (force refresh)" if force_refresh else "")
-        response = extension.api_client.list_tasks(limit=100)
+        with _timed("api_call"):
+            response = extension.api_client.list_tasks(limit=100)
         if extension.cache:
-            extension.cache.set_tasks(response)
+            with _timed("cache_store"):
+                extension.cache.set_tasks(response)
             cache_status = "refreshed" if force_refresh else "fresh"
         else:
             cache_status = "fresh"
@@ -511,17 +529,34 @@ class KeywordQueryEventListener(EventListener):
         logger.info("API tasks loaded: %d tasks", len(tasks))
         return tasks, cache_status
 
-    def _filter_tasks(self, tasks, query: str):
+    def _filter_tasks(self, tasks, query: str, search_index=None):
         if not query:
             return tasks
 
         q = query.lower()
         filtered = []
-        for task in tasks:
-            title = (task.get("title") or "").lower()
-            description = (task.get("description") or "").lower()
-            if q in title or q in description:
-                filtered.append(task)
+
+        # Use pre-computed search index if available (O(1) lowercase lookup)
+        if search_index:
+            for task in tasks:
+                task_id = task.get("id")
+                indexed = search_index.get(task_id) if task_id else None
+                if indexed:
+                    title, description = indexed
+                else:
+                    # Fallback for tasks not in index
+                    title = (task.get("title") or "").lower()
+                    description = (task.get("description") or "").lower()
+                if q in title or q in description:
+                    filtered.append(task)
+        else:
+            # No index: compute lowercase on the fly
+            for task in tasks:
+                title = (task.get("title") or "").lower()
+                description = (task.get("description") or "").lower()
+                if q in title or q in description:
+                    filtered.append(task)
+
         return filtered
 
     def _get_task_action(self, task_id: str):
@@ -551,7 +586,8 @@ class KeywordQueryEventListener(EventListener):
             return items
 
         tasks = cached.get("data", {}).get("tasks", [])
-        filtered_tasks = self._filter_tasks(tasks, query)
+        search_index = extension.cache.get_search_index() if extension.cache else None
+        filtered_tasks = self._filter_tasks(tasks, query, search_index=search_index)
         age = extension.cache.get_age_display() if extension.cache else "unknown"
         logger.info("Fallback to cached response: %d tasks (cache age=%s)", len(tasks), age)
 

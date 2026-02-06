@@ -67,9 +67,9 @@ Use this checklist **every time** you implement a feature or fix (not just once 
 ### Optional: Performance Improvements
 
 - [ ] Consider background refresh
-- [ ] Optimize search in cached data
+- [x] Optimize search in cached data (+v0.6.7)
 - [ ] Lazy load task details
-- [ ] Profile performance
+- [x] Profile performance (+v0.6.7)
 
 ---
 
