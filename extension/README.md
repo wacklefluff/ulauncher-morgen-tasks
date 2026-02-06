@@ -27,6 +27,7 @@ Manage your Morgen tasks directly from Ulauncher - list, search, and create task
    - **Keyword**: `mg` (default, customizable)
    - **API Key**: Your Morgen API key from https://platform.morgen.so
    - **Cache Duration**: Seconds to cache tasks (default: 600)
+   - **Task Open URL Template**: URL opened on task selection (opens Morgen; no official per-task deep link support)
 
 ### Where Your API Key Is Stored
 
@@ -46,6 +47,7 @@ This extension reads the key via `extension.preferences` at runtime and does not
 | `mg <term>` | Search tasks by title/description |
 | `mg !` | Force refresh (bypass cache) |
 | `mg refresh` | Force refresh (alternative) |
+| `mg d <term>` | Search tasks and press Enter to mark as done |
 
 ### Create Tasks
 
@@ -66,6 +68,13 @@ This extension reads the key via `extension.preferences` at runtime and does not
 |---------|-------------|
 | `mg help` or `mg ?` | Show command reference |
 | `mg clear` | Clear cached tasks |
+| `mg debug` | Debug/log screen (open/copy runtime log path) |
+
+### Task Actions
+
+- `Enter` on a task: Open in Morgen (uses "Task Open URL Template" preference; default: `https://web.morgen.so`)
+- `Alt+Enter` on a task: Copy task ID (if supported by your Ulauncher version)
+- `Enter` in done mode (`mg d ...`): Mark task as done
 
 ### Task Display
 
@@ -78,7 +87,7 @@ This extension reads the key via `extension.preferences` at runtime and does not
 
 ### View Runtime Logs
 
-From the help screen (`mg help`), select "Open runtime log" or "Copy log path".
+Run `mg debug`, then select "Open runtime log" or "Copy log path".
 
 Log location: `extension/logs/runtime.log`
 

@@ -55,3 +55,19 @@
 **Test**: Type `mg <query>`, select a task, press Enter.
 **Expected**: Task ID is copied to clipboard (if supported by your Ulauncher version); task is not completed.
 **Result**: [X] PASS  [ ] FAIL  [ ] SKIP
+
+---
+
+## Open task on Enter (default)
+
+### O01: Normal mode Enter opens Morgen
+**Test**: Type `mg <query>`, select a task, press Enter.
+**Expected**: Opens Morgen in your default browser/app (based on "Task Open URL Template" preference).
+**Result**: [X] PASS  [ ] FAIL
+
+### O02: Alt+Enter copies task ID (if supported)
+**Test**: Type `mg <query>`, select a task, press Alt+Enter.
+**Expected**: Task ID is copied to clipboard (if your Ulauncher version supports Alt+Enter actions).
+**Result**: [X] PASS  [ ] FAIL  [ ] SKIP
+
+**Note**: "Task Open URL Template" opens Morgen, but Morgen does not currently offer an official way to deep-link to a specific task.

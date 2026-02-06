@@ -119,6 +119,9 @@ class KeywordQueryEventListener(EventListener):
         # Get preferences
         api_key = extension.preferences.get("api_key", "").strip()
         cache_ttl_str = extension.preferences.get("cache_ttl", "600")
+        task_open_url_template = (extension.preferences.get("task_open_url_template") or "").strip()
+        if not task_open_url_template:
+            task_open_url_template = "https://web.morgen.so"
 
         try:
             cache_ttl = int(cache_ttl_str)
@@ -189,7 +192,7 @@ class KeywordQueryEventListener(EventListener):
             if done_mode:
                 enter_hint = "Enter: mark task done"
             else:
-                enter_hint = "Enter: copy task ID" if CopyToClipboardAction is not None else "Enter: close"
+                enter_hint = "Enter: open task"
             items.append(ExtensionResultItem(
                 icon='images/icon.png',
                 name=f'{"Morgen Tasks — Done" if done_mode else "Morgen Tasks"} ({len(filtered_tasks)})',
@@ -216,19 +219,29 @@ class KeywordQueryEventListener(EventListener):
                         if done_mode:
                             on_enter = self._get_complete_task_action(task)
                         else:
-                            on_enter = self._get_task_action(task_id)
+                            on_enter = self._get_task_action(task_id, task_open_url_template)
+
+                        on_alt_enter = None
+                        if (not done_mode) and task_id and CopyToClipboardAction is not None:
+                            try:
+                                on_alt_enter = CopyToClipboardAction(task_id)
+                            except Exception:
+                                on_alt_enter = None
+
                         if condensed:
-                            items.append(ExtensionSmallResultItem(
+                            items.append(self._small_result_item(
                                 icon='images/icon.png',
                                 name=formatter.format_for_display(task),
-                                on_enter=on_enter
+                                on_enter=on_enter,
+                                on_alt_enter=on_alt_enter,
                             ))
                         else:
-                            items.append(ExtensionResultItem(
+                            items.append(self._result_item(
                                 icon='images/icon.png',
                                 name=formatter.format_for_display(task),
                                 description=formatter.format_subtitle(task),
-                                on_enter=on_enter
+                                on_enter=on_enter,
+                                on_alt_enter=on_alt_enter,
                             ))
 
         except MorgenAuthError:
@@ -348,7 +361,7 @@ class KeywordQueryEventListener(EventListener):
         items.append(ExtensionResultItem(
             icon="images/icon.png",
             name="Task item Enter behavior",
-            description=f'Normal mode: Enter {enter_hint}. Done mode ("mg d"): Enter marks the task done.',
+            description='Normal mode: Enter opens task (Alt+Enter copies ID, if supported). Done mode ("mg d"): Enter marks the task done.',
             on_enter=HideWindowAction(),
         ))
 
@@ -676,13 +689,54 @@ class KeywordQueryEventListener(EventListener):
 
         return filtered
 
-    def _get_task_action(self, task_id: str):
-        if task_id and CopyToClipboardAction is not None:
+    def _get_task_action(self, task_id: str, open_url_template: str):
+        task_id = (task_id or "").strip()
+        if not task_id:
+            return HideWindowAction()
+
+        if OpenAction is not None:
+            try:
+                url = (open_url_template or "").strip() or "https://web.morgen.so"
+                return OpenAction(url)
+            except Exception:
+                return HideWindowAction()
+
+        if CopyToClipboardAction is not None:
             try:
                 return CopyToClipboardAction(task_id)
             except Exception:
                 return HideWindowAction()
+
         return HideWindowAction()
+
+    def _result_item(self, *, icon: str, name: str, description: str, on_enter, on_alt_enter=None):
+        kwargs = {
+            "icon": icon,
+            "name": name,
+            "description": description,
+            "on_enter": on_enter,
+        }
+        if on_alt_enter is not None:
+            kwargs["on_alt_enter"] = on_alt_enter
+        try:
+            return ExtensionResultItem(**kwargs)
+        except TypeError:
+            kwargs.pop("on_alt_enter", None)
+            return ExtensionResultItem(**kwargs)
+
+    def _small_result_item(self, *, icon: str, name: str, on_enter, on_alt_enter=None):
+        kwargs = {
+            "icon": icon,
+            "name": name,
+            "on_enter": on_enter,
+        }
+        if on_alt_enter is not None:
+            kwargs["on_alt_enter"] = on_alt_enter
+        try:
+            return ExtensionSmallResultItem(**kwargs)
+        except TypeError:
+            kwargs.pop("on_alt_enter", None)
+            return ExtensionSmallResultItem(**kwargs)
 
     def _get_complete_task_action(self, task: dict):
         task_id = (task.get("id") or "").strip()

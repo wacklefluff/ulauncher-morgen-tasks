@@ -29,6 +29,13 @@
       "name": "Cache Duration (seconds)",
       "description": "How long to cache task list (default: 600 seconds / 10 minutes)",
       "default_value": "600"
+    },
+    {
+      "id": "task_open_url_template",
+      "type": "input",
+      "name": "Task Open URL Template",
+      "description": "URL to open when selecting a task (default: https://web.morgen.so). Morgen does not currently support official deep links to a specific task.",
+      "default_value": "https://web.morgen.so"
     }
   ]
 }

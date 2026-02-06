@@ -19,7 +19,8 @@ This project integrates Morgen's task management system with Ulauncher, a fast a
 - ✅ Create tasks (`mg new ...`) with due parsing (`@today`, `@friday`, etc.)
 - ✅ Help and cache housekeeping (`mg help`, `mg clear`)
 - ✅ Runtime log file for debugging (`extension/logs/runtime.log`)
-- ✅ Copy task ID on Enter
+- ✅ Open task in Morgen on Enter (configurable URL template)
+- ✅ Mark task as done (`mg d <query>`)
 
 ### Planned
 - ✅ **Phase 2**: API Integration & Authentication
