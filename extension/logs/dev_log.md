@@ -1,5 +1,26 @@
 # Development Log
 
+## 2026-02-06 (Session 18)
+
+**Goals**:
+- Add `mg d <query>` flow to mark tasks as done (close via API)
+
+**Accomplished**:
+- Added `MorgenAPIClient.close_task()` and made `_make_request()` handle empty (204) responses
+- Implemented `mg d` / `mg done` mode: lists/searches tasks but Enter marks done
+- Extended unit tests for close-task behavior
+- Updated manual test plan: `development/research/test_plan_v1.1.0_2026-02-06.md` (D01–D06)
+
+**Manual Tests**:
+- D01 PASS
+- D02 PASS
+- D03 PASS
+- D04 PASS
+- D05 PASS
+- D06 PASS
+
+---
+
 ## 2026-02-06 (Session 17)
 
 **Goals**:

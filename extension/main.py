@@ -168,7 +168,11 @@ class KeywordQueryEventListener(EventListener):
             logger.info("Showing create-task preview")
             return RenderResultListAction(create_items)
 
-        force_refresh, query, refresh_prefix_used = self._parse_query(raw_query)
+        done_mode, done_raw = self._parse_done_command(raw_query)
+        if done_mode:
+            force_refresh, query, refresh_prefix_used = self._parse_query(done_raw)
+        else:
+            force_refresh, query, refresh_prefix_used = self._parse_query(raw_query)
 
         try:
             tasks, cache_status = self._get_tasks(extension, force_refresh=force_refresh)
@@ -182,10 +186,13 @@ class KeywordQueryEventListener(EventListener):
                 items.append(self._refresh_prefix_notice(extension))
 
             # Header item: task count + cache status (+ quick help)
-            enter_hint = "Enter: copy task ID" if CopyToClipboardAction is not None else "Enter: close"
+            if done_mode:
+                enter_hint = "Enter: mark task done"
+            else:
+                enter_hint = "Enter: copy task ID" if CopyToClipboardAction is not None else "Enter: close"
             items.append(ExtensionResultItem(
                 icon='images/icon.png',
-                name=f'Morgen Tasks ({len(filtered_tasks)})',
+                name=f'{"Morgen Tasks — Done" if done_mode else "Morgen Tasks"} ({len(filtered_tasks)})',
                 description=f'Cache: {cache_status} | {enter_hint} | "help" for commands | "refresh"/"!" to refresh',
                 on_enter=HideWindowAction()
             ))
@@ -206,7 +213,10 @@ class KeywordQueryEventListener(EventListener):
                 with _timed(f"format_{len(display_tasks)}_tasks"):
                     for task in display_tasks:
                         task_id = task.get("id") or ""
-                        on_enter = self._get_task_action(task_id)
+                        if done_mode:
+                            on_enter = self._get_complete_task_action(task)
+                        else:
+                            on_enter = self._get_task_action(task_id)
                         if condensed:
                             items.append(ExtensionSmallResultItem(
                                 icon='images/icon.png',
@@ -295,6 +305,7 @@ class KeywordQueryEventListener(EventListener):
             ("Search tasks", "mg <query>"),
             ("Force refresh", "mg !   or   mg refresh"),
             ("Create task", "mg new <title> [@due] [!priority]"),
+            ("Mark task done", "mg d <query>"),
             ("Clear cache", "mg clear"),
             ("Debug / logs", "mg debug"),
         ]
@@ -337,11 +348,36 @@ class KeywordQueryEventListener(EventListener):
         items.append(ExtensionResultItem(
             icon="images/icon.png",
             name="Task item Enter behavior",
-            description=f"Pressing Enter on a task {enter_hint}.",
+            description=f'Normal mode: Enter {enter_hint}. Done mode ("mg d"): Enter marks the task done.',
             on_enter=HideWindowAction(),
         ))
 
         return items
+
+    def _parse_done_command(self, raw_query: str):
+        """
+        Parse the 'done' command.
+
+        Supported:
+          - "d" / "done" (show all tasks, but Enter marks done)
+          - "d <query>" / "done <query>" (search, but Enter marks done)
+          - Allows refresh one-shot prefixes within the done query:
+              - "d !" / "d refresh"
+              - "d ! <query>" / "d refresh <query>" (no force-refresh)
+        """
+        if not raw_query:
+            return False, ""
+
+        parts = raw_query.strip().split(None, 1)
+        if not parts:
+            return False, ""
+
+        head = parts[0].lower()
+        if head not in {"d", "done"}:
+            return False, ""
+
+        rest = parts[1].strip() if len(parts) > 1 else ""
+        return True, rest
 
     def _maybe_build_debug_flow(self, raw_query: str):
         if not raw_query:
@@ -648,6 +684,24 @@ class KeywordQueryEventListener(EventListener):
                 return HideWindowAction()
         return HideWindowAction()
 
+    def _get_complete_task_action(self, task: dict):
+        task_id = (task.get("id") or "").strip()
+        title = (task.get("title") or "Untitled").strip() or "Untitled"
+        progress = (task.get("progress") or "").strip().lower()
+
+        if not task_id:
+            return HideWindowAction()
+
+        if progress == "completed":
+            return HideWindowAction()
+
+        payload = {
+            "action": "complete_task",
+            "task_id": task_id,
+            "task_title": title,
+        }
+        return ExtensionCustomAction(payload, keep_app_open=True)
+
     def _fallback_to_cache(self, extension, error_msg, query="", suggestions=None):
         """Try to show cached data on network/rate-limit errors."""
         items = []
@@ -795,7 +849,8 @@ class ItemEnterEventListener(EventListener):
         if not isinstance(data, dict) or not data.get("action"):
             return HideWindowAction()
 
-        if data.get("action") != "create_task":
+        action = data.get("action")
+        if action not in {"create_task", "complete_task"}:
             return HideWindowAction()
 
         title = (data.get("title") or "").strip()
@@ -804,6 +859,9 @@ class ItemEnterEventListener(EventListener):
             priority = int(data.get("priority") or 0)
         except Exception:
             priority = 0
+
+        task_id = (data.get("task_id") or "").strip()
+        task_title = (data.get("task_title") or "").strip()
 
         api_key = extension.preferences.get("api_key", "").strip()
         cache_ttl_str = extension.preferences.get("cache_ttl", "600")
@@ -827,23 +885,53 @@ class ItemEnterEventListener(EventListener):
             extension.cache = TaskCache(ttl=cache_ttl)
 
         try:
-            resp = extension.api_client.create_task(title=title, due=due, priority=priority)
-            task_id = resp.get("data", {}).get("id") or ""
+            if action == "create_task":
+                resp = extension.api_client.create_task(title=title, due=due, priority=priority)
+                created_id = resp.get("data", {}).get("id") or ""
 
+                if extension.cache:
+                    extension.cache.invalidate()
+
+                description = f"Created (id: {created_id})" if created_id else "Created"
+                logger.info("Task created (id=%s)", created_id or "unknown")
+                return RenderResultListAction([ExtensionResultItem(
+                    icon='images/icon.png',
+                    name='Task created',
+                    description=description,
+                    on_enter=HideWindowAction()
+                )])
+
+            if not task_id:
+                return RenderResultListAction([ExtensionResultItem(
+                    icon='images/icon.png',
+                    name='Cannot complete task',
+                    description='Missing task id.',
+                    on_enter=HideWindowAction()
+                )])
+
+            extension.api_client.close_task(task_id)
             if extension.cache:
                 extension.cache.invalidate()
 
-            description = f"Created (id: {task_id})" if task_id else "Created"
-            logger.info("Task created (id=%s)", task_id or "unknown")
-            return RenderResultListAction([ExtensionResultItem(
-                icon='images/icon.png',
-                name='Task created',
-                description=description,
-                on_enter=HideWindowAction()
-            )])
+            completed_title = task_title or task_id
+            logger.info("Task completed (id=%s)", task_id)
+            return RenderResultListAction([
+                ExtensionResultItem(
+                    icon='images/icon.png',
+                    name='Task marked as done',
+                    description=completed_title,
+                    on_enter=HideWindowAction(),
+                ),
+                ExtensionResultItem(
+                    icon='images/icon.png',
+                    name='Tip',
+                    description='Run "mg" (or "mg refresh") to reload tasks.',
+                    on_enter=HideWindowAction(),
+                ),
+            ])
 
         except MorgenAuthError:
-            logger.warning("Create task failed: auth error")
+            logger.warning("%s failed: auth error", action)
             return RenderResultListAction([ExtensionResultItem(
                 icon='images/icon.png',
                 name='Authentication Failed',
@@ -852,7 +940,7 @@ class ItemEnterEventListener(EventListener):
             )])
 
         except MorgenRateLimitError:
-            logger.warning("Create task failed: rate limit")
+            logger.warning("%s failed: rate limit", action)
             return RenderResultListAction([ExtensionResultItem(
                 icon='images/icon.png',
                 name='Rate limit exceeded',
@@ -861,16 +949,16 @@ class ItemEnterEventListener(EventListener):
             )])
 
         except (MorgenNetworkError, MorgenAPIError) as e:
-            logger.warning("Create task failed: %s", getattr(e, "message", e))
+            logger.warning("%s failed: %s", action, getattr(e, "message", e))
             return RenderResultListAction([ExtensionResultItem(
                 icon='images/icon.png',
-                name='Create failed',
+                name='Request failed',
                 description=f'{str(getattr(e, "message", e))} — run "mg debug" for logs.',
                 on_enter=HideWindowAction()
             )])
 
         except Exception as e:
-            logger.exception("Create task failed: unexpected error")
+            logger.exception("%s failed: unexpected error", action)
             return RenderResultListAction([ExtensionResultItem(
                 icon='images/icon.png',
                 name='Unexpected error',

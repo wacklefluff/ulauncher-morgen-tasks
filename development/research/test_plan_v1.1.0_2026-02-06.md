@@ -22,3 +22,36 @@
 **Expected**: Subtitle falls back to `Due: No due date`.
 **Result**: [ ] PASS  [ ] FAIL  [X] SKIP
 
+---
+
+## Mark task as done — `mg d [taskname]`
+
+### D01: Done mode search
+**Test**: Type `mg d <some task word>`
+**Expected**: List of matching tasks; header shows "Morgen Tasks — Done".
+**Result**: [X] PASS  [ ] FAIL
+
+### D02: Enter marks task done
+**Test**: In `mg d <query>` results, select a task and press Enter.
+**Expected**: Task is marked as done in Morgen; UI shows confirmation "Task marked as done".
+**Result**: [X] PASS  [ ] FAIL
+
+### D03: Task disappears from normal list
+**Test**: After D02, run `mg refresh` and search for the task.
+**Expected**: Completed task no longer appears in the active task list (or is shown as completed if Morgen returns completed tasks).
+**Result**: [X] PASS  [ ] FAIL
+
+### D04: `mg d` with no query lists tasks
+**Test**: Type `mg d`
+**Expected**: Shows tasks (same as `mg`, but Enter marks done).
+**Result**: [X] PASS  [ ] FAIL
+
+### D05: Done mode supports one-shot refresh
+**Test**: Type `mg d refresh` (or `mg d !`)
+**Expected**: Cache invalidated and tasks fetched from API once; header still shows Done mode.
+**Result**: [X] PASS  [ ] FAIL
+
+### D06: Normal mode Enter still copies ID
+**Test**: Type `mg <query>`, select a task, press Enter.
+**Expected**: Task ID is copied to clipboard (if supported by your Ulauncher version); task is not completed.
+**Result**: [X] PASS  [ ] FAIL  [ ] SKIP

@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Published to GitHub: https://github.com/wacklefluff/ulauncher-morgen-tasks
 - `mg debug` command: dedicated screen for runtime log access (open/copy log path)
+- `mg d <query>` command: search tasks and press Enter to mark selected task as done
 
 ### Changed
 - Log access items ("Open runtime log", "Copy log path") moved from help/error screens to `mg debug`

@@ -81,7 +81,11 @@ class MorgenAPIClient:
 
         try:
             with urllib.request.urlopen(req, timeout=self.timeout) as resp:
-                return json.loads(resp.read().decode("utf-8"))
+                raw = resp.read()
+                if not raw:
+                    # Some endpoints return 204 No Content (empty body).
+                    return {}
+                return json.loads(raw.decode("utf-8"))
 
         except urllib.error.HTTPError as e:
             error_body = None
@@ -192,3 +196,19 @@ class MorgenAPIClient:
         logger.info("Task created: %s", task_id)
 
         return response
+
+    def close_task(self, task_id: str):
+        """
+        Mark a task as completed in Morgen.
+
+        Endpoint:
+          POST /v3/tasks/close  with {"id": "<TASK_ID>"}
+
+        Note: This endpoint may return 204 No Content.
+        """
+        if not task_id or not str(task_id).strip():
+            raise ValueError("Task id is required")
+
+        body = {"id": str(task_id).strip()}
+        logger.info("Closing task: %s", body["id"])
+        return self._make_request("/tasks/close", method="POST", data=body)
