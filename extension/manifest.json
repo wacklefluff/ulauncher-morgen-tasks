@@ -20,7 +20,7 @@
       "id": "api_key",
       "type": "input",
       "name": "Morgen API Key",
-      "description": "Your Morgen API key from platform.morgen.so",
+      "description": "Your Morgen API key from platform.morgen.so (stored unencrypted by Ulauncher in ~/.config/ulauncher/ext_preferences/ulauncher-morgen-tasks.db)",
       "default_value": ""
     },
     {

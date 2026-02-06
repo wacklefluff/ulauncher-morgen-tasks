@@ -174,7 +174,7 @@ For detailed progress, see `extension/logs/dev_log.md`.
 
 ### Where Your API Key Is Stored
 
-Your Morgen API key is stored by **Ulauncher** in your local user configuration (typically under `~/.config/ulauncher/`), and is provided to the extension at runtime via `extension.preferences` (see `extension/manifest.json` preference id `api_key`). The key is **not** stored in this git repository.
+Your Morgen API key is stored by **Ulauncher** **unencrypted** in a local SQLite DB (typically `~/.config/ulauncher/ext_preferences/ulauncher-morgen-tasks.db`) and is provided to the extension at runtime via `extension.preferences` (see `extension/manifest.json` preference id `api_key`). The key is **not** stored in this git repository.
 
 ### Development Workflow
 

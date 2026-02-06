@@ -30,7 +30,11 @@ Manage your Morgen tasks directly from Ulauncher - list, search, and create task
 
 ### Where Your API Key Is Stored
 
-Ulauncher stores extension preferences (including the API key) in your local user configuration (typically under `~/.config/ulauncher/`). This extension reads the key via `extension.preferences` at runtime and does not store it in this repository.
+Ulauncher stores extension preferences (including the API key) **unencrypted** in a local SQLite DB. On this system the path is:
+
+- `~/.config/ulauncher/ext_preferences/ulauncher-morgen-tasks.db`
+
+This extension reads the key via `extension.preferences` at runtime and does not store it in this repository.
 
 ## Usage
 
