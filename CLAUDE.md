@@ -392,7 +392,34 @@ When asking the user to perform manual tests:
 
 **Branch Strategy**:
 - `develop` - Active development (work here)
-- `main` - Stable releases only
+- `main` - Stable releases only (flat layout for Ulauncher install)
+
+**Important**: `main` and `develop` have **different directory structures** and should never be merged directly.
+- `develop` keeps extension code inside `extension/` plus dev files (`CLAUDE.md`, `TODO.md`, `development/`, etc.)
+- `main` has extension files at the repo root (`manifest.json`, `main.py`, `src/`, etc.) — required by Ulauncher's extension installer
+
+**Releasing develop → main** (new version):
+1. Checkout `main`: `git checkout main`
+2. Remove all tracked files: `git rm -r .` (keeps `.git/`)
+3. Copy extension files from develop:
+   ```bash
+   git checkout develop -- extension/
+   ```
+4. Move them to root:
+   ```bash
+   git mv extension/* .
+   # Handle hidden files if any: git mv extension/.* .
+   rmdir extension
+   ```
+5. Fix any `extension/` path references in the copied files (e.g. `_RUNTIME_LOG_HINT` in `main.py`, paths in `README.md`, `docs/`)
+6. Commit, tag, and push:
+   ```bash
+   git add -A
+   git commit -m "release: vX.Y.Z"
+   git tag vX.Y.Z
+   git push origin main --tags
+   ```
+7. Switch back: `git checkout develop`
 
 **Commit Message Format**:
 ```
