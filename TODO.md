@@ -3,7 +3,7 @@
 Current task list and development roadmap.
 
 **Last Updated**: 2026-02-06
-**Current Version**: v1.0.0 (Publish In Progress)
+**Current Version**: v1.0.0 (Published)
 **Current Branch**: `develop`
 
 ## Release Checklist (Repeat Every Feature/Fix)
@@ -14,114 +14,106 @@ Use this checklist **every time** you implement a feature or fix (not just once 
 - [ ] Update `extension/logs/dev_log.md` (include test IDs + PASS/FAIL)
 - [ ] Update `TODO.md` context
   - [ ] Check off completed tasks
-  - [ ] Refresh **Immediate Next Steps** to reflect what's next
+  - [ ] Refresh **v1.1.0 Roadmap** to reflect what's next
 - [ ] Write/update a numbered manual test plan: `development/research/test_plan_vX.Y.Z_YYYY-MM-DD.md`
 - [ ] Run manual tests and record results by test ID
 - [ ] Commit (and include the version in the commit message when appropriate)
 
-**Version tags**: When marking a task done, append the version it shipped in, e.g. `(+v0.6.0)`.
+**Version tags**: When marking a task done, append the version it shipped in, e.g. `(+v1.1.0)`.
 
 ## Release History
 
-- v0.3.0 — list/search/refresh tasks
-- v0.4.0 — create tasks + due parsing
-- v0.5.0 — disk-persistent cache
-- v0.6.0 — help + clear cache commands
-- v0.6.1 — file-based runtime logging
-- v0.6.2 — one-shot refresh
-- v0.6.3 — improved errors + runtime logging tips
-- v0.6.4 — open/copy runtime log from UI
-- v0.6.5 — show log access on welcome/error fallbacks
+- v1.0.0 — published to GitHub + Ulauncher directory
 - v0.6.6 — better priority icons + overdue highlighting
-- (Unreleased) — documentation (README, USER_GUIDE, API_REFERENCE)
+- v0.6.5 — show log access on welcome/error fallbacks
+- v0.6.4 — open/copy runtime log from UI
+- v0.6.3 — improved errors + runtime logging tips
+- v0.6.2 — one-shot refresh
+- v0.6.1 — file-based runtime logging
+- v0.6.0 — help + clear cache commands
+- v0.5.0 — disk-persistent cache
+- v0.4.0 — create tasks + due parsing
+- v0.3.0 — list/search/refresh tasks
 
 ---
 
-## Immediate Next Steps
+## v1.1.0 Roadmap
 
-### Publish (v1.0.0)
+- [x] **SUG-02**: `mg debug` command — dedicated screen for runtime log access (+v1.1.0)
+- [x] `mg help` and `mg debug` work without API key (+v1.1.0)
+- [ ] **SUG-04**: Show creation date when no due date available
+- [ ] **Mark tasks as complete** from Ulauncher (Enter on task → complete via API)
+- [ ] **Open Morgen app** on task click (Alt+Enter or secondary action)
+- [ ] **VIM-like mode**: ALT to navigate with J/K, move between words
+
+### Implementation notes
+
+**SUG-04** — `extension/src/formatter.py`
+- When a task has no `due` date, show `Created: <date>` from the `created` field instead of "No due date"
+
+**Mark tasks as complete** — `extension/src/morgen_api.py` + `extension/main.py`
+- API: `POST /v3/tasks/close` with `{"id": "<TASK_ID>"}` → 204 No Content
+- Change task `on_enter` from `CopyToClipboardAction(task_id)` to `ExtensionCustomAction({"action": "complete_task", ...})`
+- Add handler in `ItemEnterEventListener` for `complete_task` action
+- Invalidate cache after completion
+
+---
+
+## Backlog
+
+Items not scheduled for v1.1.0. May be picked up in future versions.
+
+- [x] **SUG-01** (T02): Fix welcome screen when typing `mg` with no space — **won't fix** (Ulauncher limitation)
+- [ ] **SUG-03** (T47): Only enable search optimization for 200+ tasks
+- [ ] Background refresh
+- [ ] Lazy load task details
+- [ ] Pagination for large result sets (Ulauncher lacks native scroll)
+
+---
+
+## Future Enhancements
+
+See `extension/logs/improvements.md` for detailed ideas.
+
+### High Priority
+- [ ] Filter tasks by priority/due date
+- [ ] Support for task lists
+- [ ] Ulauncher settings
+	- [ ] additional shortcut to add a new task
+	- [ ] open log file button
+
+### Medium Priority
+- [ ] Subtask creation
+- [ ] Recurring tasks support
+- [ ] Better keyboard shortcuts (Alt+Enter actions)
+- [ ] Desktop notifications for upcoming tasks
+- [ ] Parse `#<tag>` for tags
+
+### Low Priority / Nice-to-Have
+- [ ] when showing a lot of results, next page option could be on top message
+- [ ] Integration with system notifications
+- [ ] Quick scheduling (time blocking)
+- [ ] Task templates
+- [ ] Bulk operations
+- [ ] Update task details (title, due date, priority)
+
+---
+
+## Publish (v1.0.0) — Complete
 
 Reference: `development/research/publish_plan_v1.0.0_2026-02-06.md`
 
 - [x] **P01** Repo metadata (manifest `developer_url`, etc.) (+v1.0.0)
 - [x] **P02** Icon + screenshots (+v1.0.0)
 - [x] **P03** Branch/tag policy: `main` stable, `develop` includes `development/` (+v1.0.0)
-
 - [x] **P04** Create GitHub repo + push (+v1.0.0)
-  - [x] Create empty GitHub repo (no README/license via GitHub UI)
-  - [x] `git remote add origin https://github.com/wacklefluff/ulauncher-morgen-tasks.git`
-  - [x] `git push -u origin main`
-  - [x] `git push -u origin develop`
-  - [x] `git push origin v1.0.0`
-  - [x] Set default branch to `main` on GitHub
-
 - [x] **P05** Verify install from GitHub URL (+v1.0.0)
-  - [x] Ulauncher: Preferences → Extensions → "Add extension" → paste repo URL
-  - [x] Restart: `pkill ulauncher && ulauncher -v`
-  - [x] Smoke test: list/search, refresh one-shot, create, icon visible
-
 - [x] **P06** Submit to Ulauncher directory (+v1.0.0)
-  - [x] Prepare: repo URL, short description, keywords/category, screenshots, icon
-  - [x] Submit via ext.ulauncher.io
 
-- [ ] **P07** Post-publish cleanup (optional)
-  - [ ] Keep troubleshooting accurate (API key, rate limit, runtime log)
-  - [ ] Use GitHub Releases for binaries/archives (avoid committing zips into repo)
-
-### Release Status (v1.0.0)
-
+Testing:
 - [x] Manual testing: `development/research/test_plan_v1.0.0_2026-02-06.md` (+v1.0.0)
 - [x] Empty-task-list manual tests: `development/research/test_plan_v1.0.0_empty_tasks_2026-02-06.md` (+v1.0.0)
 - [x] Unit tests: `nix-shell --run "pytest -q"` (+v1.0.0)
-
-#### Suggestions (Post v1.0.0)
-
-- [ ] **SUG-01** (T02): Fix welcome screen when typing `mg` with no space
-- [x] **SUG-02** (T36): Move log access to `mg debug` command (+v1.1.0)
-- [ ] **SUG-03** (T47): Only enable search optimization for 200+ tasks
-- [ ] **SUG-04** (T49): Show creation date when no due date available
-
-### Optional: Performance Improvements
-
-- [ ] Consider background refresh
-- [x] Optimize search in cached data (+v0.6.7)
-- [ ] Lazy load task details
-- [x] Profile performance (+v0.6.7)
-- [x] Limit rendered results to 7 for performance (+v0.6.7)
-- [ ] Add pagination for large result sets (Ulauncher lacks native scroll)
-
----
-
-## Future Enhancements (Post v1.0.0)
-
-See `extension/logs/improvements.md` for detailed ideas.
-
-### High Priority
-- [ ] Mark tasks as complete from Ulauncher
-
-- [ ] Filter tasks by priority/due date
-- [ ] Support for task lists
-- [ ] Ulauncher settings
-	- [ ] additional shortcut to add a new task
-	- [ ] open log file button
-- use ALT to turn into 'VIM like mode', that way using J,K to go up and down the list, move word to next word or last
-
-### Medium Priority
-- [ ] Subtask creation
-- [ ] Recurring tasks support
-- [ ] Better keyboard shortcuts (Alt+Enter actions)
-- [ ] Open Morgen app on task click
-- [ ] Desktop notifications for upcoming tasks
-- [ ] Parse `#<tag>` for tags
-
-### Low Priority / Nice-to-Have
-- [ ] when shwoing a lot of results, next page option could be on top message 
-- [ ] Integration with system notifications
-- [ ] Quick scheduling (time blocking)
-- [ ] Task templates
-- [ ] Bulk operations
-
-- [ ] Update task details (title, due date, priority)
 
 ---
 
@@ -175,6 +167,9 @@ See `extension/logs/improvements.md` for detailed ideas.
 - [x] Overdue task highlighting (+v0.6.6)
 - [x] Relative due dates (Today, Tomorrow) (+v0.6.6)
 - [x] Complete documentation (README, USER_GUIDE, API_REFERENCE)
+- [x] Optimized search with pre-computed lowercase index (+v0.6.7)
+- [x] Performance profiling (+v0.6.7)
+- [x] Adaptive display mode: ≤5 detailed, >5 compact (+v0.6.7)
 
 ---
 
@@ -188,7 +183,7 @@ See `extension/logs/improvements.md` for detailed ideas.
 
 ## Reminders
 
-- **P07** Post-publish cleanup (optional)
+- **P07** Post-publish cleanup (ongoing, not version-tied)
   - Keep troubleshooting accurate (API key, rate limit, runtime log)
   - Use GitHub Releases for binaries/archives (avoid committing zips into repo)
 
