@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Priority shorthands: `!!` (high) and `!` (medium)
 - Bare weekday date parsing: `@friday`, `@mon`, etc. (not just `@next-friday`)
 - `@yesterday` support in date parser
-- Adaptive display mode: ≤5 results show detailed view, >5 results show up to 15 in condensed mode
+- Adaptive display mode: ≤5 results show detailed view, >5 results show up to 15 in fzf-style compact single-line mode (using `ExtensionSmallResultItem`)
 - Comprehensive manual test plan with 60 tests (`development/research/test_plan_v1.0.0_2026-02-06.md`)
 
 ### Changed

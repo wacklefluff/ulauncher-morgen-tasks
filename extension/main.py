@@ -12,6 +12,7 @@ from ulauncher.api.client.Extension import Extension
 from ulauncher.api.client.EventListener import EventListener
 from ulauncher.api.shared.event import KeywordQueryEvent, ItemEnterEvent
 from ulauncher.api.shared.item.ExtensionResultItem import ExtensionResultItem
+from ulauncher.api.shared.item.ExtensionSmallResultItem import ExtensionSmallResultItem
 from ulauncher.api.shared.action.RenderResultListAction import RenderResultListAction
 from ulauncher.api.shared.action.HideWindowAction import HideWindowAction
 from ulauncher.api.shared.action.ExtensionCustomAction import ExtensionCustomAction
@@ -202,15 +203,19 @@ class KeywordQueryEventListener(EventListener):
                     for task in display_tasks:
                         task_id = task.get("id") or ""
                         on_enter = self._get_task_action(task_id)
-                        subtitle = (formatter.format_condensed_subtitle(task)
-                                    if condensed
-                                    else formatter.format_subtitle(task))
-                        items.append(ExtensionResultItem(
-                            icon='images/icon.png',
-                            name=formatter.format_for_display(task),
-                            description=subtitle,
-                            on_enter=on_enter
-                        ))
+                        if condensed:
+                            items.append(ExtensionSmallResultItem(
+                                icon='images/icon.png',
+                                name=formatter.format_for_display(task),
+                                on_enter=on_enter
+                            ))
+                        else:
+                            items.append(ExtensionResultItem(
+                                icon='images/icon.png',
+                                name=formatter.format_for_display(task),
+                                description=formatter.format_subtitle(task),
+                                on_enter=on_enter
+                            ))
 
         except MorgenAuthError:
             logger.warning("Authentication failed (invalid API key)")
@@ -676,15 +681,19 @@ class KeywordQueryEventListener(EventListener):
         for task in display_tasks:
             task_id = task.get("id") or ""
             on_enter = self._get_task_action(task_id)
-            subtitle = (formatter.format_condensed_subtitle(task)
-                        if condensed
-                        else formatter.format_subtitle(task))
-            items.append(ExtensionResultItem(
-                icon='images/icon.png',
-                name=formatter.format_for_display(task),
-                description=subtitle,
-                on_enter=on_enter
-            ))
+            if condensed:
+                items.append(ExtensionSmallResultItem(
+                    icon='images/icon.png',
+                    name=formatter.format_for_display(task),
+                    on_enter=on_enter
+                ))
+            else:
+                items.append(ExtensionResultItem(
+                    icon='images/icon.png',
+                    name=formatter.format_for_display(task),
+                    description=formatter.format_subtitle(task),
+                    on_enter=on_enter
+                ))
 
         return items
 

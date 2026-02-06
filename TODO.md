@@ -61,7 +61,7 @@ Use this checklist **every time** you implement a feature or fix (not just once 
 #### Enhancements (Should Fix for v1.0.0)
 
 - [x] **ENH-01** (T03): Remove "... and X more" truncation message
-- [x] **ENH-02** (T03): Adaptive display mode (>5 results → condensed 15 max, ≤5 → normal)
+- [x] **ENH-02** (T03): Adaptive display mode (>5 results → fzf-style compact single-line via `ExtensionSmallResultItem`, ≤5 → normal with subtitles)
 - [x] **ENH-03** (T43): Simplify invalid date error message
 - [x] **ENH-04** (T24): Strip surrounding quotes from task title
 
