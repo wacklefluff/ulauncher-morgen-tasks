@@ -2,6 +2,8 @@
 
 Manage your Morgen tasks directly from Ulauncher - list, search, and create tasks quickly without leaving your workflow.
 
+![New Task Screenshot](images/screenshots/v1.0-New-Task-bg.jpg)
+
 ## Features
 
 - **List tasks** - View all your Morgen tasks at a glance
