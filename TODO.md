@@ -44,7 +44,6 @@ Use this checklist **every time** you implement a feature or fix (not just once 
 - [x] **SUG-04**: Show creation date when no due date available (+v1.1.0)
 - [x] **Mark tasks as complete** from Ulauncher (`mg d <query>` → Enter to complete via API) (+v1.1.0)
 - [x] **Open Morgen app** on task click (default Enter) (+v1.1.0)
-- [ ] **VIM-like mode**: ALT to navigate with J/K, move between words
 - [ ] Ulauncher settings
 	- [ ] additional shortcut to add a new task
 	- [ ] open log file button
@@ -71,6 +70,7 @@ Items not scheduled for v1.1.0. May be picked up in future versions.
 
 - [x] **SUG-01** (T02): Fix welcome screen when typing `mg` with no space — **won't fix** (Ulauncher limitation)
 - [ ] **SUG-03** (T47): Only enable search optimization for 200+ tasks
+- [ ] **VIM-like mode**: Alt+J/K navigation (low priority) — not natively supported by Ulauncher v5 (requires system-level key remap)
 - [ ] Background refresh
 - [ ] Lazy load task details
 - [ ] Pagination for large result sets (Ulauncher lacks native scroll)
