@@ -70,6 +70,8 @@ Use this checklist **every time** you implement a feature or fix (not just once 
 - [x] Optimize search in cached data (+v0.6.7)
 - [ ] Lazy load task details
 - [x] Profile performance (+v0.6.7)
+- [x] Limit rendered results to 7 for performance (+v0.6.7)
+- [ ] Add pagination for large result sets (Ulauncher lacks native scroll)
 
 ---
 

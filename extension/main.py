@@ -40,6 +40,7 @@ from src.date_parser import DateParser, DateParseError
 logger = logging.getLogger(__name__)
 
 _LOG_FILE_NAME = "runtime.log"
+_MAX_DISPLAY_RESULTS = 7  # Limit rendered results for performance
 
 
 @contextmanager
@@ -191,8 +192,12 @@ class KeywordQueryEventListener(EventListener):
                     on_enter=HideWindowAction()
                 ))
             else:
-                with _timed(f"format_{len(filtered_tasks)}_tasks"):
-                    for task in filtered_tasks:
+                # Limit displayed results for performance
+                display_tasks = filtered_tasks[:_MAX_DISPLAY_RESULTS]
+                truncated = len(filtered_tasks) > _MAX_DISPLAY_RESULTS
+
+                with _timed(f"format_{len(display_tasks)}_tasks"):
+                    for task in display_tasks:
                         task_id = task.get("id") or ""
                         on_enter = self._get_task_action(task_id)
                         items.append(ExtensionResultItem(
@@ -201,6 +206,14 @@ class KeywordQueryEventListener(EventListener):
                             description=formatter.format_subtitle(task),
                             on_enter=on_enter
                         ))
+
+                if truncated:
+                    items.append(ExtensionResultItem(
+                        icon='images/icon.png',
+                        name=f'... and {len(filtered_tasks) - _MAX_DISPLAY_RESULTS} more',
+                        description='Type more to narrow results',
+                        on_enter=HideWindowAction()
+                    ))
 
         except MorgenAuthError:
             logger.warning("Authentication failed (invalid API key)")
@@ -608,7 +621,9 @@ class KeywordQueryEventListener(EventListener):
             ))
             return items
 
-        for task in filtered_tasks:
+        # Limit displayed results for performance
+        display_tasks = filtered_tasks[:_MAX_DISPLAY_RESULTS]
+        for task in display_tasks:
             task_id = task.get("id") or ""
             on_enter = self._get_task_action(task_id)
             items.append(ExtensionResultItem(
@@ -616,6 +631,14 @@ class KeywordQueryEventListener(EventListener):
                 name=formatter.format_for_display(task),
                 description=formatter.format_subtitle(task),
                 on_enter=on_enter
+            ))
+
+        if len(filtered_tasks) > _MAX_DISPLAY_RESULTS:
+            items.append(ExtensionResultItem(
+                icon='images/icon.png',
+                name=f'... and {len(filtered_tasks) - _MAX_DISPLAY_RESULTS} more',
+                description='Type more to narrow results',
+                on_enter=HideWindowAction()
             ))
 
         return items

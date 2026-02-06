@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Updated README with current features and usage examples
 - Optimized search with pre-computed lowercase index (~25% faster search)
+- Limited displayed results to 7 for improved UI responsiveness (shows "... and X more" when truncated)
 
 ## [0.6.6] - 2026-02-06
 

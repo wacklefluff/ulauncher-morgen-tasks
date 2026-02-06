@@ -13,18 +13,28 @@
   - Index rebuilt automatically when loading from disk
 - Updated `_filter_tasks()` in `main.py` to use the search index
 - Created performance test (`tests/test_perf.py`)
+- Added result limit (`_MAX_DISPLAY_RESULTS = 7`) to prevent UI lag with large task lists
+- Shows "... and X more" when results are truncated
 
 **Performance Results**:
 - Search with 500 tasks, 1000 iterations:
   - Without index: 217.89ms
   - With index: 162.33ms
   - **Improvement: 25.5%**
+- Real-world timing (500 tasks):
+  - cache_lookup: ~0.3ms
+  - filter_tasks: ~0.3ms
+  - format_7_tasks: ~1ms (vs 40ms for 500 tasks)
 
 **Files Changed**:
-- `extension/main.py` - Added timing, updated filter to use index
+- `extension/main.py` - Added timing, search index, result limit
 - `extension/src/cache.py` - Added search index
 - `extension/tests/test_perf.py` - Performance test (new)
 - `extension/tests/__init__.py` - Test package (new)
+
+**Notes**:
+- Ulauncher doesn't support native scrolling (hard-coded 9-17 item limit)
+- Pagination could be added as future enhancement
 
 ---
 
