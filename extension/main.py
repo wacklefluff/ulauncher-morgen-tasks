@@ -546,7 +546,10 @@ class KeywordQueryEventListener(EventListener):
         if not query:
             return tasks
 
-        q = query.lower()
+        words = query.lower().split()
+        if not words:
+            return tasks
+
         filtered = []
 
         # Use pre-computed search index if available (O(1) lowercase lookup)
@@ -560,14 +563,16 @@ class KeywordQueryEventListener(EventListener):
                     # Fallback for tasks not in index
                     title = (task.get("title") or "").lower()
                     description = (task.get("description") or "").lower()
-                if q in title or q in description:
+                text = title + " " + description
+                if all(w in text for w in words):
                     filtered.append(task)
         else:
             # No index: compute lowercase on the fly
             for task in tasks:
                 title = (task.get("title") or "").lower()
                 description = (task.get("description") or "").lower()
-                if q in title or q in description:
+                text = title + " " + description
+                if all(w in text for w in words):
                     filtered.append(task)
 
         return filtered

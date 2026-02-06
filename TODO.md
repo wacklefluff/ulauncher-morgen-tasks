@@ -39,15 +39,35 @@ Use this checklist **every time** you implement a feature or fix (not just once 
 
 ## Immediate Next Steps
 
-### Phase 7: Testing & Release (NEXT)
+### Phase 7: Testing & Release
 
-- [ ] Manual testing
-  - [ ] Test all commands
-  - [ ] Test error scenarios
-  - [ ] Test offline behavior
-  - [ ] Test with empty task list
-  - [ ] Follow manual test plan protocol
+- [x] Manual testing — 60 tests executed, results in `development/research/test_plan_v1.0.0_2026-02-06.md`
+  - [x] Test all commands
+  - [x] Test error scenarios
+  - [x] Test offline behavior
+  - [ ] Test with empty task list (skipped — no empty account)
+  - [x] Follow manual test plan protocol
 
+#### Bugs (Must Fix for v1.0.0)
+
+- [ ] **FIX-01** (T07): Search word order matters — should be order-independent
+- [ ] **FIX-02** (T15): Day-of-week date parsing (`@friday`) doesn't work
+- [ ] **FIX-03** (T16-T18): Named priorities (`!high`, `!medium`, `!low`) don't work
+- [ ] **FIX-04** (T19-T20): Priority shorthands (`!!` and `!`) don't work
+- [ ] **FIX-05** (T21): Due date + priority combo fails (priority included in title)
+- [ ] **FIX-06** (T44): Invalid priority (`!invalid`) silently accepted
+- [ ] **FIX-07** (T51 note): `@yesterday` not supported in date parser
+
+#### Enhancements (Should Fix for v1.0.0)
+
+- [ ] **ENH-01** (T03): Remove "... and X more" truncation message
+- [ ] **ENH-02** (T03): Adaptive display mode (>5 results → condensed 15 max, ≤5 → normal)
+- [ ] **ENH-03** (T43): Simplify invalid date error message
+- [ ] **ENH-04** (T24): Strip surrounding quotes from task title
+
+#### After Fixes
+
+- [ ] Re-test all failed items (T07, T15-T21, T44)
 - [ ] Write unit tests
   - [ ] Tests for date parser
   - [ ] Tests for formatter
@@ -63,6 +83,13 @@ Use this checklist **every time** you implement a feature or fix (not just once 
   - [ ] Create GitHub repository
   - [ ] Add screenshots to README
   - [ ] Submit to Ulauncher extensions directory
+
+#### Suggestions (Post v1.0.0)
+
+- [ ] **SUG-01** (T02): Fix welcome screen when typing `mg` with no space
+- [ ] **SUG-02** (T36): Move log access to `mg debug` command
+- [ ] **SUG-03** (T47): Only enable search optimization for 200+ tasks
+- [ ] **SUG-04** (T49): Show creation date when no due date available
 
 ### Optional: Performance Improvements
 
