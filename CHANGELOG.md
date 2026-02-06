@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Log access items ("Open runtime log", "Copy log path") moved from help/error screens to `mg debug`
 - Error and welcome screens now reference `mg debug` instead of showing log actions inline
+- Tasks without a due date now show `Created: YYYY-MM-DD` in the subtitle
 
 ## [1.0.0] - 2026-02-06
 

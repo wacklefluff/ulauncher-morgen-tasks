@@ -1,5 +1,22 @@
 # Development Log
 
+## 2026-02-06 (Session 17)
+
+**Goals**:
+- Implement SUG-04: show creation date when no due date is available
+
+**Accomplished**:
+- Updated `TaskFormatter.format_subtitle()` to show `Created: YYYY-MM-DD` for tasks without `due`
+- Added unit test coverage for the created-date fallback
+- Created manual test plan: `development/research/test_plan_v1.1.0_2026-02-06.md`
+
+**Manual Tests**:
+- S04-01 PASS
+- S04-02 PASS
+- S04-03 SKIP (no task missing `created` found)
+
+---
+
 ## 2026-02-06 (Session 16)
 
 **Goals**:

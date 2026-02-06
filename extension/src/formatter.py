@@ -46,15 +46,23 @@ class TaskFormatter:
         overdue = is_overdue(due)
         due_display = self._format_due(due, overdue)
 
+        prefix_label = "Due"
+        prefix_value = due_display
+        if not due:
+            created_display = self._format_created(task.get("created"))
+            if created_display:
+                prefix_label = "Created"
+                prefix_value = created_display
+
         priority = task.get("priority", 0)
         priority_display = get_priority_label(priority)
 
         description = (task.get("description") or "").strip()
         if description:
             description = self._truncate(description, 80)
-            return f"Due: {due_display} | Priority: {priority_display} — {description}"
+            return f"{prefix_label}: {prefix_value} | Priority: {priority_display} — {description}"
 
-        return f"Due: {due_display} | Priority: {priority_display}"
+        return f"{prefix_label}: {prefix_value} | Priority: {priority_display}"
 
     def _format_due(self, due, overdue: bool = False) -> str:
         if not due:
@@ -84,6 +92,21 @@ class TaskFormatter:
             if isinstance(due, str) and "T" in due:
                 return due.replace("T", " ")
             return str(due)
+
+    def _format_created(self, created) -> str | None:
+        if not created:
+            return None
+        if isinstance(created, str):
+            try:
+                created_dt = datetime.fromisoformat(created[:19])
+                return created_dt.strftime("%Y-%m-%d")
+            except ValueError:
+                if len(created) >= 10 and created[4] == "-" and created[7] == "-":
+                    return created[:10]
+                if "T" in created:
+                    return created[:19].replace("T", " ")
+                return created
+        return str(created)
 
     def _truncate(self, text: str, max_len: int) -> str:
         if len(text) <= max_len:
@@ -145,4 +168,3 @@ def get_priority_label(priority) -> str:
         return "Low"
     # Fallback for unexpected values
     return f"Priority {priority_int}"
-

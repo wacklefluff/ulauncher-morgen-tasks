@@ -41,7 +41,7 @@ Use this checklist **every time** you implement a feature or fix (not just once 
 
 - [x] **SUG-02**: `mg debug` command — dedicated screen for runtime log access (+v1.1.0)
 - [x] `mg help` and `mg debug` work without API key (+v1.1.0)
-- [ ] **SUG-04**: Show creation date when no due date available
+- [x] **SUG-04**: Show creation date when no due date available (+v1.1.0)
 - [ ] **Mark tasks as complete** from Ulauncher (Enter on task → complete via API)
 - [ ] **Open Morgen app** on task click (Alt+Enter or secondary action)
 - [ ] **VIM-like mode**: ALT to navigate with J/K, move between words
