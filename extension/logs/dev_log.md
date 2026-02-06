@@ -8,11 +8,10 @@
 **Accomplished**:
 - Default task Enter now opens Morgen using the "Task Open URL Template" preference
 - Added Alt+Enter copy-task-id action when supported by Ulauncher
-- Updated docs and manual test plan (`development/research/test_plan_v1.1.0_2026-02-06.md` O01–O02)
+- Updated docs and manual test plan (`development/research/test_plan_v1.1.0_2026-02-06.md` O02)
 - Removed `{id}` substitution from the open URL (Morgen has no official per-task deep link support)
 
 **Manual Tests**:
-- O01 PASS
 - O02 PASS
 
 ---

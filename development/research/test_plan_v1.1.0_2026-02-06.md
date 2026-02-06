@@ -60,11 +60,6 @@
 
 ## Open task on Enter (default)
 
-### O01: Normal mode Enter opens Morgen
-**Test**: Type `mg <query>`, select a task, press Enter.
-**Expected**: Opens Morgen in your default browser/app (based on "Task Open URL Template" preference).
-**Result**: [X] PASS  [ ] FAIL
-
 ### O02: Alt+Enter copies task ID (if supported)
 **Test**: Type `mg <query>`, select a task, press Alt+Enter.
 **Expected**: Task ID is copied to clipboard (if your Ulauncher version supports Alt+Enter actions).
