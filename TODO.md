@@ -44,7 +44,7 @@ Use this checklist **every time** you implement a feature or fix (not just once 
   - [x] Rate limit errors (+v0.6.3)
   - [x] Empty results (+v0.6.3)
 
-- [ ] Improve UI
+- [x] Improve UI (+v0.6.6)
   - [x] Better icons for priority levels (+v0.6.6)
   - [x] Overdue task highlighting (+v0.6.6)
   - [x] Show task count (+v0.6.0)
@@ -55,12 +55,12 @@ Use this checklist **every time** you implement a feature or fix (not just once 
   - [x] Add quick access to runtime log (+v0.6.4)
   - [x] Show log access on welcome/errors (+v0.6.5)
 
-- [ ] Write documentation
-  - [ ] Complete README.md
-  - [ ] Create docs/USER_GUIDE.md
-  - [ ] Create docs/API_REFERENCE.md
+- [x] Write documentation
+  - [x] Complete README.md (+v0.6.7)
+  - [x] Create docs/USER_GUIDE.md (+v0.6.7)
+  - [x] Create docs/API_REFERENCE.md (+v0.6.7)
 
-- [ ] Add logging
+- [x] Add logging
   - [x] Log API errors to file (+v0.6.1)
   - [x] Log cache hits/misses (+v0.6.1)
   - [x] Add richer runtime logging events (+v0.6.3)

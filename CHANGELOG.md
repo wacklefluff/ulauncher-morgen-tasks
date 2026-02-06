@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- User Guide (`extension/docs/USER_GUIDE.md`)
+- API Reference (`extension/docs/API_REFERENCE.md`)
+
+### Changed
+- Updated README with current features and usage examples
+
 ## [0.6.6] - 2026-02-06
 
 ### Changed
