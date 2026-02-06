@@ -8,7 +8,7 @@ This project integrates Morgen's task management system with Ulauncher, a fast a
 
 ## Features
 
-### Current (v0.6.5 - Phase 6 Started)
+### Current (v1.0.0)
 - ✅ Basic Ulauncher extension structure
 - ✅ Keyword trigger (`mg` by default)
 - ✅ API key configuration
@@ -16,7 +16,10 @@ This project integrates Morgen's task management system with Ulauncher, a fast a
 - ✅ List all tasks (shows cached vs fresh status)
 - ✅ Search tasks by title/description
 - ✅ Force refresh (`mg refresh` or `mg !`) to bypass cache
-- ✅ Copy task ID on Enter (for debugging)
+- ✅ Create tasks (`mg new ...`) with due parsing (`@today`, `@friday`, etc.)
+- ✅ Help and cache housekeeping (`mg help`, `mg clear`)
+- ✅ Runtime log file for debugging (`extension/logs/runtime.log`)
+- ✅ Copy task ID on Enter
 
 ### Planned
 - ✅ **Phase 2**: API Integration & Authentication
@@ -134,7 +137,7 @@ See **CLAUDE.md** for detailed development setup and workflow.
 
 ## Development Status
 
-**Current Version**: v0.6.5 (Phase 6 Started)
+**Current Version**: v1.0.0 (Phase 7: Testing & Release)
 **Current Branch**: `develop`
 
 ### Completed Phases
@@ -155,7 +158,7 @@ For detailed progress, see `extension/logs/dev_log.md`.
 
 ## Technology Stack
 
-- **Language**: Python 3.6+
+- **Language**: Python 3.10+
 - **Framework**: Ulauncher Extension API v2
 - **API**: Morgen REST API v3
 - **Tools**: Git, ImageMagick

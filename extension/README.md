@@ -89,12 +89,12 @@ Then type `mg` to trigger the extension.
 ## Requirements
 
 - Ulauncher 5.x
-- Python 3.6+
+- Python 3.10+
 - Morgen API key
 
 ## Current Version
 
-**v0.6.6** - Priority icons, overdue highlighting, relative due dates
+**v1.0.0** - Stable release (list/search/create, caching, help, logging, tests)
 
 ## Resources
 
