@@ -50,20 +50,20 @@ Use this checklist **every time** you implement a feature or fix (not just once 
 
 #### Bugs (Must Fix for v1.0.0)
 
-- [ ] **FIX-01** (T07): Search word order matters — should be order-independent
-- [ ] **FIX-02** (T15): Day-of-week date parsing (`@friday`) doesn't work
-- [ ] **FIX-03** (T16-T18): Named priorities (`!high`, `!medium`, `!low`) don't work
-- [ ] **FIX-04** (T19-T20): Priority shorthands (`!!` and `!`) don't work
-- [ ] **FIX-05** (T21): Due date + priority combo fails (priority included in title)
-- [ ] **FIX-06** (T44): Invalid priority (`!invalid`) silently accepted
-- [ ] **FIX-07** (T51 note): `@yesterday` not supported in date parser
+- [x] **FIX-01** (T07): Search word order matters — should be order-independent
+- [x] **FIX-02** (T15): Day-of-week date parsing (`@friday`) doesn't work
+- [x] **FIX-03** (T16-T18): Named priorities (`!high`, `!medium`, `!low`) don't work
+- [x] **FIX-04** (T19-T20): Priority shorthands (`!!` and `!`) don't work
+- [x] **FIX-05** (T21): Due date + priority combo fails (priority included in title)
+- [x] **FIX-06** (T44): Invalid priority (`!invalid`) silently accepted
+- [x] **FIX-07** (T51 note): `@yesterday` not supported in date parser
 
 #### Enhancements (Should Fix for v1.0.0)
 
-- [ ] **ENH-01** (T03): Remove "... and X more" truncation message
-- [ ] **ENH-02** (T03): Adaptive display mode (>5 results → condensed 15 max, ≤5 → normal)
-- [ ] **ENH-03** (T43): Simplify invalid date error message
-- [ ] **ENH-04** (T24): Strip surrounding quotes from task title
+- [x] **ENH-01** (T03): Remove "... and X more" truncation message
+- [x] **ENH-02** (T03): Adaptive display mode (>5 results → condensed 15 max, ≤5 → normal)
+- [x] **ENH-03** (T43): Simplify invalid date error message
+- [x] **ENH-04** (T24): Strip surrounding quotes from task title
 
 #### After Fixes
 

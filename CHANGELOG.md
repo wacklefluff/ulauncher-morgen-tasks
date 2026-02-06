@@ -12,11 +12,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - API Reference (`extension/docs/API_REFERENCE.md`)
 - Performance profiling with `_timed()` context manager for debugging
 - Performance test suite (`extension/tests/test_perf.py`)
+- Named priority support: `!high`, `!medium`, `!low` (+ aliases `!hi`, `!med`, `!lo`, `!urgent`)
+- Priority shorthands: `!!` (high) and `!` (medium)
+- Bare weekday date parsing: `@friday`, `@mon`, etc. (not just `@next-friday`)
+- `@yesterday` support in date parser
+- Adaptive display mode: ≤5 results show detailed view, >5 results show up to 15 in condensed mode
+- Comprehensive manual test plan with 60 tests (`development/research/test_plan_v1.0.0_2026-02-06.md`)
 
 ### Changed
 - Updated README with current features and usage examples
 - Optimized search with pre-computed lowercase index (~25% faster search)
-- Limited displayed results to 7 for improved UI responsiveness (shows "... and X more" when truncated)
+- Search is now word-order independent: `mg sync team` matches same as `mg team sync`
+- Simplified invalid date error messages (shorter, more actionable)
+
+### Fixed
+- Named priorities (`!high`, `!medium`, `!low`) now work in task creation
+- Priority shorthands (`!!`, `!`) now work in task creation
+- Due date + priority combo (`@tomorrow !high`) no longer puts priority text in title
+- Invalid priority tokens (`!invalid`) now show error instead of silently creating task
+- Surrounding quotes stripped from task titles (`mg new "Fix bug"` → title is `Fix bug`)
+
+### Removed
+- "... and X more" truncation message (replaced by adaptive display mode)
 
 ## [0.6.6] - 2026-02-06
 
