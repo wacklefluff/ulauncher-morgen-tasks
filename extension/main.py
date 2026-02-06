@@ -125,6 +125,17 @@ class KeywordQueryEventListener(EventListener):
         except ValueError:
             cache_ttl = 600
 
+        # Help and debug commands work without API key
+        help_items = self._maybe_build_help_flow(raw_query)
+        if help_items is not None:
+            logger.info("Showing help view")
+            return RenderResultListAction(help_items)
+
+        debug_items = self._maybe_build_debug_flow(raw_query)
+        if debug_items is not None:
+            logger.info("Showing debug view")
+            return RenderResultListAction(debug_items)
+
         # No API key → welcome message
         if not api_key:
             logger.warning("Missing API key (showing welcome screen)")
@@ -132,10 +143,9 @@ class KeywordQueryEventListener(EventListener):
                 ExtensionResultItem(
                     icon='images/icon.png',
                     name='Welcome to Morgen Tasks!',
-                    description=f'Configure your API key in extension preferences. Logs: {_RUNTIME_LOG_HINT}',
+                    description='Configure your API key in extension preferences. Run "mg debug" for logs.',
                     on_enter=HideWindowAction()
                 ),
-                *self._runtime_log_access_items(),
             ])
 
         # Lazy-init client and cache; re-create if API key changed
@@ -146,12 +156,6 @@ class KeywordQueryEventListener(EventListener):
 
         items = []
         formatter = TaskFormatter()
-
-        # Help / housekeeping commands
-        help_items = self._maybe_build_help_flow(raw_query)
-        if help_items is not None:
-            logger.info("Showing help view")
-            return RenderResultListAction(help_items)
 
         clear_items = self._maybe_clear_cache_flow(raw_query, extension)
         if clear_items is not None:
@@ -225,7 +229,7 @@ class KeywordQueryEventListener(EventListener):
                 suggestions=[
                     "Open extension preferences and set a valid API key.",
                     'Then run "mg refresh" (one-shot) to fetch tasks.',
-                    f"See logs: {_RUNTIME_LOG_HINT}",
+                    'Run "mg debug" for logs.',
                 ],
             ))
 
@@ -251,7 +255,7 @@ class KeywordQueryEventListener(EventListener):
                 suggestions=[
                     "Check your internet connection/VPN.",
                     'Try "mg" again, or use cached results if available.',
-                    f"See logs: {_RUNTIME_LOG_HINT}",
+                    'Run "mg debug" for logs.',
                 ],
             ))
 
@@ -260,7 +264,7 @@ class KeywordQueryEventListener(EventListener):
             items.extend(self._error_items(
                 title="Morgen API Error",
                 description=str(getattr(e, "message", e)),
-                suggestions=[f"See logs: {_RUNTIME_LOG_HINT}"],
+                suggestions=['Run "mg debug" for logs.'],
             ))
 
         except Exception as e:
@@ -270,7 +274,7 @@ class KeywordQueryEventListener(EventListener):
                 description=str(e),
                 suggestions=[
                     'Try "mg clear" then "mg refresh".',
-                    f"See logs: {_RUNTIME_LOG_HINT}",
+                    'Run "mg debug" for logs.',
                 ],
             ))
 
@@ -292,6 +296,7 @@ class KeywordQueryEventListener(EventListener):
             ("Force refresh", "mg !   or   mg refresh"),
             ("Create task", "mg new <title> [@due] [!priority]"),
             ("Clear cache", "mg clear"),
+            ("Debug / logs", "mg debug"),
         ]
 
         due_examples = [
@@ -336,15 +341,25 @@ class KeywordQueryEventListener(EventListener):
             on_enter=HideWindowAction(),
         ))
 
-        items.append(ExtensionResultItem(
-            icon="images/icon.png",
-            name="Runtime logs",
-            description=_RUNTIME_LOG_HINT,
-            on_enter=HideWindowAction(),
-        ))
+        return items
 
+    def _maybe_build_debug_flow(self, raw_query: str):
+        if not raw_query:
+            return None
+
+        normalized = raw_query.strip().lower()
+        if normalized not in {"debug", "log", "logs"}:
+            return None
+
+        items = [
+            ExtensionResultItem(
+                icon="images/icon.png",
+                name="Morgen Tasks — Debug",
+                description=_RUNTIME_LOG_HINT,
+                on_enter=HideWindowAction(),
+            )
+        ]
         items.extend(self._runtime_log_access_items())
-
         return items
 
     def _maybe_clear_cache_flow(self, raw_query: str, extension):
@@ -644,10 +659,9 @@ class KeywordQueryEventListener(EventListener):
             items.append(ExtensionResultItem(
                 icon='images/icon.png',
                 name=error_msg,
-                description='No cached data available. Try again later.',
+                description='No cached data available. Try again later. Run "mg debug" for logs.',
                 on_enter=HideWindowAction()
             ))
-            items.extend(self._runtime_log_access_items())
             items.extend(self._suggestion_items(suggestions))
             return items
 
@@ -706,7 +720,6 @@ class KeywordQueryEventListener(EventListener):
                 on_enter=HideWindowAction(),
             )
         ]
-        items.extend(self._runtime_log_access_items())
         items.extend(self._suggestion_items(suggestions))
         return items
 
@@ -800,37 +813,12 @@ class ItemEnterEventListener(EventListener):
             cache_ttl = 600
 
         if not api_key:
-            items = [ExtensionResultItem(
+            return RenderResultListAction([ExtensionResultItem(
                 icon='images/icon.png',
                 name='Cannot create task',
-                description=f'Missing API key. Set it in extension preferences. Logs: {_RUNTIME_LOG_HINT}',
+                description='Missing API key. Set it in extension preferences. Run "mg debug" for logs.',
                 on_enter=HideWindowAction()
-            )]
-
-            abs_path = os.path.join(os.path.dirname(__file__), "logs", _LOG_FILE_NAME)
-            if OpenAction is not None:
-                try:
-                    items.append(ExtensionResultItem(
-                        icon="images/icon.png",
-                        name="Open runtime log",
-                        description=abs_path,
-                        on_enter=OpenAction(abs_path),
-                    ))
-                except Exception:
-                    pass
-
-            if CopyToClipboardAction is not None:
-                try:
-                    items.append(ExtensionResultItem(
-                        icon="images/icon.png",
-                        name="Copy log path",
-                        description=abs_path,
-                        on_enter=CopyToClipboardAction(abs_path),
-                    ))
-                except Exception:
-                    pass
-
-            return RenderResultListAction(items)
+            )])
 
         # Ensure client/cache are initialized
         if extension.api_client is None or extension.api_client.api_key != api_key:
@@ -868,7 +856,7 @@ class ItemEnterEventListener(EventListener):
             return RenderResultListAction([ExtensionResultItem(
                 icon='images/icon.png',
                 name='Rate limit exceeded',
-                description=f'Try again later. Logs: {_RUNTIME_LOG_HINT}',
+                description='Try again later. Run "mg debug" for logs.',
                 on_enter=HideWindowAction()
             )])
 
@@ -877,7 +865,7 @@ class ItemEnterEventListener(EventListener):
             return RenderResultListAction([ExtensionResultItem(
                 icon='images/icon.png',
                 name='Create failed',
-                description=f'{str(getattr(e, "message", e))} (see {_RUNTIME_LOG_HINT})',
+                description=f'{str(getattr(e, "message", e))} — run "mg debug" for logs.',
                 on_enter=HideWindowAction()
             )])
 
@@ -886,7 +874,7 @@ class ItemEnterEventListener(EventListener):
             return RenderResultListAction([ExtensionResultItem(
                 icon='images/icon.png',
                 name='Unexpected error',
-                description=f'{str(e)} (see {_RUNTIME_LOG_HINT})',
+                description=f'{str(e)} — run "mg debug" for logs.',
                 on_enter=HideWindowAction()
             )])
 

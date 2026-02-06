@@ -77,7 +77,7 @@ Reference: `development/research/publish_plan_v1.0.0_2026-02-06.md`
 #### Suggestions (Post v1.0.0)
 
 - [ ] **SUG-01** (T02): Fix welcome screen when typing `mg` with no space
-- [ ] **SUG-02** (T36): Move log access to `mg debug` command
+- [x] **SUG-02** (T36): Move log access to `mg debug` command (+v1.1.0)
 - [ ] **SUG-03** (T47): Only enable search optimization for 200+ tasks
 - [ ] **SUG-04** (T49): Show creation date when no due date available
 
@@ -185,6 +185,12 @@ See `extension/logs/improvements.md` for detailed ideas.
 - Log improvement ideas in `extension/logs/improvements.md`
 - Make small, frequent git commits
 - Test after each feature implementation
+
+## Reminders
+
+- **P07** Post-publish cleanup (optional)
+  - Keep troubleshooting accurate (API key, rate limit, runtime log)
+  - Use GitHub Releases for binaries/archives (avoid committing zips into repo)
 
 ## Quick Commands
 
