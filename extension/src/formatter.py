@@ -56,6 +56,23 @@ class TaskFormatter:
 
         return f"Due: {due_display} | Priority: {priority_display}"
 
+    def format_condensed_subtitle(self, task: dict) -> str:
+        """Compact one-line subtitle for condensed display mode."""
+        due = task.get("due")
+        overdue = is_overdue(due)
+        due_display = self._format_due(due, overdue)
+
+        priority = task.get("priority", 0)
+        priority_label = get_priority_label(priority)
+
+        parts = []
+        if due:
+            parts.append(due_display)
+        if priority_label not in {"Normal", ""}:
+            parts.append(priority_label)
+
+        return " · ".join(parts) if parts else "No due date"
+
     def _format_due(self, due, overdue: bool = False) -> str:
         if not due:
             return "No due date"

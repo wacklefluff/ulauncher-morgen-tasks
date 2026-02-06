@@ -40,7 +40,8 @@ from src.date_parser import DateParser, DateParseError
 logger = logging.getLogger(__name__)
 
 _LOG_FILE_NAME = "runtime.log"
-_MAX_DISPLAY_RESULTS = 7  # Limit rendered results for performance
+_MAX_NORMAL = 5       # Max results in normal (detailed) display mode
+_MAX_CONDENSED = 15   # Max results in condensed (compact) display mode
 
 
 @contextmanager
@@ -192,28 +193,24 @@ class KeywordQueryEventListener(EventListener):
                     on_enter=HideWindowAction()
                 ))
             else:
-                # Limit displayed results for performance
-                display_tasks = filtered_tasks[:_MAX_DISPLAY_RESULTS]
-                truncated = len(filtered_tasks) > _MAX_DISPLAY_RESULTS
+                # Adaptive display: condensed mode for many results
+                condensed = len(filtered_tasks) > _MAX_NORMAL
+                max_display = _MAX_CONDENSED if condensed else _MAX_NORMAL
+                display_tasks = filtered_tasks[:max_display]
 
                 with _timed(f"format_{len(display_tasks)}_tasks"):
                     for task in display_tasks:
                         task_id = task.get("id") or ""
                         on_enter = self._get_task_action(task_id)
+                        subtitle = (formatter.format_condensed_subtitle(task)
+                                    if condensed
+                                    else formatter.format_subtitle(task))
                         items.append(ExtensionResultItem(
                             icon='images/icon.png',
                             name=formatter.format_for_display(task),
-                            description=formatter.format_subtitle(task),
+                            description=subtitle,
                             on_enter=on_enter
                         ))
-
-                if truncated:
-                    items.append(ExtensionResultItem(
-                        icon='images/icon.png',
-                        name=f'... and {len(filtered_tasks) - _MAX_DISPLAY_RESULTS} more',
-                        description='Type more to narrow results',
-                        on_enter=HideWindowAction()
-                    ))
 
         except MorgenAuthError:
             logger.warning("Authentication failed (invalid API key)")
@@ -669,24 +666,21 @@ class KeywordQueryEventListener(EventListener):
             ))
             return items
 
-        # Limit displayed results for performance
-        display_tasks = filtered_tasks[:_MAX_DISPLAY_RESULTS]
+        # Adaptive display: condensed mode for many results
+        condensed = len(filtered_tasks) > _MAX_NORMAL
+        max_display = _MAX_CONDENSED if condensed else _MAX_NORMAL
+        display_tasks = filtered_tasks[:max_display]
         for task in display_tasks:
             task_id = task.get("id") or ""
             on_enter = self._get_task_action(task_id)
+            subtitle = (formatter.format_condensed_subtitle(task)
+                        if condensed
+                        else formatter.format_subtitle(task))
             items.append(ExtensionResultItem(
                 icon='images/icon.png',
                 name=formatter.format_for_display(task),
-                description=formatter.format_subtitle(task),
+                description=subtitle,
                 on_enter=on_enter
-            ))
-
-        if len(filtered_tasks) > _MAX_DISPLAY_RESULTS:
-            items.append(ExtensionResultItem(
-                icon='images/icon.png',
-                name=f'... and {len(filtered_tasks) - _MAX_DISPLAY_RESULTS} more',
-                description='Type more to narrow results',
-                on_enter=HideWindowAction()
             ))
 
         return items
