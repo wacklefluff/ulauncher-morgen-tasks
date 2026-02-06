@@ -2,8 +2,8 @@
   "required_api_version": "2",
   "name": "Morgen Tasks",
   "description": "Manage your Morgen tasks directly from Ulauncher - list, search, and create tasks",
-  "developer_name": "Morgen Tasks Extension",
-  "developer_url": "https://github.com/yourusername/ulauncher-morgen-tasks",
+  "developer_name": "wacklefluff",
+  "developer_url": "https://github.com/wacklefluff/ulauncher-morgen-tasks",
   "icon": "images/icon.png",
   "options": {
     "query_debounce": 0.1
@@ -29,13 +29,6 @@
       "name": "Cache Duration (seconds)",
       "description": "How long to cache task list (default: 600 seconds / 10 minutes)",
       "default_value": "600"
-    },
-    {
-      "id": "dev_empty_tasks",
-      "type": "input",
-      "name": "Dev: Simulate empty task list (0/1)",
-      "description": "Developer option: when set to 1/true, list/search behaves as if there are zero tasks (no API calls).",
-      "default_value": "0"
     }
   ]
 }

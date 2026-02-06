@@ -1,5 +1,17 @@
 # Development Log
 
+## 2026-02-06 (Session 16)
+
+**Goals**:
+- Remove dev-only empty-task simulation toggle
+
+**Accomplished**:
+- Removed `dev_empty_tasks` preference from `extension/manifest.json`
+- Removed dev-empty bypass logic from `extension/main.py`
+- Updated `CHANGELOG.md` (Unreleased) to note removal
+
+---
+
 ## 2026-02-06 (Session 12)
 
 **Goals**:

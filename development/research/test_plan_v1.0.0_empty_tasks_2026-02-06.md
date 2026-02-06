@@ -1,14 +1,15 @@
-# Manual Test Plan v1.0.0 — Empty Task List (Dev Toggle)
+# Manual Test Plan v1.0.0 — Empty Task List (Legacy)
 
 **Date**: 2026-02-06
 **Version**: v1.0.0
 **Purpose**: Validate UI behavior when there are 0 tasks, without needing an empty Morgen account.
 
+**Note**: The `dev_empty_tasks` preference was removed after v1.0.0. To re-run these tests, simulate an empty list by writing an empty cache file (0 tasks) and avoid `mg refresh` / `mg !` so the API doesn’t overwrite it.
+
 ## Setup
 
-1. Open extension preferences
-2. Set `Dev: Simulate empty task list (0/1)` to `1`
-3. Start Ulauncher in verbose mode: `pkill ulauncher && ulauncher -v`
+1. Write an empty cache file (0 tasks) to `~/.cache/ulauncher-morgen-tasks/tasks_cache.json`
+2. Start Ulauncher in verbose mode: `pkill ulauncher && ulauncher -v`
 
 ---
 
@@ -43,4 +44,4 @@
 
 ## Cleanup
 
-1. Set `Dev: Simulate empty task list (0/1)` back to `0`
+1. Run `mg refresh` to restore real tasks, or delete the cache file

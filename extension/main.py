@@ -111,13 +111,6 @@ class MorgenTasksExtension(Extension):
 class KeywordQueryEventListener(EventListener):
     """Handles keyword query events"""
 
-    def _pref_truthy(self, value) -> bool:
-        v = str(value or "").strip().lower()
-        return v in {"1", "true", "yes", "y", "on"}
-
-    def _is_dev_empty_tasks_enabled(self, extension) -> bool:
-        return self._pref_truthy(extension.preferences.get("dev_empty_tasks", "0"))
-
     def on_event(self, event, extension):
         """Handle keyword query event"""
         raw_query = (event.get_argument() or "").strip()
@@ -194,17 +187,10 @@ class KeywordQueryEventListener(EventListener):
             ))
 
             if not filtered_tasks:
-                if self._is_dev_empty_tasks_enabled(extension):
-                    description = (
-                        "Dev mode is simulating an empty task list. "
-                        "Disable 'Dev: Simulate empty task list' in extension preferences."
-                    )
-                else:
-                    description = 'Try a different search term, or run "mg refresh" to fetch latest tasks.'
                 items.append(ExtensionResultItem(
                     icon='images/icon.png',
                     name='No tasks found',
-                    description=description,
+                    description='Try a different search term, or run "mg refresh" to fetch latest tasks.',
                     on_enter=HideWindowAction()
                 ))
             else:
@@ -577,12 +563,6 @@ class KeywordQueryEventListener(EventListener):
         return False, raw_query, False
 
     def _get_tasks(self, extension, force_refresh: bool):
-        if self._is_dev_empty_tasks_enabled(extension):
-            if force_refresh:
-                logger.info("Force refresh requested while dev-empty is enabled (no-op)")
-            logger.info("Dev mode: simulating empty task list (no API call)")
-            return [], "dev empty"
-
         # Cache-first: check cache before making API call
         if force_refresh and extension.cache:
             logger.info("Force refresh requested (invalidating cache)")

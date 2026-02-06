@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - (placeholder)
 
 ### Removed
-- (placeholder)
+- Dev-only preference to simulate an empty task list (`dev_empty_tasks`)
 
 ## [1.0.0] - 2026-02-06
 
