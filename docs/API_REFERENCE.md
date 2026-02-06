@@ -5,7 +5,6 @@ Technical reference for developers working on or extending this project.
 ## Architecture
 
 ```
-extension/
 ├── main.py              # Entry point, Ulauncher integration
 ├── manifest.json        # Extension metadata
 ├── versions.json        # API version mapping
@@ -345,7 +344,7 @@ item = ExtensionResultItem(
 
 ## Logging
 
-Runtime logs are written to `extension/logs/runtime.log` using Python's `RotatingFileHandler`.
+Runtime logs are written to `logs/runtime.log` using Python's `RotatingFileHandler`.
 
 ```python
 import logging

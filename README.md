@@ -1,224 +1,109 @@
 # Ulauncher Morgen Tasks Extension
 
-A comprehensive Ulauncher extension for managing Morgen tasks directly from your Linux desktop. List, search, and create tasks without leaving your workflow.
+Manage your Morgen tasks directly from Ulauncher - list, search, and create tasks quickly without leaving your workflow.
 
-## Project Overview
-
-This project integrates Morgen's task management system with Ulauncher, a fast application launcher for Linux. The extension allows you to quickly interact with your Morgen tasks using keyboard shortcuts and natural language commands.
+![New Task Screenshot](images/screenshots/v1.0-New-Task-bg.jpg)
 
 ## Features
 
-### Current (v1.0.0)
-- ✅ Basic Ulauncher extension structure
-- ✅ Keyword trigger (`mg` by default)
-- ✅ API key configuration
-- ✅ Morgen API integration with caching (cache-first to minimize API points)
-- ✅ List all tasks (shows cached vs fresh status)
-- ✅ Search tasks by title/description
-- ✅ Force refresh (`mg refresh` or `mg !`) to bypass cache
-- ✅ Create tasks (`mg new ...`) with due parsing (`@today`, `@friday`, etc.)
-- ✅ Help and cache housekeeping (`mg help`, `mg clear`)
-- ✅ Runtime log file for debugging (`extension/logs/runtime.log`)
-- ✅ Copy task ID on Enter
-
-### Planned
-- ✅ **Phase 2**: API Integration & Authentication
-- ✅ **Phase 3**: List and search tasks
-- ✅ **Phase 4**: Create tasks
-- 🔄 **Phase 4**: Create tasks with natural language dates
-- 🔄 **Phase 5**: Caching & performance optimization
-- 🔄 **Phase 6**: Polish & error handling
-- 🔄 **Phase 7**: Testing & v1.0.0 release
-
-## Repository Structure
-
-```
-/home/user/Documents/AI/Morgen-Tasks/
-│
-├── README.md                      # This file - project overview
-├── TODO.md                        # Current tasks and next steps
-├── CLAUDE.md                      # Guide for AI agents working on this project
-├── AGENTS.md                      # Quick reference for AI agents
-├── CHANGELOG.md                   # Version history
-├── .gitignore                     # Git ignore rules
-│
-├── extension/                     # Main extension code (symlinked to Ulauncher)
-│   ├── main.py                    # Extension entry point
-│   ├── manifest.json              # Extension metadata & preferences
-│   ├── versions.json              # API version mapping
-│   ├── README.md                  # User-facing documentation
-│   │
-│   ├── images/
-│   │   └── icon.png              # Extension icon
-│   │
-│   ├── src/                      # Source modules (Phase 2+)
-│   │   ├── morgen_api.py         # Morgen API client
-│   │   ├── cache.py              # Task caching
-│   │   ├── formatter.py          # Display formatting
-│   │   └── date_parser.py        # Natural language dates
-│   │
-│   ├── logs/                     # Development tracking
-│   │   ├── dev_log.md           # Daily development journal
-│   │   ├── issues.md            # Known issues and bugs
-│   │   └── improvements.md      # Future enhancement ideas
-│   │
-│   ├── tests/                    # Test files (Phase 7)
-│   │   ├── test_morgen_api.py    # Mocked API tests
-│   │   ├── test_date_parser.py   # Date parser tests
-│   │   └── test_formatter.py     # Formatter tests
-│   │
-│   └── docs/                     # Additional documentation
-│       ├── API_REFERENCE.md      # Morgen API quick reference
-│       └── USER_GUIDE.md         # Detailed user guide
-
-Additional files:
-├── (Morgen) Tasks - Morgen Developer Documentation.pdf
-└── .git/                        # Git repository
-```
-
-Note: the `development/` workspace exists on the `develop` branch only (it is not included on `main`).
+- **List tasks** - View all your Morgen tasks at a glance
+- **Search tasks** - Filter by title or description
+- **Create tasks** - Quick task creation with natural language dates
+- **Priority indicators** - Visual markers for high (`!!`) and medium (`!`) priority
+- **Overdue highlighting** - Tasks past due are clearly marked
+- **Smart caching** - Minimizes API calls with 10-minute cache (configurable)
+- **Force refresh** - Bypass cache when you need fresh data
 
 ## Installation
 
-### For Users
-
-1. **Clone or download this repository**:
+1. Clone or symlink this extension to Ulauncher's extensions directory:
    ```bash
-   git clone <repository-url> /home/user/Documents/AI/Morgen-Tasks/
-   cd /home/user/Documents/AI/Morgen-Tasks/
+   ln -s /path/to/extension ~/.local/share/ulauncher/extensions/ulauncher-morgen-tasks
    ```
 
-2. **The extension is already symlinked** to Ulauncher's extensions directory:
-   ```
-   ~/.local/share/ulauncher/extensions/ulauncher-morgen-tasks
-   → /home/user/Documents/AI/Morgen-Tasks/extension
-   ```
+2. Restart Ulauncher
 
-3. **Get your Morgen API key**:
-   - Visit https://platform.morgen.so
-   - Sign up or log in
-   - Request API access
-   - Copy your API key
-
-4. **Configure the extension**:
-   - Open Ulauncher (Ctrl+Space)
-   - Go to Preferences → Extensions
-   - Find "Morgen Tasks"
-   - Enter your API key
-   - Customize keyword if desired (default: `mg`)
-
-5. **Restart Ulauncher**:
-   ```bash
-   pkill ulauncher
-   ulauncher &
-   ```
-
-### For Developers
-
-See **CLAUDE.md** for detailed development setup and workflow.
+3. Open Ulauncher preferences (Extensions tab) and configure:
+   - **Keyword**: `mg` (default, customizable)
+   - **API Key**: Your Morgen API key from https://platform.morgen.so
+   - **Cache Duration**: Seconds to cache tasks (default: 600)
 
 ## Usage
 
-### Current Commands (Phase 1)
+### List & Search Tasks
 
-- `mg` - Trigger the extension (shows welcome message)
+| Command | Description |
+|---------|-------------|
+| `mg` | List all tasks |
+| `mg <term>` | Search tasks by title/description |
+| `mg !` | Force refresh (bypass cache) |
+| `mg refresh` | Force refresh (alternative) |
 
-### Planned Commands (Future Phases)
+### Create Tasks
 
-- `mg` - List all tasks
-- `mg search term` - Search tasks
-- `mg new Task title` - Create task
-- `mg new Task @tomorrow` - Create task with due date
-- `mg new Task @tomorrow !1` - Create task with priority
-- `mg help` - Show help
+| Command | Description |
+|---------|-------------|
+| `mg new Buy milk` | Create task with title only |
+| `mg new Buy milk @tomorrow` | Create with due date |
+| `mg new Buy milk @tomorrow !1` | Create with due date and high priority |
+| `mg new Meeting @next-mon 3pm` | Due next Monday at 3pm |
 
-## Development Status
+**Due date formats**: `today`, `tomorrow`, `next-week`, `next-mon`, `2026-02-15`, `3pm`, `15:30`
 
-**Current Version**: v1.0.0 (Phase 7: Testing & Release)
-**Current Branch**: `develop`
+**Priority**: `!1` (high), `!5` (medium), `!9` (low)
 
-### Completed Phases
+### Utility Commands
 
-- ✅ **Phase 0** (v0.0.1): Project structure and git setup
-- ✅ **Phase 1** (v0.1.0): Basic extension structure
-- ✅ **Phase 2** (v0.2.0): Morgen API integration and caching
-- ✅ **Phase 3** (v0.3.0): List/search tasks + force refresh
-- ✅ **Phase 4** (v0.4.0): Create tasks (`mg new ...`) with due parsing
-- 🔄 **Phase 5** (v0.5.0): Improve caching and performance (disk-persistent cache)
-- 🔄 **Phase 6** (v0.6.0): Polish UX (help, clearer commands)
+| Command | Description |
+|---------|-------------|
+| `mg help` or `mg ?` | Show command reference |
+| `mg clear` | Clear cached tasks |
 
-### Next Phase
+### Task Display
 
-- 🔄 **Phase 4**: Create tasks
+- `!! Task Name` - High priority task
+- `! Task Name` - Medium priority task
+- `OVERDUE !! Task Name` - Overdue high priority task
+- Subtitle shows: `Due: Today 14:00 | Priority: High`
 
-For detailed progress, see `extension/logs/dev_log.md`.
+## Troubleshooting
 
-## Technology Stack
+### View Runtime Logs
 
-- **Language**: Python 3.10+
-- **Framework**: Ulauncher Extension API v2
-- **API**: Morgen REST API v3
-- **Tools**: Git, ImageMagick
+From the help screen (`mg help`), select "Open runtime log" or "Copy log path".
 
-## Important Notes
+Log location: `logs/runtime.log`
 
-### Morgen API Considerations
+### Common Issues
 
-- **Rate Limiting**: List tasks endpoint costs 10 points per request
-- **Caching Required**: Extension will cache tasks for 10 minutes by default
-- **Date Format**: Morgen requires dates in format: `YYYY-MM-DDTHH:mm:ss` (exactly 19 characters)
-- **Authentication**: API key required in header: `Authorization: ApiKey <API_KEY>`
+- **No tasks showing**: Check API key in preferences
+- **Rate limit errors**: Wait a few minutes, Morgen API has usage limits
+- **Stale data**: Run `mg !` to force refresh
 
-### Development Workflow
-
-1. Work on `develop` branch
-2. Make small, frequent commits
-3. Update `CHANGELOG.md` for each version
-4. Log issues in `extension/logs/issues.md`
-5. Log ideas in `extension/logs/improvements.md`
-6. Keep `extension/logs/dev_log.md` updated
-
-## Documentation
-
-- **User Guide**: `extension/README.md` - End-user documentation
-- **Development Guide**: `CLAUDE.md` - AI agent/developer guide
-- **Agent Quick Reference**: `AGENTS.md` - Quick start for AI agents
-- **Implementation Plan**: `.claude/plans/buzzing-waddling-fiddle.md` - Detailed implementation plan
-- **Morgen API Docs**: `(Morgen) Tasks - Morgen Developer Documentation.pdf`
-- **Development Log**: `extension/logs/dev_log.md`
-
-## Testing
+### Testing
 
 ```bash
-# Run Ulauncher in verbose mode for debugging
-pkill ulauncher
-ulauncher -v
-
-# Type 'mg' to trigger the extension
+pkill ulauncher && ulauncher -v
 ```
 
-## Contributing
+Then type `mg` to trigger the extension.
 
-This is currently a personal project. For development by AI agents, see `CLAUDE.md` and `AGENTS.md`.
+## Requirements
 
-## Versioning
+- Ulauncher 5.x
+- Python 3.10+
+- Morgen API key
 
-This project uses [Semantic Versioning](https://semver.org/):
-- `0.x.y` - Pre-release development
-- `1.0.0` - First stable release
-- `1.x.y` - Minor features and patches
-- `2.0.0` - Breaking changes
+## Current Version
+
+**v1.0.0** - Stable release (list/search/create, caching, help, logging, tests)
+
+## Resources
+
+- [Morgen API Documentation](https://docs.morgen.so/)
+- [Ulauncher Extension API](https://docs.ulauncher.io/)
+- [User Guide](docs/USER_GUIDE.md)
 
 ## License
 
 MIT
-
-## Resources
-
-- [Ulauncher Extension API](https://docs.ulauncher.io/en/stable/extensions/tutorial.html)
-- [Morgen API Documentation](https://docs.morgen.so/)
-- [Morgen Platform](https://platform.morgen.so)
-
-## Contact
-
-See `extension/logs/issues.md` for known issues and bugs.

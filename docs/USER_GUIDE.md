@@ -190,7 +190,7 @@ Your API key may be invalid or expired. Generate a new one at https://platform.m
 1. Run `mg help`
 2. Select "Open runtime log" or "Copy log path"
 
-Log location: `extension/logs/runtime.log`
+Log location: `logs/runtime.log`
 
 ### Extension Not Loading
 

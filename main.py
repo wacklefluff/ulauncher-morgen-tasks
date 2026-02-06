@@ -54,7 +54,7 @@ def _timed(label: str):
     finally:
         elapsed_ms = (time.perf_counter() - start) * 1000
         logger.debug("PERF %s: %.2fms", label, elapsed_ms)
-_RUNTIME_LOG_HINT = "extension/logs/runtime.log"
+_RUNTIME_LOG_HINT = "logs/runtime.log"
 
 
 def _setup_file_logging():
