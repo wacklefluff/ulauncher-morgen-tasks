@@ -3,8 +3,8 @@
 Current task list and development roadmap.
 
 **Last Updated**: 2026-02-06
-**Current Version**: v1.0.0 (Phase 7 In Progress)
-**Current Branch**: `develop`
+**Current Version**: v1.0.0 (Phase 7 Complete)
+**Current Branch**: `main`
 
 ## Release Checklist (Repeat Every Feature/Fix)
 
@@ -68,16 +68,16 @@ Use this checklist **every time** you implement a feature or fix (not just once 
 #### After Fixes
 
 - [x] Re-test all failed items (T07, T15-T21, T44, ENH-02)
-- [ ] Write unit tests
+- [x] Write unit tests (+v1.0.0)
   - [x] Tests for date parser (+v1.0.0)
   - [x] Tests for formatter (+v1.0.0)
   - [x] Mock API tests (+v1.0.0)
 
-- [ ] Prepare v1.0.0 release
-  - [ ] Confirm versioning approach (no version field in `extension/manifest.json`; release version tracked in `CHANGELOG.md`/docs)
-  - [ ] Update `CHANGELOG.md`
-  - [ ] Merge to `main` branch
-  - [ ] Tag release: `v1.0.0`
+- [x] Prepare v1.0.0 release (+v1.0.0)
+  - [x] Confirm versioning approach (no version field in `extension/manifest.json`; release version tracked in `CHANGELOG.md`/docs)
+  - [x] Update `CHANGELOG.md` (+v1.0.0)
+  - [x] Create `main` branch (+v1.0.0)
+  - [x] Tag release: `v1.0.0` (+v1.0.0)
 
 - [ ] Optional: Publish
   - [ ] Create GitHub repository

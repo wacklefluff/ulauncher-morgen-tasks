@@ -55,6 +55,18 @@
 
 ---
 
+## 2026-02-06 (Session 15)
+
+**Goals**:
+- Finalize v1.0.0 release artifacts
+
+**Accomplished**:
+- Recorded empty-task-list manual test results: PASS (E01–E03)
+- Updated README version references to v1.0.0 and clarified Python requirement (3.10+)
+- Created `main` branch and tagged release `v1.0.0`
+
+---
+
 ## 2026-02-06 (Session 11)
 
 **Goals**:
