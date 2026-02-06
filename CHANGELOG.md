@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.6] - 2026-02-06
+
+### Changed
+- Better priority icons matching Morgen's normalized values: `!!` (high/1), `!` (medium/5), none for low/normal
+- Priority labels in subtitle now show human-readable text: "High", "Medium", "Low", "Normal"
+- Due dates show relative labels ("Today 14:00", "Tomorrow 09:00") when applicable
+
+### Added
+- Overdue task highlighting: title prefixed with "OVERDUE", subtitle shows "(overdue!)"
+
 ## [0.6.5] - 2026-02-05
 
 ### Fixed

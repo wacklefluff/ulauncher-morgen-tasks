@@ -2,8 +2,8 @@
 
 Current task list and development roadmap.
 
-**Last Updated**: 2026-02-05
-**Current Version**: v0.6.5 (Phase 6 Started)
+**Last Updated**: 2026-02-06
+**Current Version**: v0.6.6 (Phase 6 In Progress)
 **Current Branch**: `develop`
 
 ## Release Checklist (Repeat Every Feature/Fix)
@@ -32,20 +32,21 @@ Use this checklist **every time** you implement a feature or fix (not just once 
 - v0.6.3 — improved errors + runtime logging tips
 - v0.6.4 — open/copy runtime log from UI
 - v0.6.5 — show log access on welcome/error fallbacks
+- v0.6.6 — better priority icons + overdue highlighting
 
 ## Immediate Next Steps
 
 ### Phase 6: Polish & Error Handling (NEXT)
 
-- [ ] Enhance error messages
+- [x] Enhance error messages (+v0.6.3)
   - [x] Network errors (+v0.6.3)
   - [x] Auth errors (+v0.6.3)
   - [x] Rate limit errors (+v0.6.3)
   - [x] Empty results (+v0.6.3)
 
 - [ ] Improve UI
-  - [ ] Better icons for priority levels
-  - [ ] Color-code overdue tasks
+  - [x] Better icons for priority levels (+v0.6.6)
+  - [x] Overdue task highlighting (+v0.6.6)
   - [x] Show task count (+v0.6.0)
   - [x] Add help command (+v0.6.0)
   - [x] Add clear-cache command (+v0.6.0)

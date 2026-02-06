@@ -1,5 +1,25 @@
 # Development Log
 
+## 2026-02-06 (Session 9)
+
+**Goals**:
+- Phase 6 UI polish: better priority icons and overdue highlighting
+
+**Accomplished**:
+- Updated `extension/src/formatter.py`:
+  - Added `is_overdue()` function to detect past-due tasks
+  - Priority icons: `!!` (high/1), `!` (medium/5), none for low/normal
+  - Added `get_priority_label()` for human-readable subtitle text (High, Medium, Low, Normal)
+  - Overdue tasks show "OVERDUE" prefix in title and "(overdue!)" in subtitle
+  - Due dates show relative labels ("Today 14:00", "Tomorrow 09:00")
+- Updated priority logic to match Morgen's normalized values (High→1, Medium→5, Low→9)
+- Updated `CHANGELOG.md` for v0.6.6
+- Created test plan: `development/research/test_plan_v0.6.6_2026-02-06.md`
+
+**Test Results**: All PASS (P01-P10, O01-O03, D01-D03, C01-C02, R01-R04)
+
+---
+
 ## 2026-02-05 (Session 5)
 
 **Goals**:
