@@ -67,7 +67,7 @@ Use this checklist **every time** you implement a feature or fix (not just once 
 
 #### After Fixes
 
-- [ ] Re-test all failed items (T07, T15-T21, T44)
+- [x] Re-test all failed items (T07, T15-T21, T44, ENH-02)
 - [ ] Write unit tests
   - [ ] Tests for date parser
   - [ ] Tests for formatter
