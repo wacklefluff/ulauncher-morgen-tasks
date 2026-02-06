@@ -508,6 +508,9 @@ class KeywordQueryEventListener(EventListener):
             title_parts.append(token)
 
         title = " ".join(title_parts).strip()
+        # Strip surrounding quotes (user may type: mg new "Fix bug")
+        if len(title) >= 2 and title[0] == title[-1] and title[0] in ('"', "'"):
+            title = title[1:-1].strip()
         if not title:
             return {"error": "Missing title. Usage: mg new <title> [@due] [!priority]"}
 
@@ -518,8 +521,8 @@ class KeywordQueryEventListener(EventListener):
                 due_parsed = DateParser().parse(due_token)
                 parsed["due"] = due_parsed.due
                 parsed["due_display"] = due_parsed.display
-            except DateParseError as e:
-                return {"error": f"Invalid due date '{due_token}': {e}"}
+            except DateParseError:
+                return {"error": f"Invalid date '{due_token}'. Try: today, tomorrow, friday, 2026-02-10"}
 
         return parsed
 

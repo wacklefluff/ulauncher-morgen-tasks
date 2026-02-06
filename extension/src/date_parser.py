@@ -136,9 +136,7 @@ class DateParser:
             t = self._parse_time(time_part.strip()) if time_part else self.default_time
             return datetime.combine(base_date, t)
 
-        raise DateParseError(
-            "Unrecognized date. Try: today, tomorrow, next-mon, 2026-02-10, 2026-02-10T15:30, 15:30"
-        )
+        raise DateParseError("Unrecognized date. Try: today, tomorrow, friday, 2026-02-10, 15:30")
 
     def _looks_like_time(self, raw: str) -> bool:
         raw = raw.strip().lower()
