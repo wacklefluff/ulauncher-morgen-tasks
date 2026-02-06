@@ -81,23 +81,30 @@ See `extension/logs/improvements.md` for detailed ideas.
 
 ### High Priority
 - [ ] Mark tasks as complete from Ulauncher
-- [ ] Update task details (title, due date, priority)
+
 - [ ] Filter tasks by priority/due date
 - [ ] Support for task lists
+- [ ] Ulauncher settings
+	- [ ] additional shortcut to add a new task
+	- [ ] open log file button
+- use ALT to turn into 'VIM like mode', that way using J,K to go up and down the list, move word to next word or last
 
 ### Medium Priority
 - [ ] Subtask creation
 - [ ] Recurring tasks support
 - [ ] Better keyboard shortcuts (Alt+Enter actions)
+- [ ] Open Morgen app on task click
 - [ ] Desktop notifications for upcoming tasks
 - [ ] Parse `#<tag>` for tags
 
 ### Low Priority / Nice-to-Have
+- [ ] when shwoing a lot of results, next page option could be on top message 
 - [ ] Integration with system notifications
 - [ ] Quick scheduling (time blocking)
 - [ ] Task templates
 - [ ] Bulk operations
-- [ ] Open Morgen app on task click
+
+- [ ] Update task details (title, due date, priority)
 
 ---
 
