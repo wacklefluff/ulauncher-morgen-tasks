@@ -172,6 +172,10 @@ For detailed progress, see `extension/logs/dev_log.md`.
 - **Date Format**: Morgen requires dates in format: `YYYY-MM-DDTHH:mm:ss` (exactly 19 characters)
 - **Authentication**: API key required in header: `Authorization: ApiKey <API_KEY>`
 
+### Where Your API Key Is Stored
+
+Your Morgen API key is stored by **Ulauncher** in your local user configuration (typically under `~/.config/ulauncher/`), and is provided to the extension at runtime via `extension.preferences` (see `extension/manifest.json` preference id `api_key`). The key is **not** stored in this git repository.
+
 ### Development Workflow
 
 1. Work on `develop` branch

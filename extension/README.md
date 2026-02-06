@@ -28,6 +28,10 @@ Manage your Morgen tasks directly from Ulauncher - list, search, and create task
    - **API Key**: Your Morgen API key from https://platform.morgen.so
    - **Cache Duration**: Seconds to cache tasks (default: 600)
 
+### Where Your API Key Is Stored
+
+Ulauncher stores extension preferences (including the API key) in your local user configuration (typically under `~/.config/ulauncher/`). This extension reads the key via `extension.preferences` at runtime and does not store it in this repository.
+
 ## Usage
 
 ### List & Search Tasks
