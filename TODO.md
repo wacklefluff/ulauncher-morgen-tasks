@@ -60,9 +60,9 @@ Reference: `development/research/publish_plan_v1.0.0_2026-02-06.md`
   - [x] Restart: `pkill ulauncher && ulauncher -v`
   - [x] Smoke test: list/search, refresh one-shot, create, icon visible
 
-- [ ] **P06** Submit to Ulauncher directory (optional)
-  - [ ] Prepare: repo URL, short description, keywords/category, screenshots, icon
-  - [ ] Submit via ext.ulauncher.io (or current recommended method)
+- [x] **P06** Submit to Ulauncher directory (+v1.0.0)
+  - [x] Prepare: repo URL, short description, keywords/category, screenshots, icon
+  - [x] Submit via ext.ulauncher.io
 
 - [ ] **P07** Post-publish cleanup (optional)
   - [ ] Keep troubleshooting accurate (API key, rate limit, runtime log)
