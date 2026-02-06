@@ -10,14 +10,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Published to GitHub: https://github.com/wacklefluff/ulauncher-morgen-tasks
 - `mg debug` command: dedicated screen for runtime log access (open/copy log path)
-- `mg d <query>` command: search tasks and press Enter to mark selected task as done
+- `mg d <query>` / `mg done <query>`: search tasks and press Enter to mark selected task as done
+- Preference `task_open_url_template` to control what opens on task selection
 
 ### Changed
 - Log access items ("Open runtime log", "Copy log path") moved from help/error screens to `mg debug`
 - Error and welcome screens now reference `mg debug` instead of showing log actions inline
 - Tasks without a due date now show `Created: YYYY-MM-DD` in the subtitle
 - Selecting a task now opens Morgen (Alt+Enter copies task ID when supported)
-- Added preference `task_open_url_template` to configure the task open URL
+- Morgen API client now handles empty (204 No Content) responses
 
 ## [1.0.0] - 2026-02-06
 

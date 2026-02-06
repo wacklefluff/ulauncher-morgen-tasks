@@ -55,10 +55,13 @@ Use this checklist **every time** you implement a feature or fix (not just once 
 - When a task has no `due` date, show `Created: <date>` from the `created` field instead of "No due date"
 
 **Mark tasks as complete** — `extension/src/morgen_api.py` + `extension/main.py`
-- API: `POST /v3/tasks/close` with `{"id": "<TASK_ID>"}` → 204 No Content
-- Change task `on_enter` from `CopyToClipboardAction(task_id)` to `ExtensionCustomAction({"action": "complete_task", ...})`
-- Add handler in `ItemEnterEventListener` for `complete_task` action
-- Invalidate cache after completion
+- Command: `mg d <query>` / `mg done <query>` (done mode)
+- Enter in done mode: closes the selected task via API, then invalidates cache
+- API: `POST /v3/tasks/close` with `{"id": "<TASK_ID>"}` → typically 204 No Content
+
+**Open Morgen on Enter** — `extension/main.py` + `extension/manifest.json`
+- Normal mode Enter opens Morgen (URL from `task_open_url_template`)
+- Alt+Enter copies task ID when supported by Ulauncher
 
 ---
 
