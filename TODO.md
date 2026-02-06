@@ -3,7 +3,7 @@
 Current task list and development roadmap.
 
 **Last Updated**: 2026-02-06
-**Current Version**: v0.6.6 (Phase 6 Complete)
+**Current Version**: v1.0.0 (Phase 7 In Progress)
 **Current Branch**: `develop`
 
 ## Release Checklist (Repeat Every Feature/Fix)
@@ -74,7 +74,7 @@ Use this checklist **every time** you implement a feature or fix (not just once 
   - [x] Mock API tests (+v1.0.0)
 
 - [ ] Prepare v1.0.0 release
-  - [ ] Update `manifest.json` to v1.0.0
+  - [ ] Confirm versioning approach (no version field in `extension/manifest.json`; release version tracked in `CHANGELOG.md`/docs)
   - [ ] Update `CHANGELOG.md`
   - [ ] Merge to `main` branch
   - [ ] Tag release: `v1.0.0`
