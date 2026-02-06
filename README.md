@@ -52,11 +52,10 @@ This project integrates Morgen's task management system with Ulauncher, a fast a
 │   │   └── icon.png              # Extension icon
 │   │
 │   ├── src/                      # Source modules (Phase 2+)
-│   │   ├── morgen_api.py         # Morgen API client (planned)
-│   │   ├── task_manager.py       # Task business logic (planned)
-│   │   ├── cache.py              # Task caching (planned)
-│   │   ├── formatter.py          # Display formatting (planned)
-│   │   └── date_parser.py        # Natural language dates (planned)
+│   │   ├── morgen_api.py         # Morgen API client
+│   │   ├── cache.py              # Task caching
+│   │   ├── formatter.py          # Display formatting
+│   │   └── date_parser.py        # Natural language dates
 │   │
 │   ├── logs/                     # Development tracking
 │   │   ├── dev_log.md           # Daily development journal
@@ -64,22 +63,20 @@ This project integrates Morgen's task management system with Ulauncher, a fast a
 │   │   └── improvements.md      # Future enhancement ideas
 │   │
 │   ├── tests/                    # Test files (Phase 7)
-│   │   ├── test_api.py          # API tests (planned)
-│   │   └── test_date_parser.py  # Date parser tests (planned)
+│   │   ├── test_morgen_api.py    # Mocked API tests
+│   │   ├── test_date_parser.py   # Date parser tests
+│   │   └── test_formatter.py     # Formatter tests
 │   │
 │   └── docs/                     # Additional documentation
-│       ├── API_REFERENCE.md     # Morgen API quick reference (planned)
-│       └── USER_GUIDE.md        # Detailed user guide (planned)
-│
-└── development/                  # Development workspace
-    ├── research/                 # Research notes and findings
-    ├── prototypes/               # Experimental code
-    └── scratch/                  # Temporary testing files
+│       ├── API_REFERENCE.md      # Morgen API quick reference
+│       └── USER_GUIDE.md         # Detailed user guide
 
 Additional files:
 ├── (Morgen) Tasks - Morgen Developer Documentation.pdf
 └── .git/                        # Git repository
 ```
+
+Note: the `development/` workspace exists on the `develop` branch only (it is not included on `main`).
 
 ## Installation
 

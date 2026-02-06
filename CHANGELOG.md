@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - (placeholder)
 
 ### Changed
-- (placeholder)
+- Repo: `development/` is now `develop`-only; added `releases/` notes folder
 
 ### Fixed
 - (placeholder)

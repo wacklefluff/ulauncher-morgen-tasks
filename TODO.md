@@ -82,6 +82,7 @@ Use this checklist **every time** you implement a feature or fix (not just once 
 - [ ] Optional: Publish
   - [ ] Create GitHub repository
   - [x] Add screenshots to README (+v1.0.0)
+  - [x] Keep `development/` on `develop` only (+v1.0.0)
   - [ ] Submit to Ulauncher extensions directory
 
 #### Suggestions (Post v1.0.0)
