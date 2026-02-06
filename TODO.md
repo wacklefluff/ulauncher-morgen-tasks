@@ -71,7 +71,7 @@ Use this checklist **every time** you implement a feature or fix (not just once 
 - [ ] Write unit tests
   - [x] Tests for date parser (+v1.0.0)
   - [x] Tests for formatter (+v1.0.0)
-  - [ ] Mock API tests
+  - [x] Mock API tests (+v1.0.0)
 
 - [ ] Prepare v1.0.0 release
   - [ ] Update `manifest.json` to v1.0.0

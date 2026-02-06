@@ -34,6 +34,26 @@
 
 ---
 
+## 2026-02-06 (Session 14)
+
+**Goals**:
+- Add mock API unit tests (no network)
+
+**Accomplished**:
+- Added unit tests for `MorgenAPIClient` with mocked `urllib.request.urlopen`:
+  - Success JSON parsing
+  - HTTP error mapping (401/429/400/500)
+  - Network error mapping (URLError)
+  - Invalid JSON response handling
+  - `list_tasks()` limit capping to 100
+  - `create_task()` validation (priority range, due format)
+
+**Files Changed**:
+- `extension/tests/test_morgen_api.py` (new)
+- `TODO.md` - check off mock API test item
+
+---
+
 ## 2026-02-06 (Session 11)
 
 **Goals**:
