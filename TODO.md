@@ -3,8 +3,8 @@
 Current task list and development roadmap.
 
 **Last Updated**: 2026-02-06
-**Current Version**: v1.0.0 (Phase 7 Complete)
-**Current Branch**: `main`
+**Current Version**: v1.0.0 (Publish In Progress)
+**Current Branch**: `develop`
 
 ## Release Checklist (Repeat Every Feature/Fix)
 
@@ -39,50 +39,40 @@ Use this checklist **every time** you implement a feature or fix (not just once 
 
 ## Immediate Next Steps
 
-### Phase 7: Testing & Release
+### Publish (v1.0.0)
 
-- [x] Manual testing — 60 tests executed, results in `development/research/test_plan_v1.0.0_2026-02-06.md`
-  - [x] Test all commands
-  - [x] Test error scenarios
-  - [x] Test offline behavior
-  - [x] Test with empty task list (empty cache file) (+v1.0.0)
-  - [x] Follow manual test plan protocol
+Reference: `development/research/publish_plan_v1.0.0_2026-02-06.md`
 
-#### Bugs (Must Fix for v1.0.0)
+- [x] **P01** Repo metadata (manifest `developer_url`, etc.) (+v1.0.0)
+- [x] **P02** Icon + screenshots (+v1.0.0)
+- [x] **P03** Branch/tag policy: `main` stable, `develop` includes `development/` (+v1.0.0)
 
-- [x] **FIX-01** (T07): Search word order matters — should be order-independent
-- [x] **FIX-02** (T15): Day-of-week date parsing (`@friday`) doesn't work
-- [x] **FIX-03** (T16-T18): Named priorities (`!high`, `!medium`, `!low`) don't work
-- [x] **FIX-04** (T19-T20): Priority shorthands (`!!` and `!`) don't work
-- [x] **FIX-05** (T21): Due date + priority combo fails (priority included in title)
-- [x] **FIX-06** (T44): Invalid priority (`!invalid`) silently accepted
-- [x] **FIX-07** (T51 note): `@yesterday` not supported in date parser
+- [ ] **P04** Create GitHub repo + push
+  - [ ] Create empty GitHub repo (no README/license via GitHub UI)
+  - [ ] `git remote add origin <YOUR_GITHUB_REPO_URL>`
+  - [ ] `git push -u origin main`
+  - [ ] `git push -u origin develop`
+  - [ ] `git push origin --tags`
+  - [ ] Set default branch to `main` on GitHub
 
-#### Enhancements (Should Fix for v1.0.0)
+- [ ] **P05** Verify install from GitHub URL
+  - [ ] Ulauncher: Preferences → Extensions → “Add extension” → paste repo URL
+  - [ ] Restart: `pkill ulauncher && ulauncher -v`
+  - [ ] Smoke test: list/search, refresh one-shot, create, icon visible
 
-- [x] **ENH-01** (T03): Remove "... and X more" truncation message
-- [x] **ENH-02** (T03): Adaptive display mode (>5 results → fzf-style compact single-line via `ExtensionSmallResultItem`, ≤5 → normal with subtitles)
-- [x] **ENH-03** (T43): Simplify invalid date error message
-- [x] **ENH-04** (T24): Strip surrounding quotes from task title
+- [ ] **P06** Submit to Ulauncher directory (optional)
+  - [ ] Prepare: repo URL, short description, keywords/category, screenshots, icon
+  - [ ] Submit via ext.ulauncher.io (or current recommended method)
 
-#### After Fixes
+- [ ] **P07** Post-publish cleanup (optional)
+  - [ ] Keep troubleshooting accurate (API key, rate limit, runtime log)
+  - [ ] Use GitHub Releases for binaries/archives (avoid committing zips into repo)
 
-- [x] Re-test all failed items (T07, T15-T21, T44, ENH-02)
-- [x] Write unit tests (+v1.0.0)
-  - [x] Tests for date parser (+v1.0.0)
-  - [x] Tests for formatter (+v1.0.0)
-  - [x] Mock API tests (+v1.0.0)
+### Release Status (v1.0.0)
 
-- [x] Prepare v1.0.0 release (+v1.0.0)
-  - [x] Confirm versioning approach (no version field in `extension/manifest.json`; release version tracked in `CHANGELOG.md`/docs)
-  - [x] Update `CHANGELOG.md` (+v1.0.0)
-  - [x] Create `main` branch (+v1.0.0)
-  - [x] Tag release: `v1.0.0` (+v1.0.0)
-
-- [ ] Optional: Publish
-  - [ ] Create GitHub repository
-  - [x] Add screenshots to README (+v1.0.0)
-  - [ ] Submit to Ulauncher extensions directory
+- [x] Manual testing: `development/research/test_plan_v1.0.0_2026-02-06.md` (+v1.0.0)
+- [x] Empty-task-list manual tests: `development/research/test_plan_v1.0.0_empty_tasks_2026-02-06.md` (+v1.0.0)
+- [x] Unit tests: `nix-shell --run "pytest -q"` (+v1.0.0)
 
 #### Suggestions (Post v1.0.0)
 
