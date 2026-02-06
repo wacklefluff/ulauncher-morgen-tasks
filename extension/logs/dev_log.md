@@ -1,5 +1,23 @@
 # Development Log
 
+## 2026-02-06 (Session 12)
+
+**Goals**:
+- Close remaining manual test gap for empty task list UX
+
+**Accomplished**:
+- Added dev preference `dev_empty_tasks` to simulate a 0-task account (no API calls)
+- Updated empty-state UI message to explain dev-empty behavior when enabled
+- Added manual test plan for the empty-task-list scenario: `development/research/test_plan_v1.0.0_empty_tasks_2026-02-06.md`
+
+**Files Changed**:
+- `extension/manifest.json` - add dev empty-task-list preference
+- `extension/main.py` - bypass API/cache when dev-empty is enabled
+- `development/research/test_plan_v1.0.0_empty_tasks_2026-02-06.md` - new empty-list test plan
+- `TODO.md` - link to the new empty-list test plan
+
+---
+
 ## 2026-02-06 (Session 11)
 
 **Goals**:

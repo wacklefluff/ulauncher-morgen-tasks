@@ -29,6 +29,13 @@
       "name": "Cache Duration (seconds)",
       "description": "How long to cache task list (default: 600 seconds / 10 minutes)",
       "default_value": "600"
+    },
+    {
+      "id": "dev_empty_tasks",
+      "type": "input",
+      "name": "Dev: Simulate empty task list (0/1)",
+      "description": "Developer option: when set to 1/true, list/search behaves as if there are zero tasks (no API calls).",
+      "default_value": "0"
     }
   ]
 }
