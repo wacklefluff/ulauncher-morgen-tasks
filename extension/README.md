@@ -26,9 +26,10 @@ Manage your Morgen tasks directly from Ulauncher - list, search, and create task
 3. Open Ulauncher preferences (Extensions tab) and configure:
    - **Keyword**: `mg` (default, customizable)
    - **New Task Shortcut Keyword**: `mgn` (optional; creates tasks directly)
-   - **API Key**: Your Morgen API key from https://platform.morgen.so
-   - **Cache Duration**: Seconds to cache tasks (default: 600)
-   - **Dev Tools Enabled (1/0)**: Show/hide `mg dev ...` commands (default: `1`)
+  - **API Key**: Your Morgen API key from https://platform.morgen.so
+  - **Cache Duration**: Seconds to cache tasks (default: 600)
+  - **Manual List Map 1-5 (Name + List ID)**: Optional manual id->name mappings when API payloads only provide `taskListId`
+  - **Dev Tools Enabled (1/0)**: Show/hide `mg dev ...` commands (default: `1`)
 
 ### Where Your API Key Is Stored
 

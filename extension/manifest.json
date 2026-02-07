@@ -38,6 +38,76 @@
       "default_value": "600"
     },
     {
+      "id": "manual_list_name_1",
+      "type": "input",
+      "name": "Manual List Map 1 - Name",
+      "description": "Optional manual label for a list ID mapping (slot 1).",
+      "default_value": ""
+    },
+    {
+      "id": "manual_list_id_1",
+      "type": "input",
+      "name": "Manual List Map 1 - List ID",
+      "description": "Full taskListId value to map to slot 1 name.",
+      "default_value": ""
+    },
+    {
+      "id": "manual_list_name_2",
+      "type": "input",
+      "name": "Manual List Map 2 - Name",
+      "description": "Optional manual label for a list ID mapping (slot 2).",
+      "default_value": ""
+    },
+    {
+      "id": "manual_list_id_2",
+      "type": "input",
+      "name": "Manual List Map 2 - List ID",
+      "description": "Full taskListId value to map to slot 2 name.",
+      "default_value": ""
+    },
+    {
+      "id": "manual_list_name_3",
+      "type": "input",
+      "name": "Manual List Map 3 - Name",
+      "description": "Optional manual label for a list ID mapping (slot 3).",
+      "default_value": ""
+    },
+    {
+      "id": "manual_list_id_3",
+      "type": "input",
+      "name": "Manual List Map 3 - List ID",
+      "description": "Full taskListId value to map to slot 3 name.",
+      "default_value": ""
+    },
+    {
+      "id": "manual_list_name_4",
+      "type": "input",
+      "name": "Manual List Map 4 - Name",
+      "description": "Optional manual label for a list ID mapping (slot 4).",
+      "default_value": ""
+    },
+    {
+      "id": "manual_list_id_4",
+      "type": "input",
+      "name": "Manual List Map 4 - List ID",
+      "description": "Full taskListId value to map to slot 4 name.",
+      "default_value": ""
+    },
+    {
+      "id": "manual_list_name_5",
+      "type": "input",
+      "name": "Manual List Map 5 - Name",
+      "description": "Optional manual label for a list ID mapping (slot 5).",
+      "default_value": ""
+    },
+    {
+      "id": "manual_list_id_5",
+      "type": "input",
+      "name": "Manual List Map 5 - List ID",
+      "description": "Full taskListId value to map to slot 5 name.",
+      "default_value": ""
+    },
+    {
       "id": "dev_tools_enabled",
       "type": "input",
       "name": "Dev Tools Enabled (1/0)",

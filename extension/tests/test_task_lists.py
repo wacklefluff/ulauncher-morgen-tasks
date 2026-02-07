@@ -4,6 +4,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from task_lists import (
+    build_manual_list_name_maps,
     build_container_name_maps,
     get_task_list_ref,
     group_tasks_by_list,
@@ -122,3 +123,24 @@ def test_matches_container_id_is_case_insensitive_exact_match():
     assert matches_container_id("INBOX", "inbox") is True
     assert matches_container_id("abc-123@morgen.so", "ABC-123@MORGEN.SO") is True
     assert matches_container_id("abc-123", "abc") is False
+
+
+def test_build_manual_list_name_maps_reads_five_slots():
+    prefs = {
+        "manual_list_name_1": "Inbox",
+        "manual_list_id_1": "tl-inbox",
+        "manual_list_name_2": "Work",
+        "manual_list_id_2": "tl-work",
+        "manual_list_name_3": "",
+        "manual_list_id_3": "tl-unused",
+        "manual_list_name_4": "Personal",
+        "manual_list_id_4": "",
+        "manual_list_name_5": "Errands",
+        "manual_list_id_5": "tl-errands",
+    }
+    maps = build_manual_list_name_maps(prefs, slots=5)
+    assert maps["list"] == {
+        "tl-inbox": "Inbox",
+        "tl-work": "Work",
+        "tl-errands": "Errands",
+    }

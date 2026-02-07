@@ -68,6 +68,28 @@ def build_container_name_maps(api_response: dict) -> dict[str, dict[str, str]]:
     return maps
 
 
+def build_manual_list_name_maps(preferences: dict, *, slots: int = 5) -> dict[str, dict[str, str]]:
+    """
+    Build manual list name maps from extension preferences.
+
+    Expected preference ids:
+      - manual_list_name_<n>
+      - manual_list_id_<n>
+    where n is 1..slots.
+    """
+    maps: dict[str, dict[str, str]] = {"list": {}, "project": {}, "space": {}}
+    if not isinstance(preferences, dict):
+        return maps
+
+    for idx in range(1, slots + 1):
+        name = str(preferences.get(f"manual_list_name_{idx}", "") or "").strip()
+        list_id = str(preferences.get(f"manual_list_id_{idx}", "") or "").strip()
+        if name and list_id:
+            maps["list"][list_id] = name
+
+    return maps
+
+
 def get_task_list_ref(task: dict, *, name_maps: dict[str, dict[str, str]] | None = None) -> TaskListRef:
     """
     Best-effort extraction of list/container identity from a task dict.

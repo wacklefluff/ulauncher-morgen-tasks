@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added due-filter autocomplete suggestions while typing search filters (for example `due`, `due:to`).
 - Added `--` shortcut for low priority in create flow (`mg new <title> --`).
 - Overdue task title marker now uses `⚠` instead of the `OVERDUE` text prefix.
+- Added 5 manual list name-map slots in extension settings (`Name` + full `taskListId`) for user-defined id->name resolution.
 - New tooling for seeding test data:
   - `development/tools/create_dummy_morgen_tasks.py` (creates real tasks via API key)
   - `extension/src/dev_dummy_tasks.py` (shared dummy payload generator)

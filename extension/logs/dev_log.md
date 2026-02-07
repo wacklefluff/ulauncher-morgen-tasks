@@ -1,5 +1,31 @@
 # Development Log
 
+## 2026-02-07 (Session 39)
+
+**Goals**:
+- Add temporary manual list name-map settings (5 slots)
+
+**Accomplished**:
+- Added manual mapping preferences in `extension/manifest.json`:
+  - `manual_list_name_1..5`
+  - `manual_list_id_1..5`
+- Implemented manual map ingestion and merge:
+  - `extension/src/task_lists.py`: `build_manual_list_name_maps()`
+  - `extension/main.py`: merges cache/API maps with manual maps for runtime resolution
+  - Manual list mappings override cache/API names for matching ids
+- Updated tests:
+  - `extension/tests/test_task_lists.py` (manual map builder coverage)
+- Updated docs/tracking:
+  - `extension/README.md`
+  - `CHANGELOG.md`
+  - `TODO.md` (temporary workaround noted under v1.2.0 roadmap)
+
+**Automated Tests**:
+- `python -m py_compile extension/main.py extension/src/task_lists.py extension/tests/test_task_lists.py`: PASS
+- `nix-shell --run "pytest -q"`: PASS (57 tests)
+
+---
+
 ## 2026-02-07 (Session 38)
 
 **Goals**:

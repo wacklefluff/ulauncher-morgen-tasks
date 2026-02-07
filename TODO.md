@@ -60,6 +60,7 @@ Candidates — pick items to commit to this release:
 - [x] Filter tasks by priority/due date (+v1.2.0)
   - [x] Add `--` low-priority shortcut in create flow (+v1.2.0)
 - [ ] Task list metadata enrichment (resolve user-friendly names when API only returns ids)
+  - [x] Temporary workaround: manual name-map preferences (5 slots, `Name` + full `taskListId`) (+v1.2.0)
 - [x] Make first dropdown item the actionable "Create" option so Enter creates the task immediately (+v1.2.0)
 - [x] Due-date autocomplete: typing `@` shows a dropdown with date suggestions (e.g. `@to` suggests "today", "tomorrow") (+v1.2.0)
   - [x] Add `next-month` suggestion (+v1.2.0)

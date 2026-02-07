@@ -46,7 +46,13 @@ from src.dev_dummy_tasks import (
     DEFAULT_DUMMY_TITLE_PREFIX,
     build_dummy_task_specs,
 )
-from src.task_lists import group_tasks_by_list, get_task_list_ref, matches_list_name, matches_container_id
+from src.task_lists import (
+    build_manual_list_name_maps,
+    group_tasks_by_list,
+    get_task_list_ref,
+    matches_list_name,
+    matches_container_id,
+)
 from src.task_filters import (
     parse_query_filters,
     matches_task_filters,
@@ -261,7 +267,7 @@ class KeywordQueryEventListener(EventListener):
 
             list_match_notice = None
             if list_filter:
-                name_maps = extension.cache.get_container_name_maps() if extension.cache else {}
+                name_maps = self._get_name_maps(extension)
                 tasks, list_match_notice = self._filter_tasks_by_container(
                     tasks,
                     list_filter,
@@ -342,7 +348,7 @@ class KeywordQueryEventListener(EventListener):
                 display_tasks = filtered_tasks[:max_display]
 
                 with _timed(f"format_{len(display_tasks)}_tasks"):
-                    name_maps = extension.cache.get_container_name_maps() if extension.cache else {}
+                    name_maps = self._get_name_maps(extension)
                     for task in display_tasks:
                         task_id = task.get("id") or ""
                         list_ref = get_task_list_ref(task, name_maps=name_maps)
@@ -459,6 +465,19 @@ class KeywordQueryEventListener(EventListener):
         if isinstance(kw, str):
             return kw
         return ""
+
+    def _get_name_maps(self, extension) -> dict[str, dict[str, str]]:
+        cache_maps = extension.cache.get_container_name_maps() if extension.cache else {"list": {}, "project": {}, "space": {}}
+        manual_maps = build_manual_list_name_maps(getattr(extension, "preferences", {}) or {}, slots=5)
+
+        merged = {
+            "list": dict(cache_maps.get("list") or {}),
+            "project": dict(cache_maps.get("project") or {}),
+            "space": dict(cache_maps.get("space") or {}),
+        }
+        # Manual maps override cache/API names when both exist.
+        merged["list"].update(manual_maps.get("list") or {})
+        return merged
 
     def _maybe_build_help_flow(self, raw_query: str, extension):
         if not raw_query:
@@ -591,7 +610,7 @@ class KeywordQueryEventListener(EventListener):
                 suggestions=['Try "mg" first, or "mg refresh".', 'Run "mg debug" for logs.'],
             )
 
-        name_maps = extension.cache.get_container_name_maps() if extension.cache else {}
+        name_maps = self._get_name_maps(extension)
         grouped = group_tasks_by_list(tasks, name_maps=name_maps)
         if container_kind:
             grouped = [(ref, count) for ref, count in grouped if ref.kind == container_kind]
@@ -1497,7 +1516,7 @@ class ItemEnterEventListener(EventListener):
                         break
 
                 try:
-                    name_maps = extension.cache.get_container_name_maps() if extension.cache else {}
+                    name_maps = KeywordQueryEventListener()._get_name_maps(extension)
                 except Exception:
                     name_maps = {}
 
@@ -1539,7 +1558,7 @@ class ItemEnterEventListener(EventListener):
                 kind_label = KeywordQueryEventListener()._container_label(container_kind)
                 list_label = list_name or list_id or kind_label
                 filtered = []
-                name_maps = extension.cache.get_container_name_maps() if extension.cache else {}
+                name_maps = view._get_name_maps(extension)
                 for t in tasks:
                     ref = get_task_list_ref(t, name_maps=name_maps)
                     if container_kind and ref.kind != container_kind:
