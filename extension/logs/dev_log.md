@@ -1,5 +1,24 @@
 # Development Log
 
+## 2026-02-07 (Session 23)
+
+**Goals**:
+- Remove "Task Open URL Template" from Ulauncher extension settings
+
+**Accomplished**:
+- Removed `task_open_url_template` preference from `extension/manifest.json`
+- Updated `extension/main.py` to always open `https://web.morgen.so` on task Enter
+- Removed stale docs references in:
+  - `extension/README.md`
+  - `CHANGELOG.md`
+  - `TODO.md`
+- Updated normal-mode task Enter behavior to no-op (`HideWindowAction`) while keeping done-mode Enter and Alt+Enter copy behavior
+
+**Automated Tests**:
+- `nix-shell --run "pytest -q"`: PASS (40 tests)
+
+---
+
 ## 2026-02-07 (Session 22)
 
 **Goals**:

@@ -60,7 +60,7 @@ Use this checklist **every time** you implement a feature or fix (not just once 
 - API: `POST /v3/tasks/close` with `{"id": "<TASK_ID>"}` → typically 204 No Content
 
 **Open Morgen on Enter** — `extension/main.py` + `extension/manifest.json`
-- Normal mode Enter opens Morgen (URL from `task_open_url_template`)
+- Normal mode Enter currently does nothing (intentional temporary behavior)
 - Alt+Enter copies task ID when supported by Ulauncher
 
 **Task lists** — `extension/main.py` + `extension/src/task_lists.py`
@@ -78,7 +78,7 @@ Use this checklist **every time** you implement a feature or fix (not just once 
 Items not scheduled for v1.1.0. May be picked up in future versions.
 
 - [x] **SUG-01** (T02): Fix welcome screen when typing `mg` with no space — **won't fix** (Ulauncher limitation)
-- [ ] **SUG-03** (T47): Only enable search optimization for 200+ tasks
+- [ ] **SUG-03** (T47): Only enable search optimization for 200+ tasks. first access whether it makes sense to have a treshold or should everything be optimised?
 - [ ] **VIM-like mode**: Alt+J/K navigation (low priority) — not natively supported by Ulauncher v5 (requires system-level key remap)
 - [ ] Background refresh
 - [ ] Lazy load task details

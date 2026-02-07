@@ -122,10 +122,7 @@ class KeywordQueryEventListener(EventListener):
         # Get preferences
         api_key = extension.preferences.get("api_key", "").strip()
         cache_ttl_str = extension.preferences.get("cache_ttl", "600")
-        task_open_url_template = (extension.preferences.get("task_open_url_template") or "").strip()
         new_task_keyword = (extension.preferences.get("mg_new_keyword") or "").strip()
-        if not task_open_url_template:
-            task_open_url_template = "https://web.morgen.so"
 
         try:
             cache_ttl = int(cache_ttl_str)
@@ -224,7 +221,7 @@ class KeywordQueryEventListener(EventListener):
             if done_mode:
                 enter_hint = "Enter: mark task done"
             else:
-                enter_hint = "Enter: open task"
+                enter_hint = "Enter: no action"
 
             if list_filter and container_kind:
                 list_suffix = f" — {self._container_label(container_kind)}: {list_filter}"
@@ -260,7 +257,7 @@ class KeywordQueryEventListener(EventListener):
                         if done_mode:
                             on_enter = self._get_complete_task_action(task)
                         else:
-                            on_enter = self._get_task_action(task_id, task_open_url_template)
+                            on_enter = self._get_task_action(task_id)
 
                         on_alt_enter = None
                         if (not done_mode) and task_id and CopyToClipboardAction is not None:
@@ -443,7 +440,7 @@ class KeywordQueryEventListener(EventListener):
         items.append(ExtensionResultItem(
             icon="images/icon.png",
             name="Task item Enter behavior",
-            description='Normal mode: Enter opens task (Alt+Enter copies ID, if supported). Done mode ("mg d"): Enter marks the task done.',
+            description='Normal mode: Enter does nothing (Alt+Enter copies ID, if supported). Done mode ("mg d"): Enter marks the task done.',
             on_enter=HideWindowAction(),
         ))
 
@@ -966,24 +963,12 @@ class KeywordQueryEventListener(EventListener):
 
         return filtered
 
-    def _get_task_action(self, task_id: str, open_url_template: str):
+    def _get_task_action(self, task_id: str):
         task_id = (task_id or "").strip()
         if not task_id:
             return HideWindowAction()
 
-        if OpenAction is not None:
-            try:
-                url = (open_url_template or "").strip() or "https://web.morgen.so"
-                return OpenAction(url)
-            except Exception:
-                return HideWindowAction()
-
-        if CopyToClipboardAction is not None:
-            try:
-                return CopyToClipboardAction(task_id)
-            except Exception:
-                return HideWindowAction()
-
+        # Requested behavior: task Enter in normal mode should be a no-op.
         return HideWindowAction()
 
     def _result_item(self, *, icon: str, name: str, description: str, on_enter, on_alt_enter=None):
@@ -1200,7 +1185,6 @@ class ItemEnterEventListener(EventListener):
 
         api_key = extension.preferences.get("api_key", "").strip()
         cache_ttl_str = extension.preferences.get("cache_ttl", "600")
-        task_open_url_template = (extension.preferences.get("task_open_url_template") or "").strip() or "https://web.morgen.so"
         try:
             cache_ttl = int(cache_ttl_str)
         except ValueError:
@@ -1318,7 +1302,7 @@ class ItemEnterEventListener(EventListener):
                     ExtensionResultItem(
                         icon="images/icon.png",
                         name=f"Morgen Tasks — {list_label} ({len(filtered)})",
-                        description='Enter: open task | Tip: type "mg lists", "mg project", or "mg space" to pick another container',
+                        description='Enter: no action | Tip: type "mg lists", "mg project", or "mg space" to pick another container',
                         on_enter=HideWindowAction(),
                     )
                 ]
@@ -1338,7 +1322,7 @@ class ItemEnterEventListener(EventListener):
 
                 for t in display_tasks:
                     tid = (t.get("id") or "").strip()
-                    on_enter = view._get_task_action(tid, task_open_url_template)
+                    on_enter = view._get_task_action(tid)
                     on_alt_enter = None
                     if tid and CopyToClipboardAction is not None:
                         try:

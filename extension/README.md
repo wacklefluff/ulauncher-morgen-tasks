@@ -28,7 +28,6 @@ Manage your Morgen tasks directly from Ulauncher - list, search, and create task
    - **New Task Shortcut Keyword**: `mgn` (optional; creates tasks directly)
    - **API Key**: Your Morgen API key from https://platform.morgen.so
    - **Cache Duration**: Seconds to cache tasks (default: 600)
-   - **Task Open URL Template**: URL opened on task selection (opens Morgen; no official per-task deep link support)
 
 ### Where Your API Key Is Stored
 
@@ -82,7 +81,7 @@ This extension reads the key via `extension.preferences` at runtime and does not
 
 ### Task Actions
 
-- `Enter` on a task: Open in Morgen (uses "Task Open URL Template" preference; default: `https://web.morgen.so`)
+- `Enter` on a task (normal mode): No action
 - `Alt+Enter` on a task: Copy task ID (if supported by your Ulauncher version)
 - `Enter` in done mode (`mg d ...`): Mark task as done
 

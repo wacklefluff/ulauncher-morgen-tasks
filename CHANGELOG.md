@@ -11,7 +11,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Published to GitHub: https://github.com/wacklefluff/ulauncher-morgen-tasks
 - `mg debug` command: dedicated screen for runtime log access (open/copy log path)
 - `mg d <query>` / `mg done <query>`: search tasks and press Enter to mark selected task as done
-- Preference `task_open_url_template` to control what opens on task selection
 - Optional shortcut keyword preference `mg_new_keyword` (default: `mgn`) to create tasks without typing `new`
 - Task lists (when available from API/task fields): `mg lists` and `mg in <list> [query]`
 - Kind-specific container commands for payload discovery/testing:
@@ -29,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Selecting a task now opens Morgen (Alt+Enter copies task ID when supported)
 - Morgen API client now handles empty (204 No Content) responses
 - Task list extraction now prioritizes `taskListId`/`taskListName` and `integrationId` fallback; legacy `listId`/`projectId`/`spaceId` field parsing was removed
+- Normal-mode task Enter now performs no action (done mode Enter still marks task complete; Alt+Enter still copies task id when supported)
 
 ## [1.0.0] - 2026-02-06
 
