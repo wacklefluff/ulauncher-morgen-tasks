@@ -49,7 +49,6 @@ Candidates — pick items to commit to this release:
 
 ### From Backlog
 - [ ] **SUG-03**: Search optimization threshold (evaluate whether 200+ cutoff makes sense)
-- [ ] Background refresh (refresh cache in background without blocking UI)
 
 ### From Future Enhancements (High)
 - [ ] Filter tasks by priority/due date
@@ -99,7 +98,7 @@ See `extension/logs/improvements.md` for detailed ideas.
 - [ ] Bulk operations
 - [ ] Update task details (title, due date, priority)
 - [ ] Shorter dates, writting DD-MM should be enough, it assumes first time that date occurs. so if it is may and i say 13-02 then it stores for next year
-
+- [ ] Background refresh (refresh cache in background without blocking UI). Is it really needed?
 ---
 
 ## Completed Releases
