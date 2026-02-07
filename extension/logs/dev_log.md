@@ -1,5 +1,63 @@
 # Development Log
 
+## 2026-02-07 (Session 29)
+
+**Goals**:
+- Add a dummy-task bulk-complete option under `mg dev dummy-tasks`
+
+**Accomplished**:
+- Updated dev menu in `extension/main.py`:
+  - Added `Mark dummy tasks complete` action under `mg dev dummy-tasks`
+  - Updated header text to "Dev: Dummy task tools"
+- Added new custom action flow: `complete_dummy_tasks`
+  - Fetches tasks in repeated 100-task batches
+  - Closes tasks whose title starts with `#dev Testing `
+  - Stops safely on API/network/rate-limit errors
+  - Shows summary with closed/failed counts and a possible-remaining warning when API cap may hide more tasks
+- Updated docs/tracking:
+  - `extension/README.md`
+  - `CHANGELOG.md`
+  - `TODO.md`
+  - `development/research/test_plan_v1.2.0_dummy_tasks_2026-02-07.md` (added DD06)
+
+**Manual Tests**:
+- DD06 PENDING
+
+**Automated Tests**:
+- `python -m py_compile extension/main.py`: PASS
+- `nix-shell --run "pytest -q"`: PASS (42 tests)
+
+---
+
+## 2026-02-07 (Session 28)
+
+**Goals**:
+- Remove search-index optimization and surface API list cap in UI
+
+**Accomplished**:
+- Removed search-index code path from:
+  - `extension/src/cache.py`
+  - `extension/main.py` filtering flow
+- Added UI notice when loaded task count is exactly 100:
+  - `API list limit reached (100 tasks)`
+  - Shown in normal and cached-fallback result flows
+- Updated large-dataset test coverage to match non-indexed behavior:
+  - `extension/tests/test_perf.py`
+- Updated roadmap/release docs:
+  - `CHANGELOG.md`
+  - `TODO.md` (added **Currently not Possible** section for >100 task fetch limitation)
+
+**Manual Tests**:
+- LIM01 PENDING
+- LIM02 PENDING
+- LIM03 PENDING
+
+**Automated Tests**:
+- `python -m py_compile extension/main.py extension/src/cache.py extension/tests/test_perf.py`: PASS
+- `nix-shell --run "pytest -q"`: PASS (42 tests)
+
+---
+
 ## 2026-02-07 (Session 27)
 
 **Goals**:

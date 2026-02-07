@@ -16,7 +16,6 @@ logger = logging.getLogger(__name__)
 
 _DEFAULT_CACHE_DIR = os.path.join(os.path.expanduser("~"), ".cache", "ulauncher-morgen-tasks")
 _DEFAULT_CACHE_FILE = os.path.join(_DEFAULT_CACHE_DIR, "tasks_cache.json")
-_SEARCH_INDEX_THRESHOLD = 200
 
 
 class TaskCache:
@@ -33,7 +32,6 @@ class TaskCache:
         self._cache = None
         self._timestamp = None
         self._last_updated = None  # newest task's 'updated' field, for updatedAfter
-        self._search_index = None  # pre-computed lowercase text for fast search
 
         self._load_from_disk()
 
@@ -86,38 +84,8 @@ class TaskCache:
         if updated_times:
             self._last_updated = max(updated_times)
 
-        self._build_search_index(tasks)
         logger.info("Cache updated: %d tasks stored", len(tasks))
         self._save_to_disk()
-
-    def _build_search_index(self, tasks):
-        """Pre-compute lowercase title+description for fast searching."""
-        if len(tasks) < _SEARCH_INDEX_THRESHOLD:
-            self._search_index = None
-            logger.debug(
-                "Search index skipped: %d tasks (threshold: %d)",
-                len(tasks),
-                _SEARCH_INDEX_THRESHOLD,
-            )
-            return
-
-        self._search_index = {}
-        for task in tasks:
-            task_id = task.get("id")
-            if not task_id:
-                continue
-            title = (task.get("title") or "").lower()
-            description = (task.get("description") or "").lower()
-            self._search_index[task_id] = (title, description)
-        logger.debug(
-            "Search index built: %d entries (threshold: %d)",
-            len(self._search_index),
-            _SEARCH_INDEX_THRESHOLD,
-        )
-
-    def get_search_index(self):
-        """Return pre-computed search index {task_id: (title_lower, desc_lower)}."""
-        return self._search_index
 
     def is_fresh(self):
         """True if cache exists and is within TTL."""
@@ -154,7 +122,6 @@ class TaskCache:
         self._cache = None
         self._timestamp = None
         self._last_updated = None
-        self._search_index = None
         self._delete_from_disk()
 
     def get_last_updated(self):
@@ -179,9 +146,6 @@ class TaskCache:
             tasks = cached.get("data", {}).get("tasks", [])
             updated_times = [t.get("updated") for t in tasks if t.get("updated")]
             self._last_updated = max(updated_times) if updated_times else None
-
-            # Rebuild search index from loaded cache
-            self._build_search_index(tasks)
 
             logger.info("Loaded cache from disk: %d tasks", len(tasks))
         except Exception as e:

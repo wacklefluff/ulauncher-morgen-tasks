@@ -57,3 +57,16 @@
     - Clear missing-API-key error shown
   - **Result**: [ ] PASS  [ ] FAIL  [ ] SKIP
   - **Notes**:
+
+- **DD06** — Ulauncher command marks dummy tasks as complete
+  1. Ensure at least one open dummy task exists (`mg #dev Testing`)
+  2. Type: `mg dev dummy-tasks`
+  3. Press Enter on `Mark dummy tasks complete`
+  4. Run: `mg refresh`
+  5. Search: `mg #dev Testing`
+  - **Expected**:
+    - Completion summary shows `Closed` count
+    - Matching dummy tasks are reduced/removed from active list
+    - If many tasks exist, optional warning may appear about possible remaining tasks due to 100-task batch limit
+  - **Result**: [ ] PASS  [ ] FAIL  [ ] SKIP
+  - **Notes**:

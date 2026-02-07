@@ -49,6 +49,8 @@ logger = logging.getLogger(__name__)
 _LOG_FILE_NAME = "runtime.log"
 _MAX_NORMAL = 5       # Max results in normal (detailed) display mode
 _MAX_CONDENSED = 15   # Max results in condensed (compact) display mode
+_TASK_LIST_API_LIMIT = 100
+_DUMMY_COMPLETE_MAX_ROUNDS = 20
 
 
 @contextmanager
@@ -206,6 +208,7 @@ class KeywordQueryEventListener(EventListener):
 
         try:
             tasks, cache_status = self._get_tasks(extension, force_refresh=force_refresh)
+            api_limit_reached = len(tasks) == _TASK_LIST_API_LIMIT
 
             list_match_notice = None
             if list_filter:
@@ -218,9 +221,8 @@ class KeywordQueryEventListener(EventListener):
                 )
 
             # Search filtering (title + description)
-            search_index = extension.cache.get_search_index() if extension.cache else None
             with _timed("filter_tasks"):
-                filtered_tasks = self._filter_tasks(tasks, query, search_index=search_index)
+                filtered_tasks = self._filter_tasks(tasks, query)
 
             if refresh_prefix_used:
                 items.append(self._refresh_prefix_notice(extension))
@@ -245,6 +247,8 @@ class KeywordQueryEventListener(EventListener):
                 description=f'Cache: {cache_status} | {enter_hint} | "help" for commands | "refresh"/"!" to refresh',
                 on_enter=HideWindowAction()
             ))
+            if api_limit_reached:
+                items.append(self._api_task_limit_notice())
 
             if not filtered_tasks:
                 items.append(ExtensionResultItem(
@@ -753,8 +757,8 @@ class KeywordQueryEventListener(EventListener):
         items = [
             ExtensionResultItem(
                 icon="images/icon.png",
-                name="Dev: Dummy task seeding",
-                description="Pick a batch size (creates real tasks in your Morgen account).",
+                name="Dev: Dummy task tools",
+                description="Create or complete dummy tasks in your Morgen account.",
                 on_enter=HideWindowAction(),
             )
         ]
@@ -770,6 +774,18 @@ class KeywordQueryEventListener(EventListener):
                 description='Prefix: "#dev Testing " | Enter to run',
                 on_enter=ExtensionCustomAction(payload, keep_app_open=True),
             ))
+        items.append(ExtensionResultItem(
+            icon="images/icon.png",
+            name="Mark dummy tasks complete",
+            description='Closes tasks with prefix "#dev Testing " (processed in 100-task batches).',
+            on_enter=ExtensionCustomAction(
+                {
+                    "action": "complete_dummy_tasks",
+                    "prefix": DEFAULT_DUMMY_TITLE_PREFIX,
+                },
+                keep_app_open=True,
+            ),
+        ))
         items.append(ExtensionResultItem(
             icon="images/icon.png",
             name="Cancel",
@@ -968,7 +984,7 @@ class KeywordQueryEventListener(EventListener):
 
         logger.info("Fetching tasks from API%s...", " (force refresh)" if force_refresh else "")
         with _timed("api_call"):
-            response = extension.api_client.list_tasks(limit=100)
+            response = extension.api_client.list_tasks(limit=_TASK_LIST_API_LIMIT)
         if extension.cache:
             with _timed("cache_store"):
                 extension.cache.set_tasks(response)
@@ -981,7 +997,7 @@ class KeywordQueryEventListener(EventListener):
         logger.info("API tasks loaded: %d tasks", len(tasks))
         return tasks, cache_status
 
-    def _filter_tasks(self, tasks, query: str, search_index=None):
+    def _filter_tasks(self, tasks, query: str):
         if not query:
             return tasks
 
@@ -991,28 +1007,12 @@ class KeywordQueryEventListener(EventListener):
 
         filtered = []
 
-        # Use pre-computed search index if available (O(1) lowercase lookup)
-        if search_index:
-            for task in tasks:
-                task_id = task.get("id")
-                indexed = search_index.get(task_id) if task_id else None
-                if indexed:
-                    title, description = indexed
-                else:
-                    # Fallback for tasks not in index
-                    title = (task.get("title") or "").lower()
-                    description = (task.get("description") or "").lower()
-                text = title + " " + description
-                if all(w in text for w in words):
-                    filtered.append(task)
-        else:
-            # No index: compute lowercase on the fly
-            for task in tasks:
-                title = (task.get("title") or "").lower()
-                description = (task.get("description") or "").lower()
-                text = title + " " + description
-                if all(w in text for w in words):
-                    filtered.append(task)
+        for task in tasks:
+            title = (task.get("title") or "").lower()
+            description = (task.get("description") or "").lower()
+            text = title + " " + description
+            if all(w in text for w in words):
+                filtered.append(task)
 
         return filtered
 
@@ -1089,8 +1089,7 @@ class KeywordQueryEventListener(EventListener):
             return items
 
         tasks = cached.get("data", {}).get("tasks", [])
-        search_index = extension.cache.get_search_index() if extension.cache else None
-        filtered_tasks = self._filter_tasks(tasks, query, search_index=search_index)
+        filtered_tasks = self._filter_tasks(tasks, query)
         age = extension.cache.get_age_display() if extension.cache else "unknown"
         logger.info("Fallback to cached response: %d tasks (cache age=%s)", len(tasks), age)
 
@@ -1100,6 +1099,8 @@ class KeywordQueryEventListener(EventListener):
             description=f'{len(filtered_tasks)} tasks (cache: {age})',
             on_enter=HideWindowAction()
         ))
+        if len(tasks) == _TASK_LIST_API_LIMIT:
+            items.append(self._api_task_limit_notice())
         items.extend(self._suggestion_items(suggestions))
 
         if not filtered_tasks:
@@ -1158,6 +1159,14 @@ class KeywordQueryEventListener(EventListener):
                 on_enter=HideWindowAction(),
             ))
         return items
+
+    def _api_task_limit_notice(self):
+        return ExtensionResultItem(
+            icon="images/icon.png",
+            name="API list limit reached (100 tasks)",
+            description="Morgen may have more tasks than shown. Current list endpoint response is capped at 100.",
+            on_enter=HideWindowAction(),
+        )
 
     def _runtime_log_access_items(self):
         items = []
@@ -1219,7 +1228,14 @@ class ItemEnterEventListener(EventListener):
             return HideWindowAction()
 
         action = data.get("action")
-        if action not in {"create_task", "complete_task", "show_list", "dump_task_fields", "create_dummy_tasks"}:
+        if action not in {
+            "create_task",
+            "complete_task",
+            "show_list",
+            "dump_task_fields",
+            "create_dummy_tasks",
+            "complete_dummy_tasks",
+        }:
             return HideWindowAction()
 
         title = (data.get("title") or "").strip()
@@ -1248,7 +1264,7 @@ class ItemEnterEventListener(EventListener):
         except ValueError:
             cache_ttl = 600
 
-        if not api_key and action in {"create_task", "complete_task", "create_dummy_tasks"}:
+        if not api_key and action in {"create_task", "complete_task", "create_dummy_tasks", "complete_dummy_tasks"}:
             return RenderResultListAction([ExtensionResultItem(
                 icon='images/icon.png',
                 name='Cannot run action',
@@ -1473,6 +1489,93 @@ class ItemEnterEventListener(EventListener):
                         icon="images/icon.png",
                         name="First error",
                         description=f"{first_error}",
+                        on_enter=HideWindowAction(),
+                    ))
+                items.append(ExtensionResultItem(
+                    icon="images/icon.png",
+                    name="Tip",
+                    description='Run "mg refresh" once to reload from API.',
+                    on_enter=HideWindowAction(),
+                ))
+                return RenderResultListAction(items)
+
+            if action == "complete_dummy_tasks":
+                closed = 0
+                failed = 0
+                rounds = 0
+                first_error = ""
+                likely_more = False
+
+                while rounds < _DUMMY_COMPLETE_MAX_ROUNDS:
+                    rounds += 1
+                    response = extension.api_client.list_tasks(limit=_TASK_LIST_API_LIMIT)
+                    tasks = response.get("data", {}).get("tasks", [])
+
+                    to_close = []
+                    for t in tasks:
+                        title_value = str(t.get("title") or "")
+                        if not title_value.startswith(dummy_prefix):
+                            continue
+                        if str(t.get("progress") or "").strip().lower() == "completed":
+                            continue
+                        tid = str(t.get("id") or "").strip()
+                        if tid:
+                            to_close.append(tid)
+
+                    if not to_close:
+                        if len(tasks) == _TASK_LIST_API_LIMIT:
+                            likely_more = True
+                        break
+
+                    for tid in to_close:
+                        try:
+                            extension.api_client.close_task(tid)
+                            closed += 1
+                        except (MorgenAuthError, MorgenRateLimitError, MorgenNetworkError, MorgenAPIError) as e:
+                            failed += 1
+                            first_error = first_error or str(getattr(e, "message", e))
+                            break
+                        except Exception as e:  # pragma: no cover - safety
+                            failed += 1
+                            first_error = first_error or str(e)
+                            break
+
+                    if first_error:
+                        break
+
+                if rounds >= _DUMMY_COMPLETE_MAX_ROUNDS:
+                    likely_more = True
+
+                if extension.cache:
+                    extension.cache.invalidate()
+
+                logger.info(
+                    "Dummy task completion finished (closed=%d failed=%d rounds=%d likely_more=%s)",
+                    closed,
+                    failed,
+                    rounds,
+                    likely_more,
+                )
+                items = [
+                    ExtensionResultItem(
+                        icon="images/icon.png",
+                        name="Dummy completion finished",
+                        description=f"Closed: {closed} | Failed: {failed} | Prefix: {dummy_prefix}",
+                        on_enter=HideWindowAction(),
+                    )
+                ]
+                if likely_more:
+                    items.append(ExtensionResultItem(
+                        icon="images/icon.png",
+                        name="Possible remaining dummy tasks",
+                        description="API list endpoint returns max 100; run again to continue batch completion.",
+                        on_enter=HideWindowAction(),
+                    ))
+                if first_error:
+                    items.append(ExtensionResultItem(
+                        icon="images/icon.png",
+                        name="First error",
+                        description=first_error,
                         on_enter=HideWindowAction(),
                     ))
                 items.append(ExtensionResultItem(

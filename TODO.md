@@ -23,7 +23,7 @@ Use this checklist **every time** you implement a feature or fix (not just once 
 
 ## Immediate Next Steps
 
-1. Run manual v1.2.0 tests and record PASS/FAIL by test ID (`S01-S03`, `DD01-DD05`)
+1. Run manual v1.2.0 tests and record PASS/FAIL by test ID (`DD01-DD06`, `LIM01-LIM03`)
 2. Pick any remaining v1.2.0 scope items from the roadmap below
 3. Release v1.2.0
 
@@ -49,8 +49,9 @@ Use this checklist **every time** you implement a feature or fix (not just once 
 Candidates — pick items to commit to this release:
 
 ### From Backlog
-- [x] **SUG-03**: Search optimization threshold (evaluate whether 200+ cutoff makes sense) (+v1.2.0)
 - [x] **DEV-01**: Add dummy task seeding tools (`mg dev dummy-tasks` + CLI script) (+v1.2.0)
+- [x] **DEV-02**: Add dummy-task bulk-complete action in `mg dev dummy-tasks` (+v1.2.0)
+- [x] **LIM-01**: Warn in UI when task list response hits API cap (100 tasks) (+v1.2.0)
 
 ### From Future Enhancements (High)
 - [ ] Filter tasks by priority/due date
@@ -70,6 +71,12 @@ Items not yet scheduled. May be promoted to a version roadmap.
 - [ ] Lazy load task details
 - [ ] Pagination for large result sets (Ulauncher lacks native scroll)
 - [ ] Open log file button in Ulauncher settings (blocked: preferences don't support buttons)
+
+---
+
+## Currently not Possible
+
+- [ ] Load full task history when account has more than 100 tasks. Current `GET /v3/tasks/list` usage is capped at 100 and no pagination/cursor flow is implemented.
 
 ---
 

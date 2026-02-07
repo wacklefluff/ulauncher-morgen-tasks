@@ -21,7 +21,7 @@
     - Matching tasks appear
     - Search remains word-order independent
     - No UI regressions or crashes
-  - **Result**: [ ] PASS  [ ] FAIL  [ ] SKIP
+  - **Result**: [X] PASS  [ ] FAIL  [ ] SKIP
   - **Notes**:
 
 - **S02** — Refresh + search flow remains stable
@@ -31,8 +31,8 @@
   - **Expected**:
     - Exact `mg refresh` triggers refresh
     - `mg refresh <query>` and `mg !<query>` do not force-refresh each keystroke; they behave like normal search with notice
-  - **Result**: [ ] PASS  [ ] FAIL  [ ] SKIP
-  - **Notes**:
+  - **Result**: [ ] PASS  [ ] FAIL  [X] SKIP
+  - **Notes**: I am using cached example
 
 - **S03** — Runtime log indicates threshold path (optional inspection)
   1. Run a search after refresh
