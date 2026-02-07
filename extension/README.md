@@ -48,6 +48,14 @@ This extension reads the key via `extension.preferences` at runtime and does not
 | `mg <term>` | Search tasks by title/description |
 | `mg !` | Force refresh (bypass cache) |
 | `mg refresh` | Force refresh (alternative) |
+| `mg lists` | Show all detected containers (list/project/space) |
+| `mg list` | Show list-kind containers only |
+| `mg project` | Show project-kind containers only |
+| `mg space` | Show space-kind containers only |
+| `mg in <list> [term]` | Filter/search within a list (when available) |
+| `mg list <name> [term]` | Filter/search within a specific list-kind container |
+| `mg project <name> [term]` | Filter/search within a specific project-kind container |
+| `mg space <name> [term]` | Filter/search within a specific space-kind container |
 | `mg d <term>` | Search tasks and press Enter to mark as done |
 
 ### Create Tasks

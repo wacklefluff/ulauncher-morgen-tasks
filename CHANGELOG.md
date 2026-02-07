@@ -13,6 +13,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `mg d <query>` / `mg done <query>`: search tasks and press Enter to mark selected task as done
 - Preference `task_open_url_template` to control what opens on task selection
 - Optional shortcut keyword preference `mg_new_keyword` (default: `mgn`) to create tasks without typing `new`
+- Task lists (when available from API/task fields): `mg lists` and `mg in <list> [query]`
+- Kind-specific container commands for payload discovery/testing:
+  - `mg list` / `mg project` / `mg space` (browse by container kind)
+  - `mg list <name> [query]` / `mg project <name> [query]` / `mg space <name> [query]`
+- Task-list field compatibility for real payloads using `taskListId` / `taskListName`
+- Fallback container extraction via `integrationId` when no explicit list/project/space field exists
+- Case-insensitive container-id matching for filters and list selection (e.g. `Inbox` == `inbox`)
+- `mg debug` field dump now logs sample `taskListId` and `integrationId` values
 
 ### Changed
 - Log access items ("Open runtime log", "Copy log path") moved from help/error screens to `mg debug`
@@ -20,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Tasks without a due date now show `Created: YYYY-MM-DD` in the subtitle
 - Selecting a task now opens Morgen (Alt+Enter copies task ID when supported)
 - Morgen API client now handles empty (204 No Content) responses
+- Task list extraction now prioritizes `taskListId`/`taskListName` and `integrationId` fallback; legacy `listId`/`projectId`/`spaceId` field parsing was removed
 
 ## [1.0.0] - 2026-02-06
 

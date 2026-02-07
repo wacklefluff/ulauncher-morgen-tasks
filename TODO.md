@@ -44,7 +44,7 @@ Use this checklist **every time** you implement a feature or fix (not just once 
 - [x] **SUG-04**: Show creation date when no due date available (+v1.1.0)
 - [x] **Mark tasks as complete** from Ulauncher (`mg d <query>` → Enter to complete via API) (+v1.1.0)
 - [x] **Open Morgen app** on task click (default Enter) (+v1.1.0)
-- [ ] Support for task lists
+- [x] Support for task lists (+v1.1.0)
 - [ ] Ulauncher settings
 	- [x] additional shortcut to add a new task (+v1.1.0)
 	- [ ] open log file button (blocked: Ulauncher preferences don't support buttons)
@@ -62,6 +62,14 @@ Use this checklist **every time** you implement a feature or fix (not just once 
 **Open Morgen on Enter** — `extension/main.py` + `extension/manifest.json`
 - Normal mode Enter opens Morgen (URL from `task_open_url_template`)
 - Alt+Enter copies task ID when supported by Ulauncher
+
+**Task lists** — `extension/main.py` + `extension/src/task_lists.py`
+- Commands:
+  - `mg lists` / `mg ls`
+  - `mg in <list> [query]`
+  - `mg list` / `mg project` / `mg space`
+  - `mg list <name> [query]` / `mg project <name> [query]` / `mg space <name> [query]`
+- Note: depends on list metadata being available in Morgen task payloads
 
 ---
 
@@ -84,15 +92,18 @@ See `extension/logs/improvements.md` for detailed ideas.
 
 ### High Priority
 - [ ] Filter tasks by priority/due date
-- [ ] Support for task lists
+- [ ] Task list metadata enrichment (resolve user-friendly names when API only returns ids)
 
 
 ### Medium Priority
 - [ ] Subtask creation
 - [ ] Recurring tasks support
+- [ ] Progress status indicator (add an emoji before task title)
 - [ ] Better keyboard shortcuts (Alt+Enter actions)
 - [ ] Desktop notifications for upcoming tasks
 - [ ] Parse `#<tag>` for tags
+- [ ] autocomplete words for dates (e.g. @tomorrow)
+- [ ] add a new way to create a new task if the first option of the drop down menu if pressed enter allows the current task name to be created 
 
 ### Low Priority / Nice-to-Have
 - [ ] when showing a lot of results, next page option could be on top message
@@ -101,6 +112,7 @@ See `extension/logs/improvements.md` for detailed ideas.
 - [ ] Task templates
 - [ ] Bulk operations
 - [ ] Update task details (title, due date, priority)
+- [ ] Shorter dates, writting DD-MM should be enough, it assumes first time that date occurs. so if it is may and i say 13-02 then it stores for next year
 
 ---
 

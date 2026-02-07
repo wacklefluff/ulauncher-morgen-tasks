@@ -1,5 +1,80 @@
 # Development Log
 
+## 2026-02-07 (Session 22)
+
+**Goals**:
+- Add explicit container commands so each API field path can be tested independently (`listId`/`projectId`/`spaceId`)
+
+**Accomplished**:
+- Updated list/container UX in `extension/main.py`:
+  - Added kind-specific browse commands: `mg list`, `mg project`, `mg space`
+  - Added kind-specific filter commands: `mg list <name> [query]`, `mg project <name> [query]`, `mg space <name> [query]`
+  - Kept existing commands: `mg lists`/`mg ls` and `mg in <list> [query]`
+  - Added container-kind aware labels in headers/subtitles
+- Expanded manual test plan:
+  - `development/research/test_plan_v1.1.0_task_lists_2026-02-07.md` now includes L01-L11 to validate each container path and debug field-dump checks
+- Updated docs/changelog:
+  - `extension/README.md` command table
+  - `CHANGELOG.md` (Unreleased)
+  - `TODO.md` task-list implementation notes
+- Added explicit unit coverage for reference-field extraction:
+  - `projectId` + optional `projectName`
+  - `spaceId` + optional `spaceName`
+  - File: `extension/tests/test_task_lists.py`
+- Added compatibility for Morgen payloads that use `taskListId`/`taskListName`:
+  - `extension/src/task_lists.py` now extracts list refs from `taskListId`
+  - Container name maps also ingest `data.taskLists` / `data.tasklists` when present
+- Added unit tests for `taskListId` extraction and map-based name resolution
+- Added `integrationId` fallback support in list extraction for payloads without explicit list/project/space keys
+- Added unit tests validating `integrationId` fallback and precedence rules
+- Made container-id matching case-insensitive in list filters and list selection actions
+- Enhanced `mg debug` dump to log sample `taskListId` and `integrationId` values
+- Clarified manual test L10 pass criteria for accounts without projects/spaces
+- Simplified list field support based on real payloads:
+  - Removed `listId` / `projectId` / `spaceId` extraction paths
+  - Kept `taskListId` / `taskListName` + `integrationId` fallback
+  - Updated unit tests accordingly
+
+**Manual Tests**:
+- L11 PASS (payload keys include `taskListId`; maps may be empty)
+- L01 PASS
+- L02 PASS
+- L03 PASS
+- L04 FAIL (no project metadata available in current account payload)
+- L05 PASS
+- L06 PASS
+- L07 FAIL (no project metadata available in current account payload)
+- L08 FAIL (no matching space metadata for filter in current account payload)
+- L09 PASS
+- L10 PENDING (fallback-message verification not explicitly marked)
+- L12 PASS (`integrationId` fallback grouping confirmed)
+
+**Automated Tests**:
+- `nix-shell --run "pytest -q"`: PASS (40 tests)
+
+---
+
+## 2026-02-07 (Session 21)
+
+**Goals**:
+- Add task list support (Inbox/Work/etc): list and filter
+
+**Accomplished**:
+- Added task list extraction/grouping helpers (`extension/src/task_lists.py`)
+- Added `mg lists` / `mg ls` view and `mg in <list> [query]` filtering
+- List name now shows in task subtitle when available
+- Added debug helper: "Dump cached task fields" in `mg debug`
+- Added manual test plan: `development/research/test_plan_v1.1.0_task_lists_2026-02-07.md`
+
+**Manual Tests**:
+- L01 PENDING
+- L02 PENDING
+- L03 PENDING
+- L04 PENDING
+- L05 PENDING
+
+---
+
 ## 2026-02-07 (Session 20)
 
 **Goals**:

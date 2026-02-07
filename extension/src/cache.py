@@ -54,6 +54,22 @@ class TaskCache:
         """Return full cached API response if any data exists (even if expired)."""
         return self._cache
 
+    def get_container_name_maps(self) -> dict[str, dict[str, str]]:
+        """
+        Best-effort mapping of container ids -> names.
+
+        Expected (but not guaranteed) in Morgen API responses:
+          - data.lists:    [{id, name}, ...]
+          - data.projects: [{id, name}, ...]
+          - data.spaces:   [{id, name}, ...]
+        """
+        try:
+            from src.task_lists import build_container_name_maps
+        except Exception:  # pragma: no cover - test/import environment differences
+            from task_lists import build_container_name_maps
+
+        return build_container_name_maps(self._cache or {})
+
     def set_tasks(self, api_response):
         """
         Store an API response in the cache.

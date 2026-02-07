@@ -37,6 +37,7 @@ from src.morgen_api import (
 from src.cache import TaskCache
 from src.formatter import TaskFormatter
 from src.date_parser import DateParser, DateParseError
+from src.task_lists import group_tasks_by_list, get_task_list_ref, matches_list_name, matches_container_id
 
 logger = logging.getLogger(__name__)
 
@@ -177,6 +178,11 @@ class KeywordQueryEventListener(EventListener):
             logger.info("Cache clear requested")
             return RenderResultListAction(clear_items)
 
+        container_items = self._maybe_build_container_view(raw_query, extension)
+        if container_items is not None:
+            logger.info("Showing container view")
+            return RenderResultListAction(container_items)
+
         # Phase 4: create task flow (mg new ...)
         create_items = self._maybe_build_create_flow(raw_query)
         if create_items is not None:
@@ -189,8 +195,20 @@ class KeywordQueryEventListener(EventListener):
         else:
             force_refresh, query, refresh_prefix_used = self._parse_query(raw_query)
 
+        container_kind, list_filter, query = self._parse_container_filter_command(query)
+
         try:
             tasks, cache_status = self._get_tasks(extension, force_refresh=force_refresh)
+
+            list_match_notice = None
+            if list_filter:
+                name_maps = extension.cache.get_container_name_maps() if extension.cache else {}
+                tasks, list_match_notice = self._filter_tasks_by_container(
+                    tasks,
+                    list_filter,
+                    container_kind=container_kind,
+                    name_maps=name_maps,
+                )
 
             # Search filtering (title + description)
             search_index = extension.cache.get_search_index() if extension.cache else None
@@ -199,15 +217,24 @@ class KeywordQueryEventListener(EventListener):
 
             if refresh_prefix_used:
                 items.append(self._refresh_prefix_notice(extension))
+            if list_match_notice is not None:
+                items.append(list_match_notice)
 
             # Header item: task count + cache status (+ quick help)
             if done_mode:
                 enter_hint = "Enter: mark task done"
             else:
                 enter_hint = "Enter: open task"
+
+            if list_filter and container_kind:
+                list_suffix = f" — {self._container_label(container_kind)}: {list_filter}"
+            elif list_filter:
+                list_suffix = f" — {list_filter}"
+            else:
+                list_suffix = ""
             items.append(ExtensionResultItem(
                 icon='images/icon.png',
-                name=f'{"Morgen Tasks — Done" if done_mode else "Morgen Tasks"} ({len(filtered_tasks)})',
+                name=f'{"Morgen Tasks — Done" if done_mode else "Morgen Tasks"}{list_suffix} ({len(filtered_tasks)})',
                 description=f'Cache: {cache_status} | {enter_hint} | "help" for commands | "refresh"/"!" to refresh',
                 on_enter=HideWindowAction()
             ))
@@ -226,8 +253,10 @@ class KeywordQueryEventListener(EventListener):
                 display_tasks = filtered_tasks[:max_display]
 
                 with _timed(f"format_{len(display_tasks)}_tasks"):
+                    name_maps = extension.cache.get_container_name_maps() if extension.cache else {}
                     for task in display_tasks:
                         task_id = task.get("id") or ""
+                        list_ref = get_task_list_ref(task, name_maps=name_maps)
                         if done_mode:
                             on_enter = self._get_complete_task_action(task)
                         else:
@@ -241,9 +270,12 @@ class KeywordQueryEventListener(EventListener):
                                 on_alt_enter = None
 
                         if condensed:
+                            display_name = formatter.format_for_display(task)
+                            if list_ref.name and not list_filter:
+                                display_name = f"[{list_ref.name}] {display_name}"
                             items.append(self._small_result_item(
                                 icon='images/icon.png',
-                                name=formatter.format_for_display(task),
+                                name=display_name,
                                 on_enter=on_enter,
                                 on_alt_enter=on_alt_enter,
                             ))
@@ -251,7 +283,11 @@ class KeywordQueryEventListener(EventListener):
                             items.append(self._result_item(
                                 icon='images/icon.png',
                                 name=formatter.format_for_display(task),
-                                description=formatter.format_subtitle(task),
+                            description=(
+                                f"{self._container_label(list_ref.kind)}: {list_ref.name} | {formatter.format_subtitle(task)}"
+                                if list_ref.name
+                                else formatter.format_subtitle(task)
+                            ),
                                 on_enter=on_enter,
                                 on_alt_enter=on_alt_enter,
                             ))
@@ -351,6 +387,10 @@ class KeywordQueryEventListener(EventListener):
             ("Search tasks", "mg <query>"),
             ("Force refresh", "mg !   or   mg refresh"),
             ("Create task", "mg new <title> [@due] [!priority]"),
+            ("Show lists", "mg lists"),
+            ("Filter by list", "mg in Work <query>"),
+            ("Filter by project", "mg project Work <query>"),
+            ("Filter by space", "mg space Personal <query>"),
             ("Mark task done", "mg d <query>"),
             ("Clear cache", "mg clear"),
             ("Debug / logs", "mg debug"),
@@ -409,6 +449,189 @@ class KeywordQueryEventListener(EventListener):
 
         return items
 
+    def _container_label(self, kind: str | None) -> str:
+        if kind == "project":
+            return "Project"
+        if kind == "space":
+            return "Space"
+        return "List"
+
+    def _maybe_build_container_view(self, raw_query: str, extension):
+        """
+        Build container views for:
+          - `mg lists` / `mg ls` (all containers)
+          - `mg list` / `mg project` / `mg space` (kind-specific)
+          - `mg projects` / `mg spaces`
+        """
+        if not raw_query:
+            return None
+
+        normalized = raw_query.strip().lower()
+        container_kind = None
+        if normalized in {"lists", "ls"}:
+            container_kind = None
+        elif normalized in {"list"}:
+            container_kind = "list"
+        elif normalized in {"project", "projects"}:
+            container_kind = "project"
+        elif normalized in {"space", "spaces"}:
+            container_kind = "space"
+        else:
+            return None
+
+        try:
+            tasks, cache_status = self._get_tasks(extension, force_refresh=False)
+        except Exception as e:
+            return self._error_items(
+                title="Cannot load tasks",
+                description=str(e),
+                suggestions=['Try "mg" first, or "mg refresh".', 'Run "mg debug" for logs.'],
+            )
+
+        name_maps = extension.cache.get_container_name_maps() if extension.cache else {}
+        grouped = group_tasks_by_list(tasks, name_maps=name_maps)
+        if container_kind:
+            grouped = [(ref, count) for ref, count in grouped if ref.kind == container_kind]
+
+        title = "Morgen Task Lists" if container_kind is None else f"Morgen {self._container_label(container_kind)}s"
+        pick_label = "container" if container_kind is None else self._container_label(container_kind).lower()
+        items = [
+            ExtensionResultItem(
+                icon="images/icon.png",
+                name=title,
+                description=f"Cache: {cache_status} | Select a {pick_label} to view tasks",
+                on_enter=HideWindowAction(),
+            )
+        ]
+
+        if not grouped:
+            missing_label = "list metadata" if container_kind is None else f"{self._container_label(container_kind).lower()} metadata"
+            items.append(ExtensionResultItem(
+                icon="images/icon.png",
+                name=f"No {missing_label} found",
+                description='No matching fields found on tasks. Run "mg debug" for logs.',
+                on_enter=HideWindowAction(),
+            ))
+            items.append(ExtensionResultItem(
+                icon="images/icon.png",
+                name="Tip",
+                description='If this exists in Morgen, we may need a different endpoint or extra fields. Try "mg refresh" first.',
+                on_enter=HideWindowAction(),
+            ))
+            return items
+
+        for ref, count in grouped:
+            label = ref.name or ref.list_id or "Unnamed list"
+            payload = {
+                "action": "show_list",
+                "list_id": ref.list_id,
+                "list_name": ref.name,
+                "container_kind": ref.kind,
+            }
+            kind_label = self._container_label(ref.kind).lower()
+            items.append(ExtensionResultItem(
+                icon="images/icon.png",
+                name=f"{label} ({count})",
+                description=f"Enter: show tasks in this {kind_label}",
+                on_enter=ExtensionCustomAction(payload, keep_app_open=True),
+            ))
+
+        items.append(ExtensionResultItem(
+            icon="images/icon.png",
+            name="Tip",
+            description='You can also type: mg in <list> <query> or mg project <name> <query>',
+            on_enter=HideWindowAction(),
+        ))
+
+        return items
+
+    def _parse_container_filter_command(self, query: str):
+        """
+        Parse container filtering commands:
+          - `in <list> [query]`
+          - `list <name> [query]`
+          - `project <name> [query]`
+          - `space <name> [query]`
+
+        Returns (container_kind, container_filter, remaining_query).
+        """
+        if not query:
+            return None, "", ""
+
+        stripped = query.strip()
+        parts = stripped.split(None, 2)
+        if len(parts) >= 2 and parts[0].lower() == "in":
+            list_name = parts[1].strip()
+            remaining = parts[2].strip() if len(parts) == 3 else ""
+            return None, list_name, remaining
+
+        if len(parts) >= 2 and parts[0].lower() in {"list", "project", "space"}:
+            container_kind = parts[0].lower()
+            list_name = parts[1].strip()
+            remaining = parts[2].strip() if len(parts) == 3 else ""
+            return container_kind, list_name, remaining
+
+        return None, "", query
+
+    def _filter_tasks_by_container(
+        self,
+        tasks,
+        list_filter: str,
+        *,
+        container_kind: str | None = None,
+        name_maps: dict[str, dict[str, str]] | None = None,
+    ):
+        """
+        Filter tasks down to the selected container name/id.
+
+        Returns (filtered_tasks, optional_notice_item).
+        """
+        lf = (list_filter or "").strip()
+        if not lf:
+            return tasks, None
+
+        filtered = []
+        saw_any_list_metadata = False
+        saw_matching_kind_metadata = False
+        for task in tasks or []:
+            ref = get_task_list_ref(task, name_maps=name_maps)
+            if ref.key:
+                saw_any_list_metadata = True
+            if container_kind and ref.kind == container_kind:
+                saw_matching_kind_metadata = True
+            if container_kind and ref.kind != container_kind:
+                continue
+            if ref.list_id and matches_container_id(ref.list_id, lf):
+                filtered.append(task)
+                continue
+            if ref.name and matches_list_name(ref.name, lf):
+                filtered.append(task)
+
+        if filtered:
+            return filtered, None
+
+        if (container_kind and not saw_matching_kind_metadata) or (not container_kind and not saw_any_list_metadata):
+            if container_kind:
+                unavailable_name = self._container_label(container_kind)
+            else:
+                unavailable_name = "List"
+            notice = ExtensionResultItem(
+                icon="images/icon.png",
+                name=f"{unavailable_name} filtering unavailable",
+                description='Tasks did not include matching metadata from the API. Try "mg refresh".',
+                on_enter=HideWindowAction(),
+            )
+            return [], notice
+
+        target = f"{self._container_label(container_kind).lower()} " if container_kind else ""
+        notice = ExtensionResultItem(
+            icon="images/icon.png",
+            name=f'No tasks in {target}"{lf}"',
+            description='Try "mg lists" (or mg project / mg space) to see available containers.',
+            on_enter=HideWindowAction(),
+        )
+        return [], notice
+
     def _parse_done_command(self, raw_query: str):
         """
         Parse the 'done' command.
@@ -453,6 +676,12 @@ class KeywordQueryEventListener(EventListener):
                 on_enter=HideWindowAction(),
             )
         ]
+        items.append(ExtensionResultItem(
+            icon="images/icon.png",
+            name="Dump cached task fields",
+            description="Logs sample task keys (and list-like fields) to the runtime log",
+            on_enter=ExtensionCustomAction({"action": "dump_task_fields"}, keep_app_open=True),
+        ))
         items.extend(self._runtime_log_access_items())
         return items
 
@@ -952,7 +1181,7 @@ class ItemEnterEventListener(EventListener):
             return HideWindowAction()
 
         action = data.get("action")
-        if action not in {"create_task", "complete_task"}:
+        if action not in {"create_task", "complete_task", "show_list", "dump_task_fields"}:
             return HideWindowAction()
 
         title = (data.get("title") or "").strip()
@@ -965,14 +1194,19 @@ class ItemEnterEventListener(EventListener):
         task_id = (data.get("task_id") or "").strip()
         task_title = (data.get("task_title") or "").strip()
 
+        list_id = (data.get("list_id") or "").strip() or None
+        list_name = (data.get("list_name") or "").strip() or None
+        container_kind = (data.get("container_kind") or "").strip().lower() or None
+
         api_key = extension.preferences.get("api_key", "").strip()
         cache_ttl_str = extension.preferences.get("cache_ttl", "600")
+        task_open_url_template = (extension.preferences.get("task_open_url_template") or "").strip() or "https://web.morgen.so"
         try:
             cache_ttl = int(cache_ttl_str)
         except ValueError:
             cache_ttl = 600
 
-        if not api_key:
+        if not api_key and action in {"create_task", "complete_task"}:
             return RenderResultListAction([ExtensionResultItem(
                 icon='images/icon.png',
                 name='Cannot create task',
@@ -980,13 +1214,160 @@ class ItemEnterEventListener(EventListener):
                 on_enter=HideWindowAction()
             )])
 
-        # Ensure client/cache are initialized
+        # Ensure cache is initialized (needed for list view and for invalidation on actions)
         if extension.api_client is None or extension.api_client.api_key != api_key:
-            extension.api_client = MorgenAPIClient(api_key)
+            if api_key:
+                extension.api_client = MorgenAPIClient(api_key)
         if extension.cache is None:
             extension.cache = TaskCache(ttl=cache_ttl)
 
         try:
+            if action == "dump_task_fields":
+                cached = extension.cache.get_full_response() if extension.cache else None
+                tasks = (cached or {}).get("data", {}).get("tasks", []) if isinstance(cached, dict) else []
+                data_keys = sorted(((cached or {}).get("data") or {}).keys()) if isinstance(cached, dict) else []
+
+                if not tasks:
+                    return RenderResultListAction([
+                        ExtensionResultItem(
+                            icon="images/icon.png",
+                            name="No cached tasks to inspect",
+                            description='Run "mg" (or "mg refresh") to load tasks, then try again.',
+                            on_enter=HideWindowAction(),
+                        )
+                    ])
+
+                sample = tasks[0] if isinstance(tasks[0], dict) else {}
+                keys = sorted(sample.keys()) if isinstance(sample, dict) else []
+                listish = [k for k in keys if any(s in k.lower() for s in ("list", "space", "project", "inbox"))]
+                task_list_ids = []
+                integration_ids = []
+                for t in tasks:
+                    if not isinstance(t, dict):
+                        continue
+                    tl = t.get("taskListId")
+                    if tl:
+                        tl_s = str(tl).strip()
+                        if tl_s and tl_s not in task_list_ids:
+                            task_list_ids.append(tl_s)
+                    ii = t.get("integrationId")
+                    if ii:
+                        ii_s = str(ii).strip()
+                        if ii_s and ii_s not in integration_ids:
+                            integration_ids.append(ii_s)
+                    if len(task_list_ids) >= 5 and len(integration_ids) >= 5:
+                        break
+
+                try:
+                    name_maps = extension.cache.get_container_name_maps() if extension.cache else {}
+                except Exception:
+                    name_maps = {}
+
+                logger.info("DEBUG cached task keys: %s", keys)
+                logger.info("DEBUG cached task list-like keys: %s", listish)
+                logger.info("DEBUG sample taskListId values: %s", task_list_ids or ["(none)"])
+                logger.info("DEBUG sample integrationId values: %s", integration_ids or ["(none)"])
+                logger.info("DEBUG cached data keys: %s", data_keys)
+                logger.info(
+                    "DEBUG container maps sizes: lists=%d projects=%d spaces=%d",
+                    len((name_maps.get("list") or {})),
+                    len((name_maps.get("project") or {})),
+                    len((name_maps.get("space") or {})),
+                )
+
+                preview = ", ".join(listish) if listish else "(none found)"
+                return RenderResultListAction([
+                    ExtensionResultItem(
+                        icon="images/icon.png",
+                        name="Dumped cached task fields",
+                        description=f"List-like keys: {preview} | taskListId samples: {len(task_list_ids)} | integrationId samples: {len(integration_ids)}",
+                        on_enter=HideWindowAction(),
+                    )
+                ])
+
+            if action == "show_list":
+                cached = extension.cache.get_full_response() if extension.cache else None
+                tasks = (cached or {}).get("data", {}).get("tasks", []) if isinstance(cached, dict) else []
+                if not tasks:
+                    return RenderResultListAction([
+                        ExtensionResultItem(
+                            icon="images/icon.png",
+                            name="No cached tasks available",
+                            description='Run "mg" (or "mg refresh") first, then try again.',
+                            on_enter=HideWindowAction(),
+                        )
+                    ])
+
+                kind_label = KeywordQueryEventListener()._container_label(container_kind)
+                list_label = list_name or list_id or kind_label
+                filtered = []
+                name_maps = extension.cache.get_container_name_maps() if extension.cache else {}
+                for t in tasks:
+                    ref = get_task_list_ref(t, name_maps=name_maps)
+                    if container_kind and ref.kind != container_kind:
+                        continue
+                    if list_id and matches_container_id(ref.list_id or "", list_id):
+                        filtered.append(t)
+                        continue
+                    if list_name and ref.name and matches_list_name(ref.name, list_name):
+                        filtered.append(t)
+
+                formatter = TaskFormatter()
+                view = KeywordQueryEventListener()
+                items = [
+                    ExtensionResultItem(
+                        icon="images/icon.png",
+                        name=f"Morgen Tasks — {list_label} ({len(filtered)})",
+                        description='Enter: open task | Tip: type "mg lists", "mg project", or "mg space" to pick another container',
+                        on_enter=HideWindowAction(),
+                    )
+                ]
+
+                if not filtered:
+                    items.append(ExtensionResultItem(
+                        icon="images/icon.png",
+                        name="No tasks in this list",
+                        description='Try "mg refresh" then "mg lists".',
+                        on_enter=HideWindowAction(),
+                    ))
+                    return RenderResultListAction(items)
+
+                condensed = len(filtered) > _MAX_NORMAL
+                max_display = _MAX_CONDENSED if condensed else _MAX_NORMAL
+                display_tasks = filtered[:max_display]
+
+                for t in display_tasks:
+                    tid = (t.get("id") or "").strip()
+                    on_enter = view._get_task_action(tid, task_open_url_template)
+                    on_alt_enter = None
+                    if tid and CopyToClipboardAction is not None:
+                        try:
+                            on_alt_enter = CopyToClipboardAction(tid)
+                        except Exception:
+                            on_alt_enter = None
+
+                    if condensed:
+                        items.append(view._small_result_item(
+                            icon="images/icon.png",
+                            name=formatter.format_for_display(t),
+                            on_enter=on_enter,
+                            on_alt_enter=on_alt_enter,
+                        ))
+                    else:
+                        subtitle = formatter.format_subtitle(t)
+                        ref = get_task_list_ref(t, name_maps=name_maps)
+                        if ref.name:
+                            subtitle = f"{view._container_label(ref.kind)}: {ref.name} | {subtitle}"
+                        items.append(view._result_item(
+                            icon="images/icon.png",
+                            name=formatter.format_for_display(t),
+                            description=subtitle,
+                            on_enter=on_enter,
+                            on_alt_enter=on_alt_enter,
+                        ))
+
+                return RenderResultListAction(items)
+
             if action == "create_task":
                 resp = extension.api_client.create_task(title=title, due=due, priority=priority)
                 created_id = resp.get("data", {}).get("id") or ""
