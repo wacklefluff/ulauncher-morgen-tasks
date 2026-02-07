@@ -107,6 +107,7 @@ See `extension/logs/improvements.md` for detailed ideas.
 ### Low Priority / Nice-to-Have
 - [ ] when showing a lot of results, next page option could be on top message
 - [ ] Integration with system notifications
+- [ ] For Autocomplete due or @ and `week`, `2weeks`, `3weeks`, `6weeks` 
 - [ ] Quick scheduling (time blocking)
 - [ ] Task templates
 - [ ] Bulk operations
