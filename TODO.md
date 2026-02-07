@@ -58,11 +58,14 @@ Candidates — pick items to commit to this release:
 
 ### From Future Enhancements (High)
 - [x] Filter tasks by priority/due date (+v1.2.0)
+  - [x] Add `--` low-priority shortcut in create flow (+v1.2.0)
 - [ ] Task list metadata enrichment (resolve user-friendly names when API only returns ids)
 - [x] Make first dropdown item the actionable "Create" option so Enter creates the task immediately (+v1.2.0)
 - [x] Due-date autocomplete: typing `@` shows a dropdown with date suggestions (e.g. `@to` suggests "today", "tomorrow") (+v1.2.0)
   - [x] Add `next-month` suggestion (+v1.2.0)
   - [x] Add `due:` filter autocomplete suggestions (+v1.2.0)
+  - [x] Enter on `due:` suggestions rewrites query input (+v1.2.0)
+- [x] Overdue title marker uses `⚠` instead of `OVERDUE` text (+v1.2.0)
 
 
 ---
@@ -108,6 +111,7 @@ See `extension/logs/improvements.md` for detailed ideas.
 - [ ] when showing a lot of results, next page option could be on top message
 - [ ] Integration with system notifications
 - [ ] For Autocomplete due or @ and `week`, `2weeks`, `3weeks`, `6weeks` 
+- [ ] Autocomplete `@` edge cases, if user want to first set date then priority it will not work, if date was selected with enter (perhaps not much of an issue since `!` and `!!` can be used)
 - [ ] Quick scheduling (time blocking)
 - [ ] Task templates
 - [ ] Bulk operations

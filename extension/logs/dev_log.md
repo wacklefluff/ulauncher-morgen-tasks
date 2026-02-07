@@ -1,5 +1,47 @@
 # Development Log
 
+## 2026-02-07 (Session 38)
+
+**Goals**:
+- Replace overdue title prefix text with warning symbol
+
+**Accomplished**:
+- Updated task display formatting:
+  - `extension/src/formatter.py`
+  - Overdue title prefix changed from `OVERDUE` to `⚠`
+- Updated tests/docs:
+  - `extension/tests/test_formatter.py`
+  - `extension/README.md`
+  - `CHANGELOG.md`
+
+**Automated Tests**:
+- `python -m py_compile extension/src/formatter.py extension/tests/test_formatter.py`: PASS
+- `nix-shell --run "pytest -q"`: PASS (56 tests)
+
+---
+
+## 2026-02-07 (Session 37)
+
+**Goals**:
+- Add `--` low-priority shortcut in create flow
+
+**Accomplished**:
+- Updated create parser in `extension/main.py`:
+  - `--` token now maps to low priority (`9`)
+  - Works alongside existing priority tokens (`!`, `!!`, `!1-!9`, named `!high/!medium/!low`)
+- Updated docs/tracking:
+  - `extension/README.md`
+  - `CHANGELOG.md`
+
+**Manual Tests**:
+- LP01 PENDING (`mg new <title> --` creates low-priority task)
+
+**Automated Tests**:
+- `python -m py_compile extension/main.py`: PASS
+- `nix-shell --run "pytest -q"`: PASS (56 tests)
+
+---
+
 ## 2026-02-07 (Session 36)
 
 **Goals**:

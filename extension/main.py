@@ -1057,6 +1057,7 @@ class KeywordQueryEventListener(EventListener):
         Supports:
           - @<due> (e.g. @today, @tomorrow, @friday, @2026-02-10, @15:30)
           - !<priority>: !high, !medium, !low, !1-!9, !!, !
+          - -- shortcut: low priority (9)
         """
         tokens = rest.split()
         title_parts = []
@@ -1066,6 +1067,9 @@ class KeywordQueryEventListener(EventListener):
         for token in tokens:
             if token.startswith("@") and due_token is None:
                 due_token = token[1:]
+                continue
+            if token == "--":
+                priority = 9
                 continue
             if token.startswith("!"):
                 p, err = self._parse_priority_token(token)

@@ -34,7 +34,7 @@ class TaskFormatter:
 
         parts = []
         if overdue:
-            parts.append("OVERDUE")
+            parts.append("⚠")
         if priority_icon:
             parts.append(priority_icon)
         parts.append(title)

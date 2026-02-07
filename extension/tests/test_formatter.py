@@ -32,7 +32,7 @@ def test_format_for_display_includes_overdue_and_priority():
     formatter = TaskFormatter()
     task = {"title": "Pay rent", "priority": 1, "due": "2000-01-01T00:00:00"}
     s = formatter.format_for_display(task)
-    assert s.startswith("OVERDUE !! ")
+    assert s.startswith("⚠ !! ")
     assert s.endswith("Pay rent")
 
 
