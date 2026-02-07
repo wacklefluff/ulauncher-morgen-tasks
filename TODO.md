@@ -3,8 +3,8 @@
 Current task list and development roadmap.
 
 **Last Updated**: 2026-02-07
-**Current Version**: v1.0.0 (Published)
-**Current Branch**: `develop`
+**Current Version**: v1.0.0 (Published) — v1.1.0 ready on `develop`
+**Current Branch**: `develop` (ahead 4 from origin — needs push)
 
 ## Release Checklist (Repeat Every Feature/Fix)
 
@@ -20,6 +20,13 @@ Use this checklist **every time** you implement a feature or fix (not just once 
 - [ ] Commit (and include the version in the commit message when appropriate)
 
 **Version tags**: When marking a task done, append the version it shipped in, e.g. `(+v1.1.0)`.
+
+## Immediate Next Steps
+
+1. **Push `develop`** to origin (4 commits ahead)
+2. **Smoke test** in Ulauncher: `mg`, `mg help`, `mg d <query>`, `mg lists`
+3. **Release v1.1.0**: merge develop → main, tag, push
+4. Continue **backlog** work (SUG-03 search threshold, etc.)
 
 ## Release History
 
@@ -37,7 +44,9 @@ Use this checklist **every time** you implement a feature or fix (not just once 
 
 ---
 
-## v1.1.0 Roadmap
+## v1.1.0 Roadmap — Ready for Release
+
+All planned features complete. Remaining step: push `develop`, release to `main`, tag `v1.1.0`.
 
 - [x] **SUG-02**: `mg debug` command — dedicated screen for runtime log access (+v1.1.0)
 - [x] `mg help` and `mg debug` work without API key (+v1.1.0)
@@ -45,6 +54,9 @@ Use this checklist **every time** you implement a feature or fix (not just once 
 - [x] **Mark tasks as complete** from Ulauncher (`mg d <query>` → Enter to complete via API) (+v1.1.0)
 - [x] **Open Morgen app** on task click (default Enter) (+v1.1.0)
 - [x] Support for task lists (+v1.1.0)
+- [x] Normal-mode Enter → no-op; done-mode Enter → marks complete (+v1.1.0)
+- [x] Removed `Task Open URL Template` preference (+v1.1.0)
+- [x] Git maintenance protocol documented (+v1.1.0)
 - [ ] Ulauncher settings
 	- [x] additional shortcut to add a new task (+v1.1.0)
 	- [ ] open log file button (blocked: Ulauncher preferences don't support buttons)
