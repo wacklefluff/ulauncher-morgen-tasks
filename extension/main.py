@@ -50,7 +50,7 @@ _LOG_FILE_NAME = "runtime.log"
 _MAX_NORMAL = 5       # Max results in normal (detailed) display mode
 _MAX_CONDENSED = 15   # Max results in condensed (compact) display mode
 _TASK_LIST_API_LIMIT = 100
-_DUMMY_COMPLETE_MAX_ROUNDS = 20
+_DUMMY_COMPLETE_BATCH_SIZE = 30
 
 
 @contextmanager
@@ -193,7 +193,7 @@ class KeywordQueryEventListener(EventListener):
             logger.info("Showing create-task preview")
             return RenderResultListAction(create_items)
 
-        dev_items = self._maybe_build_dev_flow(raw_query)
+        dev_items = self._maybe_build_dev_flow(raw_query, extension)
         if dev_items is not None:
             logger.info("Showing dev flow")
             return RenderResultListAction(dev_items)
@@ -740,7 +740,13 @@ class KeywordQueryEventListener(EventListener):
         rest = parts[1].strip() if len(parts) > 1 else ""
         return self._build_create_flow_items(rest, usage="mg new <title> [@due] [!priority]")
 
-    def _maybe_build_dev_flow(self, raw_query: str):
+    def _dev_tools_enabled(self, extension) -> bool:
+        raw_value = str(extension.preferences.get("dev_tools_enabled", "1") or "").strip().lower()
+        if raw_value == "0":
+            return False
+        return True
+
+    def _maybe_build_dev_flow(self, raw_query: str, extension):
         """
         Development-only helper flow.
 
@@ -753,6 +759,14 @@ class KeywordQueryEventListener(EventListener):
         normalized = raw_query.strip().lower()
         if normalized not in {"dev dummy-tasks", "dev dummy tasks"}:
             return None
+
+        if not self._dev_tools_enabled(extension):
+            return [ExtensionResultItem(
+                icon="images/icon.png",
+                name="Dev tools are disabled",
+                description='Set "Dev Tools Enabled (1/0)" to 1 in extension preferences to use this command.',
+                on_enter=HideWindowAction(),
+            )]
 
         items = [
             ExtensionResultItem(
@@ -777,7 +791,7 @@ class KeywordQueryEventListener(EventListener):
         items.append(ExtensionResultItem(
             icon="images/icon.png",
             name="Mark dummy tasks complete",
-            description='Closes tasks with prefix "#dev Testing " (processed in 100-task batches).',
+            description='Closes up to 30 tasks with prefix "#dev Testing " per run.',
             on_enter=ExtensionCustomAction(
                 {
                     "action": "complete_dummy_tasks",
@@ -1502,58 +1516,48 @@ class ItemEnterEventListener(EventListener):
             if action == "complete_dummy_tasks":
                 closed = 0
                 failed = 0
-                rounds = 0
                 first_error = ""
                 likely_more = False
 
-                while rounds < _DUMMY_COMPLETE_MAX_ROUNDS:
-                    rounds += 1
-                    response = extension.api_client.list_tasks(limit=_TASK_LIST_API_LIMIT)
-                    tasks = response.get("data", {}).get("tasks", [])
+                response = extension.api_client.list_tasks(limit=_TASK_LIST_API_LIMIT)
+                tasks = response.get("data", {}).get("tasks", [])
 
-                    to_close = []
-                    for t in tasks:
-                        title_value = str(t.get("title") or "")
-                        if not title_value.startswith(dummy_prefix):
-                            continue
-                        if str(t.get("progress") or "").strip().lower() == "completed":
-                            continue
-                        tid = str(t.get("id") or "").strip()
-                        if tid:
-                            to_close.append(tid)
+                to_close = []
+                for t in tasks:
+                    title_value = str(t.get("title") or "")
+                    if not title_value.startswith(dummy_prefix):
+                        continue
+                    if str(t.get("progress") or "").strip().lower() == "completed":
+                        continue
+                    tid = str(t.get("id") or "").strip()
+                    if tid:
+                        to_close.append(tid)
 
-                    if not to_close:
-                        if len(tasks) == _TASK_LIST_API_LIMIT:
-                            likely_more = True
-                        break
-
-                    for tid in to_close:
-                        try:
-                            extension.api_client.close_task(tid)
-                            closed += 1
-                        except (MorgenAuthError, MorgenRateLimitError, MorgenNetworkError, MorgenAPIError) as e:
-                            failed += 1
-                            first_error = first_error or str(getattr(e, "message", e))
-                            break
-                        except Exception as e:  # pragma: no cover - safety
-                            failed += 1
-                            first_error = first_error or str(e)
-                            break
-
-                    if first_error:
-                        break
-
-                if rounds >= _DUMMY_COMPLETE_MAX_ROUNDS:
+                if len(tasks) == _TASK_LIST_API_LIMIT:
                     likely_more = True
+                if len(to_close) > _DUMMY_COMPLETE_BATCH_SIZE:
+                    likely_more = True
+
+                for tid in to_close[:_DUMMY_COMPLETE_BATCH_SIZE]:
+                    try:
+                        extension.api_client.close_task(tid)
+                        closed += 1
+                    except (MorgenAuthError, MorgenRateLimitError, MorgenNetworkError, MorgenAPIError) as e:
+                        failed += 1
+                        first_error = first_error or str(getattr(e, "message", e))
+                        break
+                    except Exception as e:  # pragma: no cover - safety
+                        failed += 1
+                        first_error = first_error or str(e)
+                        break
 
                 if extension.cache:
                     extension.cache.invalidate()
 
                 logger.info(
-                    "Dummy task completion finished (closed=%d failed=%d rounds=%d likely_more=%s)",
+                    "Dummy task completion finished (closed=%d failed=%d likely_more=%s)",
                     closed,
                     failed,
-                    rounds,
                     likely_more,
                 )
                 items = [
@@ -1568,7 +1572,7 @@ class ItemEnterEventListener(EventListener):
                     items.append(ExtensionResultItem(
                         icon="images/icon.png",
                         name="Possible remaining dummy tasks",
-                        description="API list endpoint returns max 100; run again to continue batch completion.",
+                        description="Only 30 tasks are completed per run (and list API may cap at 100). Run again to continue.",
                         on_enter=HideWindowAction(),
                     ))
                 if first_error:

@@ -1,5 +1,55 @@
 # Development Log
 
+## 2026-02-07 (Session 31)
+
+**Goals**:
+- Execute dev-tools UI tidy plan (`DEV-03`, `DEV-04`)
+
+**Accomplished**:
+- Updated dummy completion behavior in `extension/main.py`:
+  - `Mark dummy tasks complete` now closes up to 30 tasks per run
+  - Updated completion notice text to explain 30-per-run behavior
+- Added dev-tools visibility toggle support:
+  - New manifest preference in `extension/manifest.json`:
+    - `dev_tools_enabled` (default `"1"`)
+  - `mg dev dummy-tasks` now shows:
+    - disabled message when toggle is `0`
+    - full dev menu when toggle is `1` (or invalid value)
+- Updated docs/tracking:
+  - `TODO.md` (`DEV-03` and `DEV-04` checked off)
+  - `CHANGELOG.md`
+  - `extension/README.md`
+- Added manual test plan:
+  - `development/research/test_plan_v1.2.0_dev_tools_ui_2026-02-07.md` (`DT01`–`DT05`)
+
+**Manual Tests**:
+- DT01 PENDING
+- DT02 PENDING
+- DT03 PENDING
+- DT04 PENDING
+- DT05 PENDING
+
+**Automated Tests**:
+- `python -m py_compile extension/main.py`: PASS
+- `nix-shell --run "pytest -q"`: PASS (42 tests)
+
+---
+
+## 2026-02-07 (Session 30)
+
+**Goals**:
+- Plan dev-tools UI tidy-up for v1.2.0
+
+**Accomplished**:
+- Added implementation plan:
+  - `development/research/dev_tools_ui_tidy_plan_2026-02-07.md`
+- Updated roadmap in `TODO.md`:
+  - Added `DEV-03`: complete dummy tasks in 30-task runs
+  - Added `DEV-04`: dev-tools visibility toggle in extension settings (default enabled)
+- Updated `Immediate Next Steps` in `TODO.md` to execute this plan next
+
+---
+
 ## 2026-02-07 (Session 29)
 
 **Goals**:

@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Dev seed flow: `mg dev dummy-tasks` now creates 90 real test tasks in Morgen (title prefix `#dev Testing `) with varied priorities and due dates.
 - `mg dev dummy-tasks` now includes a bulk-complete action to close dummy tasks by prefix in repeated 100-task batches.
+- New extension preference: `Dev Tools Enabled (1/0)` (default `1`) to show/hide dev commands.
 - New tooling for seeding test data:
   - `development/tools/create_dummy_morgen_tasks.py` (creates real tasks via API key)
   - `extension/src/dev_dummy_tasks.py` (shared dummy payload generator)
@@ -17,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Removed precomputed search-index optimization; search now always uses on-the-fly matching.
+- Dummy-task bulk-complete now processes up to 30 tasks per run (instead of trying to process all matches at once).
 
 ## [1.1.0] - 2026-02-07
 

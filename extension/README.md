@@ -28,6 +28,7 @@ Manage your Morgen tasks directly from Ulauncher - list, search, and create task
    - **New Task Shortcut Keyword**: `mgn` (optional; creates tasks directly)
    - **API Key**: Your Morgen API key from https://platform.morgen.so
    - **Cache Duration**: Seconds to cache tasks (default: 600)
+   - **Dev Tools Enabled (1/0)**: Show/hide `mg dev ...` commands (default: `1`)
 
 ### Where Your API Key Is Stored
 
@@ -78,7 +79,7 @@ This extension reads the key via `extension.preferences` at runtime and does not
 | `mg help` or `mg ?` | Show command reference |
 | `mg clear` | Clear cached tasks |
 | `mg debug` | Debug/log screen (open/copy runtime log path) |
-| `mg dev dummy-tasks` | Dev helper: choose 10/50/90 create or bulk-complete dummy tasks (`#dev Testing ...`) |
+| `mg dev dummy-tasks` | Dev helper: choose 10/50/90 create or bulk-complete dummy tasks (`#dev Testing ...`, completion is max 30/run) |
 
 ### Task Actions
 

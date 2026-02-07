@@ -23,8 +23,8 @@ Use this checklist **every time** you implement a feature or fix (not just once 
 
 ## Immediate Next Steps
 
-1. Run manual v1.2.0 tests and record PASS/FAIL by test ID (`DD01-DD06`, `LIM01-LIM03`)
-2. Pick any remaining v1.2.0 scope items from the roadmap below
+1. Run manual v1.2.0 tests and record PASS/FAIL by test ID (`DD01-DD06`, `LIM01-LIM03`, `DT01-DT05`)
+2. Verify dev-toggle behavior on fresh restart (`0` hides, `1` shows)
 3. Release v1.2.0
 
 ## Release History
@@ -51,6 +51,8 @@ Candidates — pick items to commit to this release:
 ### From Backlog
 - [x] **DEV-01**: Add dummy task seeding tools (`mg dev dummy-tasks` + CLI script) (+v1.2.0)
 - [x] **DEV-02**: Add dummy-task bulk-complete action in `mg dev dummy-tasks` (+v1.2.0)
+- [x] **DEV-03**: Limit dummy-task bulk-complete action to 30 tasks per run (+v1.2.0)
+- [x] **DEV-04**: Add extension preference toggle for dev tools visibility (`1` show, `0` hide; default `1`) (+v1.2.0)
 - [x] **LIM-01**: Warn in UI when task list response hits API cap (100 tasks) (+v1.2.0)
 
 ### From Future Enhancements (High)

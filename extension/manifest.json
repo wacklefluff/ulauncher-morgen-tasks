@@ -36,6 +36,13 @@
       "name": "Cache Duration (seconds)",
       "description": "How long to cache task list (default: 600 seconds / 10 minutes)",
       "default_value": "600"
+    },
+    {
+      "id": "dev_tools_enabled",
+      "type": "input",
+      "name": "Dev Tools Enabled (1/0)",
+      "description": "Show developer commands (1 = enabled, 0 = hidden). Default: 1.",
+      "default_value": "1"
     }
   ]
 }
