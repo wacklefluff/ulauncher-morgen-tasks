@@ -122,7 +122,19 @@ Then type `mg` to trigger the extension.
 
 ## Current Version
 
-**v1.0.0** - Stable release (list/search/create, caching, help, logging, tests)
+**v1.1.0** - Task completion, task lists, debug command, shortcut keywords
+
+## Roadmap
+
+Planned for future releases:
+
+- Filter tasks by priority or due date
+- Background cache refresh
+- Subtask creation
+- Recurring tasks support
+- Desktop notifications for upcoming tasks
+
+See the full backlog in the [development TODO](https://github.com/wacklefluff/ulauncher-morgen-tasks/tree/develop).
 
 ## Resources
 
