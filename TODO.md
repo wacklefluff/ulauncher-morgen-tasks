@@ -100,6 +100,7 @@ See `extension/logs/improvements.md` for detailed ideas.
 
 
 ### Medium Priority
+- [ ] Change ui to simulate morgen UI task command pallet, need to create a cache for current created task (to store due date, priority, list, calendar)
 - [ ] Subtask creation
 - [ ] Recurring tasks support
 - [ ] Progress status indicator (add an emoji before task title)
