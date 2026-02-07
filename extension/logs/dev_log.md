@@ -1,5 +1,33 @@
 # Development Log
 
+## 2026-02-07 (Session 36)
+
+**Goals**:
+- Verify and implement query-rewrite behavior for `due:` autocomplete suggestions
+
+**Accomplished**:
+- Confirmed Ulauncher exposes query-rewrite action for extension items:
+  - `SetUserQueryAction` available in installed Ulauncher API (v5.15.7 path inspection).
+- Implemented `due:` suggestion Enter behavior to rewrite query input:
+  - `extension/main.py`
+  - Suggestion items now use `SetUserQueryAction` when available (fallback to `HideWindowAction`).
+  - Rewritten query preserves existing argument text and replaces active `due`/`due:<fragment>` token.
+- Added helper for query token rewrite:
+  - `extension/src/task_filters.py` (`rewrite_due_filter_query`)
+- Added unit coverage:
+  - `extension/tests/test_task_filters.py` (rewrite helper tests)
+- Updated manual test plan:
+  - `development/research/test_plan_v1.2.0_due_autocomplete_2026-02-07.md` (added `DA08`)
+
+**Manual Tests**:
+- DA08 PASS
+
+**Automated Tests**:
+- `python -m py_compile extension/main.py extension/src/task_filters.py extension/tests/test_task_filters.py`: PASS
+- `nix-shell --run "pytest -q"`: PASS (56 tests)
+
+---
+
 ## 2026-02-07 (Session 35)
 
 **Goals**:

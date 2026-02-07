@@ -9,6 +9,7 @@ from task_filters import (
     matches_task_filters,
     extract_due_filter_fragment,
     get_due_filter_suggestions,
+    rewrite_due_filter_query,
 )
 
 
@@ -90,3 +91,9 @@ def test_get_due_filter_suggestions_matches_prefix():
     assert "today" in get_due_filter_suggestions("to")
     assert "tomorrow" in get_due_filter_suggestions("to")
     assert "next-month" in get_due_filter_suggestions("next-")
+
+
+def test_rewrite_due_filter_query_replaces_last_due_fragment():
+    assert rewrite_due_filter_query("report due:to", "today") == "report due:today"
+    assert rewrite_due_filter_query("due", "today") == "due:today"
+    assert rewrite_due_filter_query("", "today") == "due:today"

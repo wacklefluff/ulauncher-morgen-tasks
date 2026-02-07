@@ -26,6 +26,10 @@ try:
     from ulauncher.api.shared.action.OpenAction import OpenAction
 except Exception:  # pragma: no cover - optional Ulauncher action
     OpenAction = None
+try:
+    from ulauncher.api.shared.action.SetUserQueryAction import SetUserQueryAction
+except Exception:  # pragma: no cover - optional Ulauncher action
+    SetUserQueryAction = None
 
 from src.morgen_api import (
     MorgenAPIClient,
@@ -48,6 +52,7 @@ from src.task_filters import (
     matches_task_filters,
     extract_due_filter_fragment,
     get_due_filter_suggestions,
+    rewrite_due_filter_query,
 )
 
 logger = logging.getLogger(__name__)
@@ -301,11 +306,16 @@ class KeywordQueryEventListener(EventListener):
                 ))
                 if due_filter_suggestions:
                     for suggestion in due_filter_suggestions:
+                        rewritten = rewrite_due_filter_query(raw_query, suggestion)
+                        action = HideWindowAction()
+                        if SetUserQueryAction is not None:
+                            mg_keyword = (extension.preferences.get("mg_keyword") or "mg").strip() or "mg"
+                            action = SetUserQueryAction(f"{mg_keyword} {rewritten}".strip())
                         items.append(ExtensionResultItem(
                             icon="images/icon.png",
                             name=f"due:{suggestion}",
-                            description="Autocomplete suggestion for due filter",
-                            on_enter=HideWindowAction(),
+                            description="Enter: fill query with this due filter",
+                            on_enter=action,
                         ))
                 else:
                     items.append(ExtensionResultItem(

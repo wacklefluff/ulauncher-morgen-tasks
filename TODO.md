@@ -26,7 +26,7 @@ Use this checklist **every time** you implement a feature or fix (not just once 
 1. Decide v1.2.0 scope for remaining roadmap candidates:
    - Task list metadata enrichment (resolve user-friendly names when API only returns ids)
 2. If deferring remaining candidates, finalize v1.2.0 release packaging/tag and publish release notes
-3. Run follow-up due-autocomplete tests and record PASS/FAIL (`DA06`, `DA07`)
+3. Prepare final v1.2.0 release summary from test plans (`DD`, `LIM`, `DT`, `DA`, `TF`)
 
 ## Release History
 
@@ -114,6 +114,7 @@ See `extension/logs/improvements.md` for detailed ideas.
 - [ ] Update task details (title, due date, priority)
 - [ ] Shorter dates, writting DD-MM should be enough, it assumes first time that date occurs. so if it is may and i say 13-02 then it stores for next year
 - [ ] Background refresh (refresh cache in background without blocking UI). Is it really needed?
+- [] when there is only one task matching hide `Morgen Tasks (1)`
 ---
 
 ## Completed Releases

@@ -104,6 +104,27 @@ def get_due_filter_suggestions(fragment: str, *, limit: int = 8) -> list[str]:
     return [value for value in _SUPPORTED_DUE_FILTERS if value.startswith(normalized)][:limit]
 
 
+def rewrite_due_filter_query(query: str, suggestion: str) -> str:
+    """
+    Rewrite the active due-filter token in a query to `due:<suggestion>`.
+
+    Examples:
+      - "due:to" -> "due:today"
+      - "report due:to" -> "report due:today"
+      - "due" -> "due:today"
+    """
+    tokens = (query or "").split()
+    if not tokens:
+        return f"due:{suggestion}"
+
+    last = tokens[-1].strip().lower()
+    if last == "due" or last.startswith("due:"):
+        tokens[-1] = f"due:{suggestion}"
+    else:
+        tokens.append(f"due:{suggestion}")
+    return " ".join(tokens).strip()
+
+
 def matches_task_filters(task: dict, spec: TaskFilterSpec, *, now: datetime | None = None) -> bool:
     if not spec.active:
         return True

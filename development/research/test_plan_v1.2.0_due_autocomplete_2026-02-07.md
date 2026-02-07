@@ -63,7 +63,7 @@
   - **Expected**:
     - Suggestion appears in the autocomplete list
     - Created task has due date in next calendar month
-  - **Result**: [ ] PASS  [ ] FAIL  [ ] SKIP
+  - **Result**: [X] PASS  [ ] FAIL  [ ] SKIP
   - **Notes**:
 
 - **DA07** — `due:` filter suggestions appear in search flow
@@ -73,5 +73,14 @@
     - A due-filter suggestion section appears
     - Suggested values appear (for example `due:today`, `due:tomorrow`)
     - No crash or blocking behavior
-  - **Result**: [ ] PASS  [ ] FAIL  [ ] SKIP
-  - **Notes**:
+  - **Result**: [X] PASS  [ ] FAIL  [ ] SKIP
+  - **Notes**: even though it works when I select the correct option and select it, e.g. I write `mg due:to` and then select `due:today` when I press enter it does nothing. Check if possible to change current uLauncher prompt field
+
+- **DA08** — Enter on `due:` suggestion rewrites query input
+  1. Type: `mg due:to`
+  2. Press Enter on suggestion `due:today`
+  - **Expected**:
+    - Input query is rewritten to `mg due:today`
+    - Results refresh under rewritten query
+  - **Result**: [X] PASS  [ ] FAIL  [ ] SKIP
+  - **Notes**: perfect

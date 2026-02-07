@@ -2,7 +2,7 @@
 
 **Created**: 2026-02-07  
 **Owner**: AI agent + user  
-**Status**: In Progress (follow-up enhancements in progress)  
+**Status**: Completed (follow-up enhancements verified)  
 **Primary Strategy**: Approach 1 (actionable suggestions) with code seams for future Approach 2 parser-state model.
 
 ## Objective
@@ -38,7 +38,7 @@ Add due-date autocomplete guidance in create flow (`mg new`, `mg add`, quick-cre
 - [x] `DA-10` Update release tracking (`CHANGELOG.md`, `TODO.md`, `extension/logs/dev_log.md`)
 - [x] `DA-11` Add `next-month` due suggestion support
 - [x] `DA-12` Add `due:` filter autocomplete suggestions in search flow
-- [ ] `DA-13` Run/record follow-up manual outcomes (`DA06`, `DA07`)
+- [x] `DA-13` Run/record follow-up manual outcomes (`DA06`, `DA07`)
 
 ## Progress Log
 
@@ -67,6 +67,10 @@ Add due-date autocomplete guidance in create flow (`mg new`, `mg add`, quick-cre
   - Added due-filter autocomplete suggestions for partial `due` / `due:<fragment>` search input.
   - Added follow-up manual tests in:
     - `development/research/test_plan_v1.2.0_due_autocomplete_2026-02-07.md` (`DA06`, `DA07`)
+- 2026-02-07: Follow-up manual verification completed:
+  - `DA06` PASS
+  - `DA07` PASS
+  - `DA08` PASS (query rewrite on Enter for `due:` suggestions)
 
 ## Design Notes
 
