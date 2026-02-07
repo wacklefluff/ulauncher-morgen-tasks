@@ -44,6 +44,7 @@ Use this checklist **every time** you implement a feature or fix (not just once 
 - [x] **SUG-04**: Show creation date when no due date available (+v1.1.0)
 - [x] **Mark tasks as complete** from Ulauncher (`mg d <query>` → Enter to complete via API) (+v1.1.0)
 - [x] **Open Morgen app** on task click (default Enter) (+v1.1.0)
+- [ ] Support for task lists
 - [ ] Ulauncher settings
 	- [x] additional shortcut to add a new task (+v1.1.0)
 	- [ ] open log file button (blocked: Ulauncher preferences don't support buttons)
