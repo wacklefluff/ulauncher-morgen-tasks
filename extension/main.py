@@ -421,6 +421,13 @@ class KeywordQueryEventListener(EventListener):
             )
         ]
 
+        items.append(ExtensionResultItem(
+            icon="images/icon.png",
+            name="Open extension settings",
+            description="Manual: Ctrl+, -> Extensions -> Morgen Tasks",
+            on_enter=HideWindowAction(),
+        ))
+
         for label, example in examples:
             items.append(ExtensionResultItem(
                 icon="images/icon.png",
