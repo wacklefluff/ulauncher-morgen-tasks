@@ -69,7 +69,7 @@ Use this checklist **every time** you implement a feature or fix (not just once 
   - `mg in <list> [query]`
   - `mg list` / `mg project` / `mg space`
   - `mg list <name> [query]` / `mg project <name> [query]` / `mg space <name> [query]`
-- Note: depends on list metadata being available in Morgen task payloads
+- Note: current production payload primarily exposes `taskListId` (+ optional `integrationId` fallback); project/space commands may show unavailable states when metadata is absent.
 
 ---
 

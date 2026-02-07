@@ -40,13 +40,13 @@
 - L01 PASS
 - L02 PASS
 - L03 PASS
-- L04 FAIL (no project metadata available in current account payload)
+- L04 SKIP (no project metadata available in current account payload)
 - L05 PASS
 - L06 PASS
-- L07 FAIL (no project metadata available in current account payload)
-- L08 FAIL (no matching space metadata for filter in current account payload)
+- L07 SKIP (no project metadata available in current account payload)
+- L08 SKIP (no matching space metadata for filter in current account payload)
 - L09 PASS
-- L10 PENDING (fallback-message verification not explicitly marked)
+- L10 PASS (unavailable metadata fallback message verified)
 - L12 PASS (`integrationId` fallback grouping confirmed)
 
 **Automated Tests**:

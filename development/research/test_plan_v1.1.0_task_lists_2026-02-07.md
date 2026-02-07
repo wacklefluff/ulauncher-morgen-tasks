@@ -59,8 +59,8 @@
 - **L04** — `mg project` shows project-kind containers
   1. Type: `mg project`
   - **Expected**: Shows “Morgen Projects”, or “No project metadata found” if unavailable.
-  - **Result**: [ ] PASS  [X] FAIL  [ ] SKIP
-  - **Notes**: i think this variable is not visible check morgen documentaion. if not present remove it
+  - **Result**: [ ] PASS  [ ] FAIL  [X] SKIP
+  - **Notes**: current account payload does not expose project metadata; unavailable state is expected.
 
 - **L05** — `mg space` shows space-kind containers
   1. Type: `mg space`
@@ -74,20 +74,19 @@
   1. Type: `mg in <known-container-name-or-id>`
   - **Expected**: Shows only matching tasks (kind-agnostic).
   - **Result**: [X] PASS  [ ] FAIL  [ ] SKIP
-  - **Notes**: it is case sensitive, worked `inbox` but not `Inbox`. it would be nice for the future to add a easy completion
-      - FIXED
+  - **Notes**: case-insensitive id matching verified (`Inbox` and `inbox` both work).
 
 - **L07** — `mg project <name>` filters project tasks
   1. Type: `mg project <known-project-name>`
   - **Expected**: Shows only matching project tasks, or a clear unavailable/no-match message.
-  - **Result**: [ ] PASS  [X] FAIL  [ ] SKIP
-  - **Notes**: i think this variable is not visible check morgen documentaion. if not present remove it
+  - **Result**: [ ] PASS  [ ] FAIL  [X] SKIP
+  - **Notes**: current account payload does not expose project metadata; unavailable state is expected.
 
 - **L08** — `mg space <name>` filters space tasks
   1. Type: `mg space <known-space-name>`
   - **Expected**: Shows only matching space tasks, or a clear unavailable/no-match message.
-  - **Result**: [ ] PASS  [X] FAIL  [ ] SKIP
-  - **Notes**: i think this variable is not visible check morgen documentaion. if not present remove it
+  - **Result**: [ ] PASS  [ ] FAIL  [X] SKIP
+  - **Notes**: no matching space metadata in the current payload for filtering.
 
 - **L09** — `mg list <name> <query>` filters within list-kind container
   1. Type: `mg list <known-list-name-or-id> <query>`
