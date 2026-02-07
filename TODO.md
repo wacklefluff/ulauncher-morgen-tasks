@@ -23,9 +23,10 @@ Use this checklist **every time** you implement a feature or fix (not just once 
 
 ## Immediate Next Steps
 
-1. Run manual v1.2.0 tests and record PASS/FAIL by test ID (`DD01-DD06`, `LIM01-LIM03`, `DT01-DT05`)
-2. Verify dev-toggle behavior on fresh restart (`0` hides, `1` shows)
-3. Release v1.2.0
+1. Decide v1.2.0 scope for remaining roadmap candidates:
+   - Task list metadata enrichment (resolve user-friendly names when API only returns ids)
+2. If deferring remaining candidates, finalize v1.2.0 release packaging/tag and publish release notes
+3. Follow-up enhancement note: add `next-month` due autocomplete suggestion
 
 ## Release History
 
@@ -56,10 +57,11 @@ Candidates — pick items to commit to this release:
 - [x] **LIM-01**: Warn in UI when task list response hits API cap (100 tasks) (+v1.2.0)
 
 ### From Future Enhancements (High)
-- [ ] Filter tasks by priority/due date
+- [x] Filter tasks by priority/due date (+v1.2.0)
 - [ ] Task list metadata enrichment (resolve user-friendly names when API only returns ids)
 - [x] Make first dropdown item the actionable "Create" option so Enter creates the task immediately (+v1.2.0)
-- [ ] Due-date autocomplete: typing `@` shows a dropdown with date suggestions (e.g. `@to` suggests "today", "tomorrow")
+- [x] Due-date autocomplete: typing `@` shows a dropdown with date suggestions (e.g. `@to` suggests "today", "tomorrow") (+v1.2.0)
+  - [ ] Add `next-month` suggestion
 
 
 ---

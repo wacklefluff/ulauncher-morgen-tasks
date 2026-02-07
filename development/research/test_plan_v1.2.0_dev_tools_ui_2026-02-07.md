@@ -19,16 +19,16 @@
   - **Expected**:
     - Summary shows `Closed` count
     - `Closed` is `<= 30`
-  - **Result**: [ ] PASS  [ ] FAIL  [ ] SKIP
-  - **Notes**:
+  - **Result**: [X] PASS  [ ] FAIL  [ ] SKIP
+  - **Notes**: Per-run close count stayed within 30-task cap.
 
 - **DT02** — Re-run closes additional batches
   1. Run `Mark dummy tasks complete` repeatedly
   - **Expected**:
     - Each run closes up to 30 more matching tasks
     - Optional warning appears when more tasks may remain
-  - **Result**: [ ] PASS  [ ] FAIL  [ ] SKIP
-  - **Notes**:
+  - **Result**: [X] PASS  [ ] FAIL  [ ] SKIP
+  - **Notes**: Repeat runs closed additional batches as expected.
 
 - **DT03** — Toggle off hides dev tools
   1. In extension preferences set `Dev Tools Enabled (1/0)` to `0`
@@ -36,21 +36,21 @@
   - **Expected**:
     - No dev action list
     - Message indicates dev tools are disabled
-  - **Result**: [ ] PASS  [ ] FAIL  [ ] SKIP
-  - **Notes**:
+  - **Result**: [X] PASS  [ ] FAIL  [ ] SKIP
+  - **Notes**: `0` reliably hid actions and showed disabled state.
 
 - **DT04** — Toggle on restores dev tools
   1. Set `Dev Tools Enabled (1/0)` to `1`
   2. Type: `mg dev dummy-tasks`
   - **Expected**:
     - Dev tools menu appears (create 10/50/90 + mark complete)
-  - **Result**: [ ] PASS  [ ] FAIL  [ ] SKIP
-  - **Notes**:
+  - **Result**: [X] PASS  [ ] FAIL  [ ] SKIP
+  - **Notes**: `1` restored full dev tools menu.
 
 - **DT05** — Invalid toggle value falls back to enabled
   1. Set `Dev Tools Enabled (1/0)` to `abc`
   2. Type: `mg dev dummy-tasks`
   - **Expected**:
     - Dev tools menu appears (safe fallback to enabled)
-  - **Result**: [ ] PASS  [ ] FAIL  [ ] SKIP
-  - **Notes**:
+  - **Result**: [X] PASS  [ ] FAIL  [ ] SKIP
+  - **Notes**: Invalid value fallback behaved as enabled.

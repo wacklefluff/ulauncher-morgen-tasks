@@ -18,8 +18,8 @@
   - **Expected**:
     - Header appears normally
     - Additional item appears: `API list limit reached (100 tasks)`
-  - **Result**: [ ] PASS  [ ] FAIL  [ ] SKIP
-  - **Notes**:
+  - **Result**: [X] PASS  [ ] FAIL  [ ] SKIP
+  - **Notes**: API cap notice rendered as expected at 100 tasks.
 
 - **LIM02** — Warning appears in cached fallback flow
   1. Load tasks once (`mg refresh`) so cache is populated with 100 tasks
@@ -28,8 +28,8 @@
   - **Expected**:
     - Fallback banner (`showing cached data`) appears
     - `API list limit reached (100 tasks)` item is also shown
-  - **Result**: [ ] PASS  [ ] FAIL  [ ] SKIP
-  - **Notes**:
+  - **Result**: [X] PASS  [ ] FAIL  [ ] SKIP
+  - **Notes**: Cached fallback banner and cap warning both appeared.
 
 - **LIM03** — Search still works correctly without index path
   1. Type: `mg <known keyword>`
@@ -37,5 +37,5 @@
   - **Expected**:
     - Matching results appear in both cases
     - No regression in normal search behavior
-  - **Result**: [ ] PASS  [ ] FAIL  [ ] SKIP
-  - **Notes**:
+  - **Result**: [X] PASS  [ ] FAIL  [ ] SKIP
+  - **Notes**: Search behavior remained correct and word-order independent.

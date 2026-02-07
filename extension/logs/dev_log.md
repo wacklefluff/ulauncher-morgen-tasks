@@ -1,5 +1,120 @@
 # Development Log
 
+## 2026-02-07 (Session 34)
+
+**Goals**:
+- Implement task filtering by priority/due date for v1.2.0
+
+**Accomplished**:
+- Added filter parsing/matching module:
+  - `extension/src/task_filters.py`
+  - Supports:
+    - `p:<value>` / `priority:<value>` (`high`, `medium`, `low`, `normal`, `1-9`)
+    - `due:<value>` (`today`, `tomorrow`, `overdue`, `future`, `week`, `nodue`)
+- Integrated filter flow in `extension/main.py`:
+  - Parses filter tokens from query
+  - Applies filters plus normal text search together
+  - Applies same filtering in cached fallback mode (network/rate-limit errors)
+  - Added filter examples to `mg help`
+- Added unit tests:
+  - `extension/tests/test_task_filters.py`
+- Added manual test plan:
+  - `development/research/test_plan_v1.2.0_task_filters_2026-02-07.md` (`TF01`-`TF06`)
+- Added feature tracker:
+  - `development/research/feature_tracker_task_filters_v1.2.0_2026-02-07.md`
+- Updated docs/tracking:
+  - `extension/README.md`
+  - `CHANGELOG.md`
+  - `TODO.md` (task filter roadmap item marked complete)
+
+**Manual Tests**:
+- TF01 PASS
+- TF02 PASS
+- TF03 PASS
+- TF04 PASS
+- TF05 PASS
+- TF06 PASS
+  - Note: consider adding `!` / `!!` aliases for priority filtering in a future enhancement.
+
+**Automated Tests**:
+- `python -m py_compile extension/main.py extension/src/task_filters.py`: PASS
+- `nix-shell --run "pytest -q"`: PASS (50 tests)
+
+---
+
+## 2026-02-07 (Session 33)
+
+**Goals**:
+- Implement due-date autocomplete suggestions in create flow for v1.2.0
+- Keep implementation structured for future parser-state refactor path
+
+**Accomplished**:
+- Implemented due-autocomplete flow in `extension/main.py`:
+  - Added due suggestion catalog and deterministic matcher
+  - Added helper to detect active due token context
+  - Added suggestion rendering for partial due input (`@`, `@to`, etc.)
+  - Added actionable suggestion items (`Use due @...`) that create task directly on Enter
+  - Updated create parser behavior so partial due input shows guidance instead of only hard errors
+- Added tracking and planning artifacts:
+  - `development/research/feature_tracker_due_date_autocomplete_v1.2.0_2026-02-07.md`
+  - `development/research/due_date_autocomplete_plan_2026-02-07.md`
+  - `development/research/test_plan_v1.2.0_due_autocomplete_2026-02-07.md`
+  - `development/research/due_date_autocomplete_approach_1_actionable_items_2026-02-07.md`
+  - `development/research/due_date_autocomplete_approach_2_parser_state_model_2026-02-07.md`
+  - `development/research/due_date_autocomplete_approach_3_tab_fill_concept_2026-02-07.md`
+- Updated docs/tracking:
+  - `extension/README.md`
+  - `CHANGELOG.md`
+  - `TODO.md` (due-autocomplete roadmap item marked complete)
+
+**Manual Tests**:
+- DA01 PASS
+- DA02 PASS
+- DA03 PASS
+- DA04 PASS
+- DA05 PASS
+  - Note: consider adding an explicit "next month" suggestion in a follow-up enhancement.
+
+**Automated Tests**:
+- `python -m py_compile extension/main.py`: PASS
+- `nix-shell --run "pytest -q"`: PASS (42 tests)
+
+---
+
+## 2026-02-07 (Session 32)
+
+**Goals**:
+- Complete and record manual v1.2.0 verification
+- Refresh roadmap focus after verification pass
+
+**Accomplished**:
+- Recorded manual test outcomes as PASS in:
+  - `development/research/test_plan_v1.2.0_dummy_tasks_2026-02-07.md` (`DD01`-`DD06`)
+  - `development/research/test_plan_v1.2.0_api_limit_notice_2026-02-07.md` (`LIM01`-`LIM03`)
+  - `development/research/test_plan_v1.2.0_dev_tools_ui_2026-02-07.md` (`DT01`-`DT05`)
+- Updated `TODO.md` Immediate Next Steps to focus on deciding whether to include or defer remaining v1.2.0 roadmap candidates before release.
+
+**Manual Tests**:
+- DD01 PASS
+- DD02 PASS
+- DD03 PASS
+- DD04 PASS
+- DD05 PASS
+- DD06 PASS
+- LIM01 PASS
+- LIM02 PASS
+- LIM03 PASS
+- DT01 PASS
+- DT02 PASS
+- DT03 PASS
+- DT04 PASS
+- DT05 PASS
+
+**Automated Tests**:
+- Not re-run in this logging-only session.
+
+---
+
 ## 2026-02-07 (Session 31)
 
 **Goals**:

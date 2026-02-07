@@ -43,6 +43,7 @@ from src.dev_dummy_tasks import (
     build_dummy_task_specs,
 )
 from src.task_lists import group_tasks_by_list, get_task_list_ref, matches_list_name, matches_container_id
+from src.task_filters import parse_query_filters, matches_task_filters
 
 logger = logging.getLogger(__name__)
 
@@ -51,6 +52,34 @@ _MAX_NORMAL = 5       # Max results in normal (detailed) display mode
 _MAX_CONDENSED = 15   # Max results in condensed (compact) display mode
 _TASK_LIST_API_LIMIT = 100
 _DUMMY_COMPLETE_BATCH_SIZE = 30
+_DUE_AUTOCOMPLETE_MAX = 8
+_DUE_SUGGESTION_VALUES = (
+    "today",
+    "tomorrow",
+    "yesterday",
+    "next-week",
+    "mon",
+    "tue",
+    "wed",
+    "thu",
+    "fri",
+    "sat",
+    "sun",
+    "next-mon",
+    "next-tue",
+    "next-wed",
+    "next-thu",
+    "next-fri",
+    "next-sat",
+    "next-sun",
+    "09:00",
+    "15:30",
+    "3pm",
+    "noon",
+    "midnight",
+    "2026-02-10",
+    "2026-02-10T15:30",
+)
 
 
 @contextmanager
@@ -205,6 +234,7 @@ class KeywordQueryEventListener(EventListener):
             force_refresh, query, refresh_prefix_used = self._parse_query(raw_query)
 
         container_kind, list_filter, query = self._parse_container_filter_command(query)
+        filter_spec, query = parse_query_filters(query)
 
         try:
             tasks, cache_status = self._get_tasks(extension, force_refresh=force_refresh)
@@ -222,7 +252,7 @@ class KeywordQueryEventListener(EventListener):
 
             # Search filtering (title + description)
             with _timed("filter_tasks"):
-                filtered_tasks = self._filter_tasks(tasks, query)
+                filtered_tasks = self._filter_tasks(tasks, query, filter_spec=filter_spec)
 
             if refresh_prefix_used:
                 items.append(self._refresh_prefix_notice(extension))
@@ -321,6 +351,7 @@ class KeywordQueryEventListener(EventListener):
                 extension,
                 "Rate limit exceeded",
                 query=query,
+                filter_spec=filter_spec,
                 suggestions=[
                     "Wait a minute and try again.",
                     "Avoid using refresh repeatedly; refresh is one-shot.",
@@ -334,6 +365,7 @@ class KeywordQueryEventListener(EventListener):
                 extension,
                 "Cannot reach Morgen API",
                 query=query,
+                filter_spec=filter_spec,
                 suggestions=[
                     "Check your internet connection/VPN.",
                     'Try "mg" again, or use cached results if available.',
@@ -396,6 +428,9 @@ class KeywordQueryEventListener(EventListener):
         examples = [
             ("List tasks", "mg"),
             ("Search tasks", "mg <query>"),
+            ("Filter by due", "mg due:today"),
+            ("Filter by priority", "mg p:high"),
+            ("Combine filters", "mg report due:week p:high"),
             ("Force refresh", "mg !   or   mg refresh"),
             ("Create task", "mg new <title> [@due] [!priority]"),
             ("Show lists", "mg lists"),
@@ -834,6 +869,48 @@ class KeywordQueryEventListener(EventListener):
         due = parse.get("due")
         due_display = parse.get("due_display")
         priority = parse.get("priority", 0)
+        incomplete_due = bool(parse.get("incomplete_due"))
+
+        if incomplete_due:
+            due_fragment = parse.get("due_fragment", "")
+            due_suggestions = parse.get("due_suggestions") or self._get_due_suggestion_values(due_fragment)
+            if not due_suggestions:
+                due_suggestions = self._get_due_suggestion_values("")
+
+            items.append(ExtensionResultItem(
+                icon="images/icon.png",
+                name=f'Create task: choose due for "{title}"',
+                description='Pick a suggestion for the "@" due token.',
+                on_enter=HideWindowAction(),
+            ))
+
+            for suggestion in due_suggestions[:_DUE_AUTOCOMPLETE_MAX]:
+                try:
+                    due_parsed = DateParser().parse(suggestion)
+                except DateParseError:
+                    continue
+
+                payload = {
+                    "action": "create_task",
+                    "title": title,
+                    "due": due_parsed.due,
+                    "priority": priority,
+                }
+                priority_suffix = f" | Priority: {priority}" if priority else ""
+                items.append(ExtensionResultItem(
+                    icon="images/icon.png",
+                    name=f"Use due @{suggestion}",
+                    description=f"Due: {due_parsed.display}{priority_suffix}",
+                    on_enter=ExtensionCustomAction(payload, keep_app_open=True),
+                ))
+
+            items.append(ExtensionResultItem(
+                icon="images/icon.png",
+                name="Cancel",
+                description="Close without creating a task",
+                on_enter=HideWindowAction(),
+            ))
+            return items
 
         summary = []
         if due:
@@ -865,6 +942,23 @@ class KeywordQueryEventListener(EventListener):
         ))
 
         return items
+
+    def _extract_active_due_fragment(self, rest: str) -> str | None:
+        tokens = (rest or "").split()
+        if not tokens:
+            return None
+        last_token = tokens[-1]
+        if not last_token.startswith("@"):
+            return None
+        return last_token[1:]
+
+    def _get_due_suggestion_values(self, fragment: str, *, limit: int = _DUE_AUTOCOMPLETE_MAX) -> list[str]:
+        normalized = (fragment or "").strip().lower().replace("_", "-")
+        if not normalized:
+            return list(_DUE_SUGGESTION_VALUES[:limit])
+
+        matches = [value for value in _DUE_SUGGESTION_VALUES if value.startswith(normalized)]
+        return matches[:limit]
 
     _PRIORITY_NAMES = {
         "high": 1, "hi": 1, "h": 1, "urgent": 1,
@@ -921,7 +1015,7 @@ class KeywordQueryEventListener(EventListener):
         priority = 0
 
         for token in tokens:
-            if token.startswith("@") and len(token) > 1 and due_token is None:
+            if token.startswith("@") and due_token is None:
                 due_token = token[1:]
                 continue
             if token.startswith("!"):
@@ -942,12 +1036,26 @@ class KeywordQueryEventListener(EventListener):
 
         parsed = {"title": title, "priority": priority}
 
-        if due_token:
+        active_due_fragment = self._extract_active_due_fragment(rest)
+
+        if due_token is not None:
+            if not due_token:
+                parsed["incomplete_due"] = True
+                parsed["due_fragment"] = ""
+                parsed["due_suggestions"] = self._get_due_suggestion_values("")
+                return parsed
+
             try:
                 due_parsed = DateParser().parse(due_token)
                 parsed["due"] = due_parsed.due
                 parsed["due_display"] = due_parsed.display
             except DateParseError:
+                due_suggestions = self._get_due_suggestion_values(due_token)
+                if due_suggestions and active_due_fragment is not None:
+                    parsed["incomplete_due"] = True
+                    parsed["due_fragment"] = due_token
+                    parsed["due_suggestions"] = due_suggestions
+                    return parsed
                 return {"error": f"Invalid date '{due_token}'. Try: today, tomorrow, friday, 2026-02-10"}
 
         return parsed
@@ -1011,22 +1119,27 @@ class KeywordQueryEventListener(EventListener):
         logger.info("API tasks loaded: %d tasks", len(tasks))
         return tasks, cache_status
 
-    def _filter_tasks(self, tasks, query: str):
-        if not query:
-            return tasks
-
-        words = query.lower().split()
-        if not words:
+    def _filter_tasks(self, tasks, query: str, *, filter_spec=None):
+        words = query.lower().split() if query else []
+        has_text_query = bool(words)
+        has_extra_filters = bool(filter_spec and filter_spec.active)
+        if not has_text_query and not has_extra_filters:
             return tasks
 
         filtered = []
 
         for task in tasks:
-            title = (task.get("title") or "").lower()
-            description = (task.get("description") or "").lower()
-            text = title + " " + description
-            if all(w in text for w in words):
-                filtered.append(task)
+            if has_extra_filters and not matches_task_filters(task, filter_spec):
+                continue
+
+            if has_text_query:
+                title = (task.get("title") or "").lower()
+                description = (task.get("description") or "").lower()
+                text = title + " " + description
+                if not all(w in text for w in words):
+                    continue
+
+            filtered.append(task)
 
         return filtered
 
@@ -1085,7 +1198,7 @@ class KeywordQueryEventListener(EventListener):
         }
         return ExtensionCustomAction(payload, keep_app_open=True)
 
-    def _fallback_to_cache(self, extension, error_msg, query="", suggestions=None):
+    def _fallback_to_cache(self, extension, error_msg, query="", filter_spec=None, suggestions=None):
         """Try to show cached data on network/rate-limit errors."""
         items = []
         cached = extension.cache.get_full_response() if extension.cache else None
@@ -1103,7 +1216,7 @@ class KeywordQueryEventListener(EventListener):
             return items
 
         tasks = cached.get("data", {}).get("tasks", [])
-        filtered_tasks = self._filter_tasks(tasks, query)
+        filtered_tasks = self._filter_tasks(tasks, query, filter_spec=filter_spec)
         age = extension.cache.get_age_display() if extension.cache else "unknown"
         logger.info("Fallback to cached response: %d tasks (cache age=%s)", len(tasks), age)
 
