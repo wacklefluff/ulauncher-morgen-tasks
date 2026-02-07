@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New extension preference: `Dev Tools Enabled (1/0)` (default `1`) to show/hide dev commands.
 - Due-date autocomplete suggestions in create flow: partial due tokens like `@` and `@to` now show actionable due suggestions (for example `@today`, `@tomorrow`) that create the task on Enter.
 - Query filters for task browsing: `p:`/`priority:` (priority) and `due:` (due-state/date-window) tokens can be combined with normal text search.
+- Added `next-month` due support and autocomplete (`@next-month`) in task creation flow.
+- Added due-filter autocomplete suggestions while typing search filters (for example `due`, `due:to`).
 - New tooling for seeding test data:
   - `development/tools/create_dummy_morgen_tasks.py` (creates real tasks via API key)
   - `extension/src/dev_dummy_tasks.py` (shared dummy payload generator)

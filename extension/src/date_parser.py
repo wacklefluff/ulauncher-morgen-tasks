@@ -7,6 +7,7 @@ required due format: YYYY-MM-DDTHH:mm:ss (exactly 19 chars, no timezone).
 
 from __future__ import annotations
 
+import calendar
 import re
 from dataclasses import dataclass
 from datetime import date, datetime, time, timedelta
@@ -49,7 +50,7 @@ class DateParser:
     Parse human input for due dates.
 
     Supported examples:
-      - today, tomorrow, next-week
+      - today, tomorrow, next-week, next-month
       - next-mon, next-monday
       - 2026-02-10
       - 2026-02-10T15:30
@@ -81,6 +82,8 @@ class DateParser:
             return datetime.combine(now.date() - timedelta(days=1), self.default_time)
         if raw in {"nextweek", "next-week"}:
             return datetime.combine(now.date() + timedelta(days=7), self.default_time)
+        if raw in {"nextmonth", "next-month"}:
+            return datetime.combine(self._next_month_same_day(now.date()), self.default_time)
 
         # next-<weekday>
         if raw.startswith("next-"):
@@ -136,7 +139,7 @@ class DateParser:
             t = self._parse_time(time_part.strip()) if time_part else self.default_time
             return datetime.combine(base_date, t)
 
-        raise DateParseError("Unrecognized date. Try: today, tomorrow, friday, 2026-02-10, 15:30")
+        raise DateParseError("Unrecognized date. Try: today, tomorrow, next-month, friday, 2026-02-10, 15:30")
 
     def _looks_like_time(self, raw: str) -> bool:
         raw = raw.strip().lower()
@@ -193,3 +196,14 @@ class DateParser:
             delta = 7
         return base + timedelta(days=delta)
 
+    def _next_month_same_day(self, base: date) -> date:
+        if base.month == 12:
+            target_year = base.year + 1
+            target_month = 1
+        else:
+            target_year = base.year
+            target_month = base.month + 1
+
+        max_day = calendar.monthrange(target_year, target_month)[1]
+        target_day = min(base.day, max_day)
+        return date(target_year, target_month, target_day)

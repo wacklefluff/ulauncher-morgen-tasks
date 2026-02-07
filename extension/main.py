@@ -43,7 +43,12 @@ from src.dev_dummy_tasks import (
     build_dummy_task_specs,
 )
 from src.task_lists import group_tasks_by_list, get_task_list_ref, matches_list_name, matches_container_id
-from src.task_filters import parse_query_filters, matches_task_filters
+from src.task_filters import (
+    parse_query_filters,
+    matches_task_filters,
+    extract_due_filter_fragment,
+    get_due_filter_suggestions,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -53,11 +58,13 @@ _MAX_CONDENSED = 15   # Max results in condensed (compact) display mode
 _TASK_LIST_API_LIMIT = 100
 _DUMMY_COMPLETE_BATCH_SIZE = 30
 _DUE_AUTOCOMPLETE_MAX = 8
+_DUE_FILTER_AUTOCOMPLETE_MAX = 6
 _DUE_SUGGESTION_VALUES = (
     "today",
     "tomorrow",
     "yesterday",
     "next-week",
+    "next-month",
     "mon",
     "tue",
     "wed",
@@ -234,6 +241,13 @@ class KeywordQueryEventListener(EventListener):
             force_refresh, query, refresh_prefix_used = self._parse_query(raw_query)
 
         container_kind, list_filter, query = self._parse_container_filter_command(query)
+        due_filter_fragment = extract_due_filter_fragment(query)
+        due_filter_suggestions = []
+        if due_filter_fragment is not None:
+            due_filter_suggestions = get_due_filter_suggestions(
+                due_filter_fragment,
+                limit=_DUE_FILTER_AUTOCOMPLETE_MAX,
+            )
         filter_spec, query = parse_query_filters(query)
 
         try:
@@ -277,6 +291,30 @@ class KeywordQueryEventListener(EventListener):
                 description=f'Cache: {cache_status} | {enter_hint} | "help" for commands | "refresh"/"!" to refresh',
                 on_enter=HideWindowAction()
             ))
+
+            if due_filter_fragment is not None:
+                items.append(ExtensionResultItem(
+                    icon="images/icon.png",
+                    name="Due filter suggestions",
+                    description='Use `due:<value>` while searching (example: due:today)',
+                    on_enter=HideWindowAction(),
+                ))
+                if due_filter_suggestions:
+                    for suggestion in due_filter_suggestions:
+                        items.append(ExtensionResultItem(
+                            icon="images/icon.png",
+                            name=f"due:{suggestion}",
+                            description="Autocomplete suggestion for due filter",
+                            on_enter=HideWindowAction(),
+                        ))
+                else:
+                    items.append(ExtensionResultItem(
+                        icon="images/icon.png",
+                        name="No due filter suggestions",
+                        description="Try: due:today due:tomorrow due:next-month due:week",
+                        on_enter=HideWindowAction(),
+                    ))
+
             if api_limit_reached:
                 items.append(self._api_task_limit_notice())
 
@@ -455,6 +493,7 @@ class KeywordQueryEventListener(EventListener):
         due_examples = [
             "@today",
             "@tomorrow",
+            "@next-month",
             "@next-mon",
             "@2026-02-10",
             "@2026-02-10T15:30",
@@ -1056,7 +1095,7 @@ class KeywordQueryEventListener(EventListener):
                     parsed["due_fragment"] = due_token
                     parsed["due_suggestions"] = due_suggestions
                     return parsed
-                return {"error": f"Invalid date '{due_token}'. Try: today, tomorrow, friday, 2026-02-10"}
+                return {"error": f"Invalid date '{due_token}'. Try: today, tomorrow, next-month, friday, 2026-02-10"}
 
         return parsed
 

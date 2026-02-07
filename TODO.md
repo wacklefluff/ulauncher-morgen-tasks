@@ -26,7 +26,7 @@ Use this checklist **every time** you implement a feature or fix (not just once 
 1. Decide v1.2.0 scope for remaining roadmap candidates:
    - Task list metadata enrichment (resolve user-friendly names when API only returns ids)
 2. If deferring remaining candidates, finalize v1.2.0 release packaging/tag and publish release notes
-3. Follow-up enhancement note: add `next-month` due autocomplete suggestion
+3. Run follow-up due-autocomplete tests and record PASS/FAIL (`DA06`, `DA07`)
 
 ## Release History
 
@@ -61,7 +61,8 @@ Candidates — pick items to commit to this release:
 - [ ] Task list metadata enrichment (resolve user-friendly names when API only returns ids)
 - [x] Make first dropdown item the actionable "Create" option so Enter creates the task immediately (+v1.2.0)
 - [x] Due-date autocomplete: typing `@` shows a dropdown with date suggestions (e.g. `@to` suggests "today", "tomorrow") (+v1.2.0)
-  - [ ] Add `next-month` suggestion
+  - [x] Add `next-month` suggestion (+v1.2.0)
+  - [x] Add `due:` filter autocomplete suggestions (+v1.2.0)
 
 
 ---

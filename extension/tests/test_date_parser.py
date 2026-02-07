@@ -41,6 +41,12 @@ def test_next_weekday_works():
     assert parsed.due == "2026-02-13T09:00:00"
 
 
+def test_next_month_clamps_day_when_needed():
+    now = datetime(2026, 1, 31, 12, 0, 0)
+    parsed = DateParser(default_time=time(9, 0, 0)).parse("next-month", now=now)
+    assert parsed.due == "2026-02-28T09:00:00"
+
+
 def test_time_only_rolls_to_tomorrow_if_time_has_passed():
     now = datetime(2026, 2, 6, 10, 0, 0)
     parsed = DateParser().parse("09:00", now=now)
@@ -57,4 +63,3 @@ def test_invalid_date_raises():
     now = datetime(2026, 2, 6, 12, 0, 0)
     with pytest.raises(DateParseError):
         DateParser().parse("notadate", now=now)
-

@@ -56,3 +56,22 @@
   - **Result**: [X] PASS  [ ] FAIL  [ ] SKIP
   - **Notes**:
 
+- **DA06** — `@next-month` appears and creates correctly
+  1. Type: `mg new Planning @next-`
+  2. Confirm `@next-month` appears in suggestions
+  3. Press Enter on `Use due @next-month`
+  - **Expected**:
+    - Suggestion appears in the autocomplete list
+    - Created task has due date in next calendar month
+  - **Result**: [ ] PASS  [ ] FAIL  [ ] SKIP
+  - **Notes**:
+
+- **DA07** — `due:` filter suggestions appear in search flow
+  1. Type: `mg due`
+  2. Type: `mg due:to`
+  - **Expected**:
+    - A due-filter suggestion section appears
+    - Suggested values appear (for example `due:today`, `due:tomorrow`)
+    - No crash or blocking behavior
+  - **Result**: [ ] PASS  [ ] FAIL  [ ] SKIP
+  - **Notes**:

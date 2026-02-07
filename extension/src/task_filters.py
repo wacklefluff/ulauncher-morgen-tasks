@@ -5,7 +5,7 @@ Task query filter parsing and matching helpers.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 
 _PRIORITY_NAME_TO_VALUE = {
@@ -15,7 +15,15 @@ _PRIORITY_NAME_TO_VALUE = {
     "normal": 0,
 }
 
-_SUPPORTED_DUE_FILTERS = {"today", "tomorrow", "overdue", "future", "week", "nodue"}
+_SUPPORTED_DUE_FILTERS = (
+    "today",
+    "tomorrow",
+    "overdue",
+    "future",
+    "week",
+    "next-month",
+    "nodue",
+)
 
 
 @dataclass(frozen=True)
@@ -60,6 +68,40 @@ def parse_query_filters(query: str) -> tuple[TaskFilterSpec, str]:
         remaining_tokens.append(token)
 
     return TaskFilterSpec(priority_values=priority_values, due_values=due_values), " ".join(remaining_tokens).strip()
+
+
+def extract_due_filter_fragment(query: str) -> str | None:
+    """
+    Return active due-filter fragment from query for autocomplete.
+
+    Examples:
+      - "report due:to" -> "to"
+      - "due:" -> ""
+      - "due" -> ""
+      - "due:today" -> None (already complete)
+    """
+    tokens = (query or "").split()
+    if not tokens:
+        return None
+
+    last = tokens[-1].strip().lower()
+    if last == "due":
+        return ""
+
+    if last.startswith("due:"):
+        fragment = last.split(":", 1)[1].strip()
+        if fragment in _SUPPORTED_DUE_FILTERS:
+            return None
+        return fragment
+
+    return None
+
+
+def get_due_filter_suggestions(fragment: str, *, limit: int = 8) -> list[str]:
+    normalized = (fragment or "").strip().lower().replace("_", "-")
+    if not normalized:
+        return list(_SUPPORTED_DUE_FILTERS[:limit])
+    return [value for value in _SUPPORTED_DUE_FILTERS if value.startswith(normalized)][:limit]
 
 
 def matches_task_filters(task: dict, spec: TaskFilterSpec, *, now: datetime | None = None) -> bool:
@@ -112,6 +154,7 @@ def _match_due(task: dict, due_filters: set[str], *, now: datetime | None = None
     due_date = due_dt.date()
     today = now.date()
     tomorrow = today + timedelta(days=1)
+    start_next_month, start_month_after_next = _month_bounds(now)
 
     if "today" in due_filters and due_date == today:
         return True
@@ -123,6 +166,24 @@ def _match_due(task: dict, due_filters: set[str], *, now: datetime | None = None
         return True
     if "week" in due_filters and today <= due_date <= (today + timedelta(days=7)):
         return True
+    if "next-month" in due_filters and start_next_month <= due_date < start_month_after_next:
+        return True
 
     return False
 
+
+def _month_bounds(now: datetime) -> tuple[date, date]:
+    year = now.year
+    month = now.month
+
+    if month == 12:
+        start_next_month = now.date().replace(year=year + 1, month=1, day=1)
+        start_month_after_next = now.date().replace(year=year + 1, month=2, day=1)
+    elif month == 11:
+        start_next_month = now.date().replace(month=12, day=1)
+        start_month_after_next = now.date().replace(year=year + 1, month=1, day=1)
+    else:
+        start_next_month = now.date().replace(month=month + 1, day=1)
+        start_month_after_next = now.date().replace(month=month + 2, day=1)
+
+    return start_next_month, start_month_after_next

@@ -1,5 +1,44 @@
 # Development Log
 
+## 2026-02-07 (Session 35)
+
+**Goals**:
+- Commit completed v1.2.0 work
+- Add `next-month` due autocomplete support
+- Add autocomplete suggestions for `due:` filter typing
+
+**Accomplished**:
+- Committed completed v1.2.0 due-autocomplete + task-filter work:
+  - Commit: `fbfd3f7`
+  - Message: `feat: add due autocomplete and task filters`
+- Added `next-month` support in due parsing/autocomplete:
+  - `extension/src/date_parser.py`
+  - `extension/main.py` due suggestion catalog/help examples
+- Added `due:` filter autocomplete suggestions in search flow:
+  - `extension/src/task_filters.py` (fragment extraction + suggestion helper)
+  - `extension/main.py` suggestion section for partial `due` / `due:<fragment>` input
+- Extended due filter support:
+  - Added `due:next-month` matching in `extension/src/task_filters.py`
+- Added/updated tests:
+  - `extension/tests/test_date_parser.py` (next-month parse test)
+  - `extension/tests/test_task_filters.py` (next-month + due-filter autocomplete helper coverage)
+- Updated docs/tracking:
+  - `development/research/test_plan_v1.2.0_due_autocomplete_2026-02-07.md` (added `DA06`, `DA07`)
+  - `development/research/feature_tracker_due_date_autocomplete_v1.2.0_2026-02-07.md`
+  - `extension/README.md`
+  - `CHANGELOG.md`
+  - `TODO.md`
+
+**Manual Tests**:
+- DA06 PENDING
+- DA07 PENDING
+
+**Automated Tests**:
+- `python -m py_compile extension/main.py extension/src/date_parser.py extension/src/task_filters.py extension/tests/test_date_parser.py extension/tests/test_task_filters.py`: PASS
+- `nix-shell --run "pytest -q"`: PASS (55 tests)
+
+---
+
 ## 2026-02-07 (Session 34)
 
 **Goals**:

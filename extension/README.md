@@ -47,6 +47,7 @@ This extension reads the key via `extension.preferences` at runtime and does not
 | `mg` | List all tasks |
 | `mg <term>` | Search tasks by title/description |
 | `mg due:today` | Filter tasks due today |
+| `mg due:to` | Show due-filter suggestions while typing |
 | `mg p:high` | Filter high-priority tasks |
 | `mg report due:week p:high` | Combine text + due + priority filters |
 | `mg !` | Force refresh (bypass cache) |
@@ -70,9 +71,10 @@ This extension reads the key via `extension.preferences` at runtime and does not
 | `mg new Buy milk @tomorrow` | Create with due date |
 | `mg new Buy milk @to` | Show due suggestions (e.g. `@today`, `@tomorrow`) |
 | `mg new Buy milk @tomorrow !1` | Create with due date and high priority |
+| `mg new Buy milk @next-month` | Create due next calendar month (same day, clamped) |
 | `mg new Meeting @next-mon 3pm` | Due next Monday at 3pm |
 
-**Due date formats**: `today`, `tomorrow`, `next-week`, `next-mon`, `2026-02-15`, `3pm`, `15:30`
+**Due date formats**: `today`, `tomorrow`, `next-week`, `next-month`, `next-mon`, `2026-02-15`, `3pm`, `15:30`
 When typing a due token, partial input like `@to` shows suggestion items you can select with Enter.
 
 **Priority**: `!1` (high), `!5` (medium), `!9` (low)
@@ -104,7 +106,7 @@ When typing a due token, partial input like `@to` shows suggestion items you can
 - `p:<value>` or `priority:<value>`:
   - `high`, `medium`, `low`, `normal`, or `1-9`
 - `due:<value>`:
-  - `today`, `tomorrow`, `overdue`, `future`, `week`, `nodue`
+  - `today`, `tomorrow`, `overdue`, `future`, `week`, `next-month`, `nodue`
 - Filters can be combined with each other and normal text terms.
 
 ## Troubleshooting
