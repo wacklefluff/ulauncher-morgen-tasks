@@ -85,6 +85,7 @@ Items not yet scheduled. May be promoted to a version roadmap.
 ## Currently not Possible
 
 - [ ] Load full task history when account has more than 100 tasks. Current `GET /v3/tasks/list` usage is capped at 100 and no pagination/cursor flow is implemented.
+- [ ] Reliably resolve human-friendly list names from tasks when API payload only provides `taskListId` and no authoritative list-name map/field (for example no `taskListName`).
 
 ---
 

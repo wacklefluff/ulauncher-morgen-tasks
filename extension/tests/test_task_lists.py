@@ -21,12 +21,12 @@ def test_get_task_list_ref_from_embedded_list_object():
     assert ref.key == "list:id:l1"
 
 
-def test_get_task_list_ref_from_task_list_id_and_name_fields():
-    task = {"taskListId": "tl2", "taskListName": "Inbox"}
+def test_get_task_list_ref_from_task_list_id_without_name_map():
+    task = {"taskListId": "tl2"}
     ref = get_task_list_ref(task)
     assert ref.kind == "list"
     assert ref.list_id == "tl2"
-    assert ref.name == "Inbox"
+    assert ref.name is None
     assert ref.key == "list:id:tl2"
 
 
@@ -89,12 +89,13 @@ def test_get_task_list_ref_uses_integration_id_only_when_no_other_fields():
 
 def test_group_tasks_by_list_counts_and_sorts():
     tasks = [
-        {"id": "t1", "title": "a", "taskListId": "l2", "taskListName": "Work"},
-        {"id": "t2", "title": "b", "taskListId": "l1", "taskListName": "Inbox"},
-        {"id": "t3", "title": "c", "taskListId": "l2", "taskListName": "Work"},
+        {"id": "t1", "title": "a", "taskListId": "l2"},
+        {"id": "t2", "title": "b", "taskListId": "l1"},
+        {"id": "t3", "title": "c", "taskListId": "l2"},
         {"id": "t4", "title": "d"},  # ignored (no list metadata)
     ]
-    grouped = group_tasks_by_list(tasks)
+    maps = {"list": {"l1": "Inbox", "l2": "Work"}, "project": {}, "space": {}}
+    grouped = group_tasks_by_list(tasks, name_maps=maps)
     # Sorted by name: Inbox, Work
     assert [(r.name, c) for r, c in grouped] == [("Inbox", 1), ("Work", 2)]
 

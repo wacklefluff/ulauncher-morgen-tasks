@@ -75,7 +75,7 @@ def get_task_list_ref(task: dict, *, name_maps: dict[str, dict[str, str]] | None
     Supported patterns (in priority order):
       - task["list"] = {"id": "...", "name": "..."}
       - task["project"] / task["space"] = {"id": "...", "name": "..."}
-      - task["taskListId"] + optional task["taskListName"]
+      - task["taskListId"] (name resolved via maps only)
       - task["integrationId"] (fallback only)
       - If the task has an id but no name, and `name_maps` includes a mapping,
         the name will be resolved from `name_maps`.
@@ -100,10 +100,8 @@ def get_task_list_ref(task: dict, *, name_maps: dict[str, dict[str, str]] | None
 
     list_id = (task.get("taskListId") or "").strip() if isinstance(task.get("taskListId"), str) else task.get("taskListId")
     list_id = str(list_id).strip() if list_id else None
-    name = (task.get("taskListName") or "").strip() if isinstance(task.get("taskListName"), str) else None
-    if list_id or name:
-        if not name and list_id:
-            name = (name_maps.get("list") or {}).get(list_id)
+    if list_id:
+        name = (name_maps.get("list") or {}).get(list_id)
         return TaskListRef(kind="list", list_id=list_id, name=name or None)
 
     # Final fallback for payloads that expose only integration/account-level ids.
