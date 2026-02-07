@@ -2,7 +2,7 @@
 
 Current task list and development roadmap.
 
-**Last Updated**: 2026-02-06
+**Last Updated**: 2026-02-07
 **Current Version**: v1.0.0 (Published)
 **Current Branch**: `develop`
 
@@ -45,8 +45,8 @@ Use this checklist **every time** you implement a feature or fix (not just once 
 - [x] **Mark tasks as complete** from Ulauncher (`mg d <query>` → Enter to complete via API) (+v1.1.0)
 - [x] **Open Morgen app** on task click (default Enter) (+v1.1.0)
 - [ ] Ulauncher settings
-	- [ ] additional shortcut to add a new task
-	- [ ] open log file button
+	- [x] additional shortcut to add a new task (+v1.1.0)
+	- [ ] open log file button (blocked: Ulauncher preferences don't support buttons)
 
 ### Implementation notes
 

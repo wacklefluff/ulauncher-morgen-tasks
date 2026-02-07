@@ -116,10 +116,13 @@ class KeywordQueryEventListener(EventListener):
         raw_query = (event.get_argument() or "").strip()
         logger.info("Keyword triggered with query: '%s'", raw_query)
 
+        triggered_keyword = self._get_triggered_keyword(event)
+
         # Get preferences
         api_key = extension.preferences.get("api_key", "").strip()
         cache_ttl_str = extension.preferences.get("cache_ttl", "600")
         task_open_url_template = (extension.preferences.get("task_open_url_template") or "").strip()
+        new_task_keyword = (extension.preferences.get("mg_new_keyword") or "").strip()
         if not task_open_url_template:
             task_open_url_template = "https://web.morgen.so"
 
@@ -129,7 +132,7 @@ class KeywordQueryEventListener(EventListener):
             cache_ttl = 600
 
         # Help and debug commands work without API key
-        help_items = self._maybe_build_help_flow(raw_query)
+        help_items = self._maybe_build_help_flow(raw_query, extension)
         if help_items is not None:
             logger.info("Showing help view")
             return RenderResultListAction(help_items)
@@ -156,6 +159,15 @@ class KeywordQueryEventListener(EventListener):
             extension.api_client = MorgenAPIClient(api_key)
             extension.cache = TaskCache(ttl=cache_ttl)
             logger.info("API client initialized (cache TTL: %ds)", cache_ttl)
+
+        # Optional "new task" shortcut keyword (preference: mg_new_keyword)
+        if triggered_keyword and new_task_keyword and triggered_keyword == new_task_keyword:
+            logger.info("Quick-create keyword triggered: %s", triggered_keyword)
+            create_items = self._build_create_flow_items(
+                raw_query,
+                usage=f"{new_task_keyword} <title> [@due] [!priority]",
+            )
+            return RenderResultListAction(create_items)
 
         items = []
         formatter = TaskFormatter()
@@ -303,7 +315,25 @@ class KeywordQueryEventListener(EventListener):
 
         return RenderResultListAction(items)
 
-    def _maybe_build_help_flow(self, raw_query: str):
+    def _get_triggered_keyword(self, event) -> str:
+        """
+        Best-effort retrieval of the keyword used to trigger this event.
+
+        Ulauncher versions may expose this as `get_keyword()` or an attribute.
+        """
+        try:
+            kw = event.get_keyword()
+            if isinstance(kw, str):
+                return kw
+        except Exception:
+            pass
+
+        kw = getattr(event, "keyword", None)
+        if isinstance(kw, str):
+            return kw
+        return ""
+
+    def _maybe_build_help_flow(self, raw_query: str, extension):
         if not raw_query:
             return None
 
@@ -312,6 +342,9 @@ class KeywordQueryEventListener(EventListener):
         # "help regression test" still behave like normal search.
         if normalized not in {"help", "?", "h"}:
             return None
+
+        mg_keyword = (extension.preferences.get("mg_keyword") or "mg").strip() or "mg"
+        new_task_keyword = (extension.preferences.get("mg_new_keyword") or "").strip()
 
         examples = [
             ("List tasks", "mg"),
@@ -322,6 +355,15 @@ class KeywordQueryEventListener(EventListener):
             ("Clear cache", "mg clear"),
             ("Debug / logs", "mg debug"),
         ]
+        if new_task_keyword:
+            examples.insert(4, ("Create task (shortcut keyword)", f"{new_task_keyword} <title> [@due] [!priority]"))
+
+        # Prefer showing actual configured keyword in the help header.
+        def _swap_mg(example: str) -> str:
+            # Examples contain the literal "mg". Replace all occurrences for consistency.
+            return example.replace("mg", mg_keyword)
+
+        examples = [(label, _swap_mg(example) if example.startswith("mg") else example) for label, example in examples]
 
         due_examples = [
             "@today",
@@ -337,7 +379,7 @@ class KeywordQueryEventListener(EventListener):
             ExtensionResultItem(
                 icon="images/icon.png",
                 name="Morgen Tasks — Help",
-                description='Commands and examples. Tip: type "mg" then the example.',
+                description=f'Commands and examples. Tip: type "{mg_keyword}" then the example.',
                 on_enter=HideWindowAction(),
             )
         ]
@@ -400,6 +442,9 @@ class KeywordQueryEventListener(EventListener):
         if normalized not in {"debug", "log", "logs"}:
             return None
 
+        return self._build_debug_view_items()
+
+    def _build_debug_view_items(self):
         items = [
             ExtensionResultItem(
                 icon="images/icon.png",
@@ -445,24 +490,27 @@ class KeywordQueryEventListener(EventListener):
             return None
 
         rest = parts[1].strip() if len(parts) > 1 else ""
+        return self._build_create_flow_items(rest, usage="mg new <title> [@due] [!priority]")
+
+    def _build_create_flow_items(self, rest: str, *, usage: str):
         items = []
 
         if not rest:
             items.append(ExtensionResultItem(
-                icon='images/icon.png',
-                name='Create task: missing title',
-                description='Usage: mg new <title> [@due] [!priority]',
-                on_enter=HideWindowAction()
+                icon="images/icon.png",
+                name="Create task: missing title",
+                description=f"Usage: {usage}",
+                on_enter=HideWindowAction(),
             ))
             return items
 
-        parse = self._parse_create_args(rest)
+        parse = self._parse_create_args(rest, usage=usage)
         if parse.get("error"):
             items.append(ExtensionResultItem(
-                icon='images/icon.png',
-                name='Cannot create task',
+                icon="images/icon.png",
+                name="Cannot create task",
                 description=parse["error"],
-                on_enter=HideWindowAction()
+                on_enter=HideWindowAction(),
             ))
             return items
 
@@ -480,10 +528,10 @@ class KeywordQueryEventListener(EventListener):
             summary.append("No due date / priority")
 
         items.append(ExtensionResultItem(
-            icon='images/icon.png',
-            name='Create Morgen task',
-            description=' | '.join(summary),
-            on_enter=HideWindowAction()
+            icon="images/icon.png",
+            name="Create Morgen task",
+            description=" | ".join(summary),
+            on_enter=HideWindowAction(),
         ))
 
         payload = {
@@ -494,17 +542,17 @@ class KeywordQueryEventListener(EventListener):
         }
 
         items.append(ExtensionResultItem(
-            icon='images/icon.png',
-            name=f'Create: {title}',
-            description='Press Enter to create this task',
-            on_enter=ExtensionCustomAction(payload, keep_app_open=True)
+            icon="images/icon.png",
+            name=f"Create: {title}",
+            description="Press Enter to create this task",
+            on_enter=ExtensionCustomAction(payload, keep_app_open=True),
         ))
 
         items.append(ExtensionResultItem(
-            icon='images/icon.png',
-            name='Cancel',
-            description='Close without creating a task',
-            on_enter=HideWindowAction()
+            icon="images/icon.png",
+            name="Cancel",
+            description="Close without creating a task",
+            on_enter=HideWindowAction(),
         ))
 
         return items
@@ -550,7 +598,7 @@ class KeywordQueryEventListener(EventListener):
 
         return 0, f"Unknown priority '{body}'. Use: !high, !medium, !low, or !1-!9"
 
-    def _parse_create_args(self, rest: str) -> dict:
+    def _parse_create_args(self, rest: str, *, usage: str = "mg new <title> [@due] [!priority]") -> dict:
         """
         Parse create args from the part after 'new' / 'add'.
 
@@ -581,7 +629,7 @@ class KeywordQueryEventListener(EventListener):
         if len(title) >= 2 and title[0] == title[-1] and title[0] in ('"', "'"):
             title = title[1:-1].strip()
         if not title:
-            return {"error": "Missing title. Usage: mg new <title> [@due] [!priority]"}
+            return {"error": f"Missing title. Usage: {usage}"}
 
         parsed = {"title": title, "priority": priority}
 

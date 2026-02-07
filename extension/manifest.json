@@ -17,6 +17,13 @@
       "default_value": "mg"
     },
     {
+      "id": "mg_new_keyword",
+      "type": "keyword",
+      "name": "Morgen Tasks (New Task Shortcut)",
+      "description": "Optional shortcut keyword to create a new task (acts like typing: mg new ...). Leave empty to disable.",
+      "default_value": "mgn"
+    },
+    {
       "id": "api_key",
       "type": "input",
       "name": "Morgen API Key",

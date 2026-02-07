@@ -25,6 +25,7 @@ Manage your Morgen tasks directly from Ulauncher - list, search, and create task
 
 3. Open Ulauncher preferences (Extensions tab) and configure:
    - **Keyword**: `mg` (default, customizable)
+   - **New Task Shortcut Keyword**: `mgn` (optional; creates tasks directly)
    - **API Key**: Your Morgen API key from https://platform.morgen.so
    - **Cache Duration**: Seconds to cache tasks (default: 600)
    - **Task Open URL Template**: URL opened on task selection (opens Morgen; no official per-task deep link support)
@@ -54,6 +55,7 @@ This extension reads the key via `extension.preferences` at runtime and does not
 | Command | Description |
 |---------|-------------|
 | `mg new Buy milk` | Create task with title only |
+| `mgn Buy milk` | Create task (shortcut keyword; configurable in preferences) |
 | `mg new Buy milk @tomorrow` | Create with due date |
 | `mg new Buy milk @tomorrow !1` | Create with due date and high priority |
 | `mg new Meeting @next-mon 3pm` | Due next Monday at 3pm |

@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `mg debug` command: dedicated screen for runtime log access (open/copy log path)
 - `mg d <query>` / `mg done <query>`: search tasks and press Enter to mark selected task as done
 - Preference `task_open_url_template` to control what opens on task selection
+- Optional shortcut keyword preference `mg_new_keyword` (default: `mgn`) to create tasks without typing `new`
 
 ### Changed
 - Log access items ("Open runtime log", "Copy log path") moved from help/error screens to `mg debug`

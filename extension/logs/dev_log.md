@@ -1,5 +1,27 @@
 # Development Log
 
+## 2026-02-07 (Session 20)
+
+**Goals**:
+- Add an optional shortcut keyword to create new tasks
+
+**Accomplished**:
+- Added `mg_new_keyword` manifest preference (default: `mgn`) to trigger quick-create flow
+- Updated help screen to show configured keyword(s) and the shortcut example when enabled
+- Updated docs and changelog
+- Created manual test plan: `development/research/test_plan_v1.1.0_2026-02-07.md`
+
+**Manual Tests**:
+- N01 PASS
+- N02 PASS
+- N03 PASS
+- N04 PASS
+
+**Notes**:
+- Ulauncher extension preferences don't support clickable "buttons"; runtime log access remains available via `mg debug`.
+
+---
+
 ## 2026-02-06 (Session 19)
 
 **Goals**:
