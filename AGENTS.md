@@ -70,6 +70,7 @@ Manual test request format is mandatory:
 3. Record/report outcomes by test ID (PASS/FAIL).
 
 ### End of Session / Feature Completion
+trigger word: `end session`
 
 Update all of the following:
 - `CHANGELOG.md`

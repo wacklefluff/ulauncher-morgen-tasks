@@ -60,7 +60,7 @@
   - `CHANGELOG.md`
 
 **Manual Tests**:
-- LP01 PENDING (`mg new <title> --` creates low-priority task)
+- LP01 PASS (`mg new <title> --` creates low-priority task)
 
 **Automated Tests**:
 - `python -m py_compile extension/main.py`: PASS
