@@ -1,5 +1,23 @@
 # Development Log
 
+## 2026-02-07 (Session 27)
+
+**Goals**:
+- Add multiple batch-size options to `mg dev dummy-tasks`
+
+**Accomplished**:
+- Updated `extension/main.py` dev flow UI to provide three explicit actions:
+  - Create 10 dummy tasks
+  - Create 50 dummy tasks
+  - Create 90 dummy tasks
+- Updated `extension/README.md` utility command description to reflect 10/50/90 options
+
+**Automated Tests**:
+- `python -m py_compile extension/main.py`: PASS
+- `nix-shell --run "pytest -q"`: PASS (43 tests)
+
+---
+
 ## 2026-02-07 (Session 26)
 
 **Goals**:

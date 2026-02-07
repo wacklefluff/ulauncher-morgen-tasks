@@ -750,31 +750,33 @@ class KeywordQueryEventListener(EventListener):
         if normalized not in {"dev dummy-tasks", "dev dummy tasks"}:
             return None
 
-        payload = {
-            "action": "create_dummy_tasks",
-            "count": DEFAULT_DUMMY_TASK_COUNT,
-            "prefix": DEFAULT_DUMMY_TITLE_PREFIX,
-        }
-        return [
+        items = [
             ExtensionResultItem(
                 icon="images/icon.png",
-                name="Dev: Create 90 dummy tasks in Morgen",
+                name="Dev: Dummy task seeding",
+                description="Pick a batch size (creates real tasks in your Morgen account).",
+                on_enter=HideWindowAction(),
+            )
+        ]
+        for count in (10, 50, DEFAULT_DUMMY_TASK_COUNT):
+            payload = {
+                "action": "create_dummy_tasks",
+                "count": count,
+                "prefix": DEFAULT_DUMMY_TITLE_PREFIX,
+            }
+            items.append(ExtensionResultItem(
+                icon="images/icon.png",
+                name=f"Create {count} dummy tasks",
                 description='Prefix: "#dev Testing " | Enter to run',
                 on_enter=ExtensionCustomAction(payload, keep_app_open=True),
-            ),
-            ExtensionResultItem(
-                icon="images/icon.png",
-                name="Warning",
-                description="This creates real tasks in your Morgen account.",
-                on_enter=HideWindowAction(),
-            ),
-            ExtensionResultItem(
-                icon="images/icon.png",
-                name="Cancel",
-                description="Close without creating dummy tasks",
-                on_enter=HideWindowAction(),
-            ),
-        ]
+            ))
+        items.append(ExtensionResultItem(
+            icon="images/icon.png",
+            name="Cancel",
+            description="Close without creating dummy tasks",
+            on_enter=HideWindowAction(),
+        ))
+        return items
 
     def _build_create_flow_items(self, rest: str, *, usage: str):
         items = []

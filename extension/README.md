@@ -78,7 +78,7 @@ This extension reads the key via `extension.preferences` at runtime and does not
 | `mg help` or `mg ?` | Show command reference |
 | `mg clear` | Clear cached tasks |
 | `mg debug` | Debug/log screen (open/copy runtime log path) |
-| `mg dev dummy-tasks` | Dev helper: create 90 real dummy tasks (`#dev Testing ...`) |
+| `mg dev dummy-tasks` | Dev helper: choose 10/50/90 real dummy tasks (`#dev Testing ...`) |
 
 ### Task Actions
 
