@@ -5,10 +5,9 @@ All notable changes to the Ulauncher Morgen Tasks extension will be documented i
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.1.0] - 2026-02-07
 
 ### Added
-- Published to GitHub: https://github.com/wacklefluff/ulauncher-morgen-tasks
 - `mg debug` command: dedicated screen for runtime log access (open/copy log path)
 - `mg d <query>` / `mg done <query>`: search tasks and press Enter to mark selected task as done
 - Optional shortcut keyword preference `mg_new_keyword` (default: `mgn`) to create tasks without typing `new`
