@@ -25,8 +25,17 @@ Manage your Morgen tasks directly from Ulauncher - list, search, and create task
 
 3. Open Ulauncher preferences (Extensions tab) and configure:
    - **Keyword**: `mg` (default, customizable)
+   - **New Task Shortcut Keyword**: `mgn` (optional; creates tasks directly)
    - **API Key**: Your Morgen API key from https://platform.morgen.so
    - **Cache Duration**: Seconds to cache tasks (default: 600)
+
+### Where Your API Key Is Stored
+
+Ulauncher stores extension preferences (including the API key) **unencrypted** in a local SQLite DB. On this system the path is:
+
+- `~/.config/ulauncher/ext_preferences/ulauncher-morgen-tasks.db`
+
+This extension reads the key via `extension.preferences` at runtime and does not store it in this repository.
 
 ## Usage
 
@@ -38,12 +47,22 @@ Manage your Morgen tasks directly from Ulauncher - list, search, and create task
 | `mg <term>` | Search tasks by title/description |
 | `mg !` | Force refresh (bypass cache) |
 | `mg refresh` | Force refresh (alternative) |
+| `mg lists` | Show all detected containers (list/project/space) |
+| `mg list` | Show list-kind containers only |
+| `mg project` | Show project-kind containers only |
+| `mg space` | Show space-kind containers only |
+| `mg in <list> [term]` | Filter/search within a list (when available) |
+| `mg list <name> [term]` | Filter/search within a specific list-kind container |
+| `mg project <name> [term]` | Filter/search within a specific project-kind container |
+| `mg space <name> [term]` | Filter/search within a specific space-kind container |
+| `mg d <term>` | Search tasks and press Enter to mark as done |
 
 ### Create Tasks
 
 | Command | Description |
 |---------|-------------|
 | `mg new Buy milk` | Create task with title only |
+| `mgn Buy milk` | Create task (shortcut keyword; configurable in preferences) |
 | `mg new Buy milk @tomorrow` | Create with due date |
 | `mg new Buy milk @tomorrow !1` | Create with due date and high priority |
 | `mg new Meeting @next-mon 3pm` | Due next Monday at 3pm |
@@ -58,6 +77,13 @@ Manage your Morgen tasks directly from Ulauncher - list, search, and create task
 |---------|-------------|
 | `mg help` or `mg ?` | Show command reference |
 | `mg clear` | Clear cached tasks |
+| `mg debug` | Debug/log screen (open/copy runtime log path) |
+
+### Task Actions
+
+- `Enter` on a task (normal mode): No action
+- `Alt+Enter` on a task: Copy task ID (if supported by your Ulauncher version)
+- `Enter` in done mode (`mg d ...`): Mark task as done
 
 ### Task Display
 
@@ -70,7 +96,7 @@ Manage your Morgen tasks directly from Ulauncher - list, search, and create task
 
 ### View Runtime Logs
 
-From the help screen (`mg help`), select "Open runtime log" or "Copy log path".
+Run `mg debug`, then select "Open runtime log" or "Copy log path".
 
 Log location: `logs/runtime.log`
 

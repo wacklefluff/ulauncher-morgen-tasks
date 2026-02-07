@@ -1,5 +1,197 @@
 # Development Log
 
+## 2026-02-07 (Session 24)
+
+**Goals**:
+- Complete documentation protocol housekeeping and end session
+
+**Accomplished**:
+- Created dedicated handoff protocol file:
+  - `development/protocols/ai_agent_handoff_protocol_2026-02-07.md`
+- Updated `AGENTS.md` to point handoff rules to the dedicated protocol file
+- Added explicit trigger phrase support in protocol/docs:
+  - `handoff session`
+- Added protocol pointers in core docs:
+  - `README.md`
+  - `AGENTS.md`
+  - `CLAUDE.md`
+- Verified current changes and committed documentation updates
+
+**Notes**:
+- Handoff and git-maintenance protocols now both live under `development/protocols/`.
+
+---
+
+## 2026-02-07 (Session 23)
+
+**Goals**:
+- Remove "Task Open URL Template" from Ulauncher extension settings
+
+**Accomplished**:
+- Removed `task_open_url_template` preference from `extension/manifest.json`
+- Updated `extension/main.py` to always open `https://web.morgen.so` on task Enter
+- Removed stale docs references in:
+  - `extension/README.md`
+  - `CHANGELOG.md`
+  - `TODO.md`
+- Updated normal-mode task Enter behavior to no-op (`HideWindowAction`) while keeping done-mode Enter and Alt+Enter copy behavior
+
+**Automated Tests**:
+- `nix-shell --run "pytest -q"`: PASS (40 tests)
+
+---
+
+## 2026-02-07 (Session 22)
+
+**Goals**:
+- Add explicit container commands so each API field path can be tested independently (`listId`/`projectId`/`spaceId`)
+
+**Accomplished**:
+- Updated list/container UX in `extension/main.py`:
+  - Added kind-specific browse commands: `mg list`, `mg project`, `mg space`
+  - Added kind-specific filter commands: `mg list <name> [query]`, `mg project <name> [query]`, `mg space <name> [query]`
+  - Kept existing commands: `mg lists`/`mg ls` and `mg in <list> [query]`
+  - Added container-kind aware labels in headers/subtitles
+- Expanded manual test plan:
+  - `development/research/test_plan_v1.1.0_task_lists_2026-02-07.md` now includes L01-L11 to validate each container path and debug field-dump checks
+- Updated docs/changelog:
+  - `extension/README.md` command table
+  - `CHANGELOG.md` (Unreleased)
+  - `TODO.md` task-list implementation notes
+- Added explicit unit coverage for reference-field extraction:
+  - `projectId` + optional `projectName`
+  - `spaceId` + optional `spaceName`
+  - File: `extension/tests/test_task_lists.py`
+- Added compatibility for Morgen payloads that use `taskListId`/`taskListName`:
+  - `extension/src/task_lists.py` now extracts list refs from `taskListId`
+  - Container name maps also ingest `data.taskLists` / `data.tasklists` when present
+- Added unit tests for `taskListId` extraction and map-based name resolution
+- Added `integrationId` fallback support in list extraction for payloads without explicit list/project/space keys
+- Added unit tests validating `integrationId` fallback and precedence rules
+- Made container-id matching case-insensitive in list filters and list selection actions
+- Enhanced `mg debug` dump to log sample `taskListId` and `integrationId` values
+- Clarified manual test L10 pass criteria for accounts without projects/spaces
+- Simplified list field support based on real payloads:
+  - Removed `listId` / `projectId` / `spaceId` extraction paths
+  - Kept `taskListId` / `taskListName` + `integrationId` fallback
+  - Updated unit tests accordingly
+
+**Manual Tests**:
+- L11 PASS (payload keys include `taskListId`; maps may be empty)
+- L01 PASS
+- L02 PASS
+- L03 PASS
+- L04 SKIP (no project metadata available in current account payload)
+- L05 PASS
+- L06 PASS
+- L07 SKIP (no project metadata available in current account payload)
+- L08 SKIP (no matching space metadata for filter in current account payload)
+- L09 PASS
+- L10 PASS (unavailable metadata fallback message verified)
+- L12 PASS (`integrationId` fallback grouping confirmed)
+
+**Automated Tests**:
+- `nix-shell --run "pytest -q"`: PASS (40 tests)
+
+---
+
+## 2026-02-07 (Session 21)
+
+**Goals**:
+- Add task list support (Inbox/Work/etc): list and filter
+
+**Accomplished**:
+- Added task list extraction/grouping helpers (`extension/src/task_lists.py`)
+- Added `mg lists` / `mg ls` view and `mg in <list> [query]` filtering
+- List name now shows in task subtitle when available
+- Added debug helper: "Dump cached task fields" in `mg debug`
+- Added manual test plan: `development/research/test_plan_v1.1.0_task_lists_2026-02-07.md`
+
+**Manual Tests**:
+- L01 PENDING
+- L02 PENDING
+- L03 PENDING
+- L04 PENDING
+- L05 PENDING
+
+---
+
+## 2026-02-07 (Session 20)
+
+**Goals**:
+- Add an optional shortcut keyword to create new tasks
+
+**Accomplished**:
+- Added `mg_new_keyword` manifest preference (default: `mgn`) to trigger quick-create flow
+- Updated help screen to show configured keyword(s) and the shortcut example when enabled
+- Updated docs and changelog
+- Created manual test plan: `development/research/test_plan_v1.1.0_2026-02-07.md`
+
+**Manual Tests**:
+- N01 PASS
+- N02 PASS
+- N03 PASS
+- N04 PASS
+
+**Notes**:
+- Ulauncher extension preferences don't support clickable "buttons"; runtime log access remains available via `mg debug`.
+
+---
+
+## 2026-02-06 (Session 19)
+
+**Goals**:
+- Make opening Morgen the default task action on Enter
+
+**Accomplished**:
+- Default task Enter now opens Morgen using the "Task Open URL Template" preference
+- Added Alt+Enter copy-task-id action when supported by Ulauncher
+- Updated docs and manual test plan (`development/research/test_plan_v1.1.0_2026-02-06.md` O02)
+- Removed `{id}` substitution from the open URL (Morgen has no official per-task deep link support)
+
+**Manual Tests**:
+- O02 PASS
+
+---
+
+## 2026-02-06 (Session 18)
+
+**Goals**:
+- Add `mg d <query>` flow to mark tasks as done (close via API)
+
+**Accomplished**:
+- Added `MorgenAPIClient.close_task()` and made `_make_request()` handle empty (204) responses
+- Implemented `mg d` / `mg done` mode: lists/searches tasks but Enter marks done
+- Extended unit tests for close-task behavior
+- Updated manual test plan: `development/research/test_plan_v1.1.0_2026-02-06.md` (D01–D06)
+
+**Manual Tests**:
+- D01 PASS
+- D02 PASS
+- D03 PASS
+- D04 PASS
+- D05 PASS
+- D06 PASS
+
+---
+
+## 2026-02-06 (Session 17)
+
+**Goals**:
+- Implement SUG-04: show creation date when no due date is available
+
+**Accomplished**:
+- Updated `TaskFormatter.format_subtitle()` to show `Created: YYYY-MM-DD` for tasks without `due`
+- Added unit test coverage for the created-date fallback
+- Created manual test plan: `development/research/test_plan_v1.1.0_2026-02-06.md`
+
+**Manual Tests**:
+- S04-01 PASS
+- S04-02 PASS
+- S04-03 SKIP (no task missing `created` found)
+
+---
+
 ## 2026-02-06 (Session 16)
 
 **Goals**:

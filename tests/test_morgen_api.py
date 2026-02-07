@@ -34,6 +34,20 @@ class _FakeHTTPResponse:
         return False
 
 
+class _FakeHTTPResponseBytes:
+    def __init__(self, raw: bytes):
+        self._raw = raw
+
+    def read(self):
+        return self._raw
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        return False
+
+
 def _http_error(code: int, body: str = "") -> urllib.error.HTTPError:
     fp = io.BytesIO(body.encode("utf-8"))
     return urllib.error.HTTPError(
@@ -50,6 +64,13 @@ def test_make_request_success_parses_json():
     with patch("urllib.request.urlopen", return_value=_FakeHTTPResponse({"ok": True})) as _:
         resp = client._make_request("/tasks/list?limit=1")
     assert resp == {"ok": True}
+
+
+def test_make_request_empty_body_returns_empty_dict():
+    client = MorgenAPIClient("k")
+    with patch("urllib.request.urlopen", return_value=_FakeHTTPResponseBytes(b"")) as _:
+        resp = client._make_request("/tasks/close", method="POST", data={"id": "t"})
+    assert resp == {}
 
 
 def test_make_request_401_raises_auth_error():
@@ -134,3 +155,19 @@ def test_create_task_validates_priority_and_due_format():
     with pytest.raises(ValueError):
         client.create_task("x", due="2026/02/10T09:00:00")  # wrong separators
 
+
+def test_close_task_calls_close_endpoint():
+    client = MorgenAPIClient("k")
+    captured = {}
+
+    def _capture(endpoint, method="GET", data=None):
+        captured["endpoint"] = endpoint
+        captured["method"] = method
+        captured["data"] = data
+        return {}
+
+    client._make_request = _capture  # type: ignore[method-assign]
+    assert client.close_task("task-123") == {}
+    assert captured["endpoint"] == "/tasks/close"
+    assert captured["method"] == "POST"
+    assert captured["data"] == {"id": "task-123"}

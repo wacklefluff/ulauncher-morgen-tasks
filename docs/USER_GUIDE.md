@@ -19,6 +19,15 @@ A complete guide to using the Morgen Tasks extension for Ulauncher.
 4. Find **Morgen Tasks**
 5. Enter your API key
 6. Optionally adjust the cache duration (default: 600 seconds / 10 minutes)
+7. (Optional) Set **Task Open URL Template** to control what opens when you press Enter on a task (opens Morgen; no official per-task deep link support)
+
+#### Where Your API Key Is Stored
+
+Ulauncher stores extension preferences (including your Morgen API key) **unencrypted** in a local SQLite DB. Typical path:
+
+- `~/.config/ulauncher/ext_preferences/ulauncher-morgen-tasks.db`
+
+The extension reads it via `extension.preferences` at runtime and does not store it in this repository.
 
 ### 3. Start Using
 
@@ -42,6 +51,12 @@ mg meeting
 mg project review
 ```
 Filters tasks by title or description. Case-insensitive.
+
+**Mark task as done:**
+```
+mg d meeting
+```
+Shows matching tasks; pressing Enter marks the selected task as done in Morgen.
 
 **Force refresh:**
 ```
@@ -187,7 +202,7 @@ Your API key may be invalid or expired. Generate a new one at https://platform.m
 
 ### Viewing Logs
 
-1. Run `mg help`
+1. Run `mg debug`
 2. Select "Open runtime log" or "Copy log path"
 
 Log location: `logs/runtime.log`
@@ -215,7 +230,9 @@ Log location: `logs/runtime.log`
 ## Keyboard Shortcuts
 
 In Ulauncher:
-- `Enter` on a task: Copy task ID (for debugging)
+- `Enter` on a task: Open in Morgen
+- `Alt+Enter` on a task: Copy task ID (if supported by your Ulauncher version)
+- `Enter` in done mode (`mg d ...`): Mark task as done
 - `Escape`: Close Ulauncher
 - `Ctrl+,`: Open preferences
 
@@ -225,4 +242,4 @@ In Ulauncher:
 
 See [CHANGELOG.md](../../CHANGELOG.md) for full version history.
 
-Current: **v0.6.6**
+Current: **v1.0.0**

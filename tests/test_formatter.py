@@ -45,3 +45,9 @@ def test_format_subtitle_truncates_description():
     assert subtitle.endswith("…")
     assert len(subtitle) < 200
 
+
+def test_format_subtitle_shows_created_when_no_due():
+    formatter = TaskFormatter()
+    task = {"title": "Task", "priority": 0, "due": None, "created": "2026-02-05T10:20:30"}
+    subtitle = formatter.format_subtitle(task)
+    assert subtitle == "Created: 2026-02-05 | Priority: Normal"

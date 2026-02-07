@@ -326,6 +326,8 @@ Access via `extension.preferences`:
 | `api_key` | input | Morgen API key |
 | `cache_ttl` | input | Cache duration (seconds) |
 
+Note: Ulauncher persists extension preferences (including `api_key`) **unencrypted** in a local SQLite DB (typically `~/.config/ulauncher/ext_preferences/ulauncher-morgen-tasks.db`). The extension reads values via `extension.preferences` at runtime and does not store secrets in this repository.
+
 ### Result Items
 
 ```python
