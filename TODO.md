@@ -23,8 +23,8 @@ Use this checklist **every time** you implement a feature or fix (not just once 
 
 ## Immediate Next Steps
 
-1. Pick remaining v1.2.0 scope items (beyond SUG-03) from the roadmap below
-2. Run manual v1.2.0 tests and record PASS/FAIL by test ID
+1. Run manual v1.2.0 tests and record PASS/FAIL by test ID (`S01-S03`, `DD01-DD05`)
+2. Pick any remaining v1.2.0 scope items from the roadmap below
 3. Release v1.2.0
 
 ## Release History
@@ -50,6 +50,7 @@ Candidates — pick items to commit to this release:
 
 ### From Backlog
 - [x] **SUG-03**: Search optimization threshold (evaluate whether 200+ cutoff makes sense) (+v1.2.0)
+- [x] **DEV-01**: Add dummy task seeding tools (`mg dev dummy-tasks` + CLI script) (+v1.2.0)
 
 ### From Future Enhancements (High)
 - [ ] Filter tasks by priority/due date

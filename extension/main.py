@@ -37,6 +37,11 @@ from src.morgen_api import (
 from src.cache import TaskCache
 from src.formatter import TaskFormatter
 from src.date_parser import DateParser, DateParseError
+from src.dev_dummy_tasks import (
+    DEFAULT_DUMMY_TASK_COUNT,
+    DEFAULT_DUMMY_TITLE_PREFIX,
+    build_dummy_task_specs,
+)
 from src.task_lists import group_tasks_by_list, get_task_list_ref, matches_list_name, matches_container_id
 
 logger = logging.getLogger(__name__)
@@ -185,6 +190,11 @@ class KeywordQueryEventListener(EventListener):
         if create_items is not None:
             logger.info("Showing create-task preview")
             return RenderResultListAction(create_items)
+
+        dev_items = self._maybe_build_dev_flow(raw_query)
+        if dev_items is not None:
+            logger.info("Showing dev flow")
+            return RenderResultListAction(dev_items)
 
         done_mode, done_raw = self._parse_done_command(raw_query)
         if done_mode:
@@ -391,6 +401,7 @@ class KeywordQueryEventListener(EventListener):
             ("Mark task done", "mg d <query>"),
             ("Clear cache", "mg clear"),
             ("Debug / logs", "mg debug"),
+            ("Dev: create dummy tasks", "mg dev dummy-tasks"),
         ]
         if new_task_keyword:
             examples.insert(4, ("Create task (shortcut keyword)", f"{new_task_keyword} <title> [@due] [!priority]"))
@@ -724,6 +735,46 @@ class KeywordQueryEventListener(EventListener):
 
         rest = parts[1].strip() if len(parts) > 1 else ""
         return self._build_create_flow_items(rest, usage="mg new <title> [@due] [!priority]")
+
+    def _maybe_build_dev_flow(self, raw_query: str):
+        """
+        Development-only helper flow.
+
+        Supported:
+          - `mg dev dummy-tasks`
+        """
+        if not raw_query:
+            return None
+
+        normalized = raw_query.strip().lower()
+        if normalized not in {"dev dummy-tasks", "dev dummy tasks"}:
+            return None
+
+        payload = {
+            "action": "create_dummy_tasks",
+            "count": DEFAULT_DUMMY_TASK_COUNT,
+            "prefix": DEFAULT_DUMMY_TITLE_PREFIX,
+        }
+        return [
+            ExtensionResultItem(
+                icon="images/icon.png",
+                name="Dev: Create 90 dummy tasks in Morgen",
+                description='Prefix: "#dev Testing " | Enter to run',
+                on_enter=ExtensionCustomAction(payload, keep_app_open=True),
+            ),
+            ExtensionResultItem(
+                icon="images/icon.png",
+                name="Warning",
+                description="This creates real tasks in your Morgen account.",
+                on_enter=HideWindowAction(),
+            ),
+            ExtensionResultItem(
+                icon="images/icon.png",
+                name="Cancel",
+                description="Close without creating dummy tasks",
+                on_enter=HideWindowAction(),
+            ),
+        ]
 
     def _build_create_flow_items(self, rest: str, *, usage: str):
         items = []
@@ -1166,7 +1217,7 @@ class ItemEnterEventListener(EventListener):
             return HideWindowAction()
 
         action = data.get("action")
-        if action not in {"create_task", "complete_task", "show_list", "dump_task_fields"}:
+        if action not in {"create_task", "complete_task", "show_list", "dump_task_fields", "create_dummy_tasks"}:
             return HideWindowAction()
 
         title = (data.get("title") or "").strip()
@@ -1178,6 +1229,11 @@ class ItemEnterEventListener(EventListener):
 
         task_id = (data.get("task_id") or "").strip()
         task_title = (data.get("task_title") or "").strip()
+        dummy_prefix = str(data.get("prefix") or DEFAULT_DUMMY_TITLE_PREFIX)
+        try:
+            dummy_count = max(1, int(data.get("count") or DEFAULT_DUMMY_TASK_COUNT))
+        except Exception:
+            dummy_count = DEFAULT_DUMMY_TASK_COUNT
 
         list_id = (data.get("list_id") or "").strip() or None
         list_name = (data.get("list_name") or "").strip() or None
@@ -1190,10 +1246,10 @@ class ItemEnterEventListener(EventListener):
         except ValueError:
             cache_ttl = 600
 
-        if not api_key and action in {"create_task", "complete_task"}:
+        if not api_key and action in {"create_task", "complete_task", "create_dummy_tasks"}:
             return RenderResultListAction([ExtensionResultItem(
                 icon='images/icon.png',
-                name='Cannot create task',
+                name='Cannot run action',
                 description='Missing API key. Set it in extension preferences. Run "mg debug" for logs.',
                 on_enter=HideWindowAction()
             )])
@@ -1367,6 +1423,63 @@ class ItemEnterEventListener(EventListener):
                     description=description,
                     on_enter=HideWindowAction()
                 )])
+
+            if action == "create_dummy_tasks":
+                specs = build_dummy_task_specs(count=dummy_count, title_prefix=dummy_prefix)
+                created = 0
+                failed = 0
+                first_error = ""
+
+                for spec in specs:
+                    try:
+                        extension.api_client.create_task(
+                            title=spec["title"],
+                            description=spec["description"],
+                            due=spec["due"],
+                            priority=spec["priority"],
+                        )
+                        created += 1
+                    except (MorgenAuthError, MorgenRateLimitError, MorgenNetworkError, MorgenAPIError) as e:
+                        failed += 1
+                        first_error = first_error or str(getattr(e, "message", e))
+                        # Stop on hard API failures to avoid extra request spam.
+                        break
+                    except Exception as e:  # pragma: no cover - safety
+                        failed += 1
+                        first_error = first_error or str(e)
+                        break
+
+                if extension.cache:
+                    extension.cache.invalidate()
+
+                logger.info(
+                    "Dummy task seeding finished (requested=%d created=%d failed=%d)",
+                    dummy_count,
+                    created,
+                    failed,
+                )
+                items = [
+                    ExtensionResultItem(
+                        icon="images/icon.png",
+                        name="Dummy task seed complete",
+                        description=f"Created: {created} | Failed: {failed} | Prefix: {dummy_prefix}",
+                        on_enter=HideWindowAction(),
+                    )
+                ]
+                if first_error:
+                    items.append(ExtensionResultItem(
+                        icon="images/icon.png",
+                        name="First error",
+                        description=f"{first_error}",
+                        on_enter=HideWindowAction(),
+                    ))
+                items.append(ExtensionResultItem(
+                    icon="images/icon.png",
+                    name="Tip",
+                    description='Run "mg refresh" once to reload from API.',
+                    on_enter=HideWindowAction(),
+                ))
+                return RenderResultListAction(items)
 
             if not task_id:
                 return RenderResultListAction([ExtensionResultItem(

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Dev seed flow: `mg dev dummy-tasks` now creates 90 real test tasks in Morgen (title prefix `#dev Testing `) with varied priorities and due dates.
+- New tooling for seeding test data:
+  - `development/tools/create_dummy_morgen_tasks.py` (creates real tasks via API key)
+  - `extension/src/dev_dummy_tasks.py` (shared dummy payload generator)
+
 ### Changed
 - Search index optimization now activates only when cache has at least 200 tasks; smaller sets use on-the-fly lowercase matching to avoid index overhead.
 

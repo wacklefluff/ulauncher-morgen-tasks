@@ -1,5 +1,40 @@
 # Development Log
 
+## 2026-02-07 (Session 26)
+
+**Goals**:
+- Add real dummy-task seeding for performance/testing workflows
+
+**Accomplished**:
+- Added shared dummy-task generator module:
+  - `extension/src/dev_dummy_tasks.py`
+- Added Ulauncher dev command:
+  - `mg dev dummy-tasks` (creates 90 real tasks with `#dev Testing ` prefix)
+  - Added confirmation UI and bulk-create action handling in `extension/main.py`
+- Added CLI seeding script:
+  - `development/tools/create_dummy_morgen_tasks.py`
+  - Supports `--count`, `--prefix`, `--api-key`/`MORGEN_API_KEY`, and `--dry-run`
+- Added unit tests:
+  - `extension/tests/test_dev_dummy_tasks.py`
+- Updated docs/tracking:
+  - `extension/README.md` command table
+  - `CHANGELOG.md` (Unreleased)
+  - `TODO.md` roadmap/context
+- Added manual test plan:
+  - `development/research/test_plan_v1.2.0_dummy_tasks_2026-02-07.md`
+
+**Manual Tests**:
+- DD01 PENDING
+- DD02 PENDING
+- DD03 PENDING
+- DD04 PENDING
+- DD05 PENDING
+
+**Automated Tests**:
+- `nix-shell --run "pytest -q"`: PASS (43 tests)
+
+---
+
 ## 2026-02-07 (Session 25)
 
 **Goals**:
