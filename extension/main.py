@@ -760,13 +760,6 @@ class KeywordQueryEventListener(EventListener):
         if not summary:
             summary.append("No due date / priority")
 
-        items.append(ExtensionResultItem(
-            icon="images/icon.png",
-            name="Create Morgen task",
-            description=" | ".join(summary),
-            on_enter=HideWindowAction(),
-        ))
-
         payload = {
             "action": "create_task",
             "title": title,
@@ -777,7 +770,7 @@ class KeywordQueryEventListener(EventListener):
         items.append(ExtensionResultItem(
             icon="images/icon.png",
             name=f"Create: {title}",
-            description="Press Enter to create this task",
+            description=" | ".join(summary),
             on_enter=ExtensionCustomAction(payload, keep_app_open=True),
         ))
 
