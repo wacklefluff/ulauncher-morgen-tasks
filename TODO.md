@@ -195,6 +195,7 @@ Testing:
 - Remember to update `extension/logs/dev_log.md` during each session
 - Log issues in `extension/logs/issues.md` as they arise
 - Log improvement ideas in `extension/logs/improvements.md`
+- Protocols live in `development/protocols/` (handoff + git maintenance)
 - Make small, frequent git commits
 - Test after each feature implementation
 

@@ -11,57 +11,35 @@ Quick reference guide for AI agents working on the Ulauncher Morgen Tasks Extens
 
 ## Handoff Protocol
 
-### When to Write a Handoff
-Write a handoff file at **natural break points**:
-- After completing a sub-task (e.g., finished one file, moving to next)
-- Before starting a large/risky change
-- When user says "pause", "stop", or "switch agents"
-- If you receive a rate limit error
-- Before context compaction/conversation restart
+Use the dedicated protocol file:
+- `development/protocols/ai_agent_handoff_protocol_2026-02-07.md`
 
-### Ask User to Check Rate Limits
-At natural break points, ask: *"Should I continue or would you like to check rate limits first?"*
+This includes:
+- when to write handoffs,
+- rate-limit prompt policy,
+- required file template,
+- archive/continuation rules.
 
-**How users check rate limits:**
-- **Claude Code**: Run `/status` or check "Account and usage..." in settings
-- **Codex CLI**: Run `codex --usage` or check OpenAI dashboard
-- **Gemini CLI**: Check Google AI Studio usage dashboard
-- **GitHub Copilot**: GitHub settings → Copilot → Usage
-
-### Handoff File Format
-Create `development/handoff/handoff_YYYY-MM-DD_HHmm.md`:
-
-```markdown
-# AI Agent Handoff
-
-**Agent**: [Model name]
-**Timestamp**: YYYY-MM-DD HH:mm
-**Reason**: [Natural break / User request / Rate limit / Context limit]
-
-## Current Task
-[What you were working on]
-
-## Progress Made
-- [Completed items]
-
-## Next Steps
-1. [Immediate next action]
-2. [Following actions]
-
-## Files Modified (uncommitted)
-- [List any uncommitted changes]
-
-## Notes for Next Agent
-[Context, gotchas, important information]
-```
-
-### For Continuing Agents
-1. Check `development/handoff/` for recent handoff files
-2. Read the most recent handoff to understand context
-3. Continue from where previous agent stopped
-4. Archive completed handoff file to `development/handoff/archive/`
+Trigger phrase:
+- If user says `handoff session`, write a handoff file immediately using that protocol.
 
 ---
+
+## Workflow
+
+1. **Start Session**:
+   - Read `dev_log.md` and `TODO.md`
+   - Check git status
+
+2. **During Work**:
+   - Make small changes
+   - Test frequently: `pkill ulauncher && ulauncher -v`
+   - Update `dev_log.md` with progress
+
+3. **End Session**:
+   - Update `dev_log.md` with accomplishments
+   - Update `TODO.md` (check off tasks + refresh context)
+   - Commit: `git add -A && git commit -m "type: description"`
 
 ## What to Do First
 
@@ -81,6 +59,9 @@ Create `development/handoff/handoff_YYYY-MM-DD_HHmm.md`:
    ```
 
 3. **Start working on next task** in `TODO.md`
+
+
+
 
 ## Current Status
 
@@ -201,22 +182,6 @@ git commit -m "feat: description"
 cat extension/logs/dev_log.md
 cat TODO.md
 ```
-
-## Workflow
-
-1. **Start Session**:
-   - Read `dev_log.md` and `TODO.md`
-   - Check git status
-
-2. **During Work**:
-   - Make small changes
-   - Test frequently: `pkill ulauncher && ulauncher -v`
-   - Update `dev_log.md` with progress
-
-3. **End Session**:
-   - Update `dev_log.md` with accomplishments
-   - Update `TODO.md` (check off tasks + refresh context)
-   - Commit: `git add -A && git commit -m "type: description"`
 
 ## Testing
 
