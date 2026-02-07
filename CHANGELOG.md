@@ -5,6 +5,11 @@ All notable changes to the Ulauncher Morgen Tasks extension will be documented i
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+- Search index optimization now activates only when cache has at least 200 tasks; smaller sets use on-the-fly lowercase matching to avoid index overhead.
+
 ## [1.1.0] - 2026-02-07
 
 ### Added

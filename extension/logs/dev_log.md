@@ -1,5 +1,32 @@
 # Development Log
 
+## 2026-02-07 (Session 25)
+
+**Goals**:
+- Implement SUG-03 search optimization threshold behavior
+
+**Accomplished**:
+- Updated `extension/src/cache.py` to only build the precomputed search index when task count is >= 200
+- Added debug logging for threshold skip/build decisions
+- Updated `extension/tests/test_perf.py`:
+  - Adjusted index-building test to use 250 tasks
+  - Added coverage for below-threshold behavior (no index for 100 tasks)
+- Added manual test plan for this change:
+  - `development/research/test_plan_v1.2.0_sug03_2026-02-07.md`
+- Updated release tracking docs:
+  - `CHANGELOG.md` (Unreleased)
+  - `TODO.md` (SUG-03 marked complete for v1.2.0)
+
+**Manual Tests**:
+- S01 PENDING
+- S02 PENDING
+- S03 PENDING
+
+**Automated Tests**:
+- `nix-shell --run "pytest -q"`: PASS (41 tests)
+
+---
+
 ## 2026-02-07 (Session 24)
 
 **Goals**:

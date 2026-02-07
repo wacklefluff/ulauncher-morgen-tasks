@@ -27,8 +27,8 @@ def test_search_with_index():
     """Test search performance with pre-computed index."""
     cache = TaskCache(ttl=600, cache_path=None)
 
-    # Generate 100 tasks
-    mock_response = generate_mock_tasks(100)
+    # Generate enough tasks to cross the indexing threshold.
+    mock_response = generate_mock_tasks(250)
     cache.set_tasks(mock_response)
 
     tasks = cache.get_tasks()
@@ -36,7 +36,7 @@ def test_search_with_index():
 
     assert tasks is not None, "Tasks should be cached"
     assert search_index is not None, "Search index should exist"
-    assert len(search_index) == 100, "Search index should have 100 entries"
+    assert len(search_index) == 250, "Search index should have 250 entries"
 
     # Verify index content
     assert "task-0" in search_index
@@ -45,6 +45,19 @@ def test_search_with_index():
     assert "description for task 0" in desc
 
     print(f"✓ Search index built correctly with {len(search_index)} entries")
+
+
+def test_search_index_skipped_below_threshold():
+    """Search index should be skipped for small task sets (<200)."""
+    cache = TaskCache(ttl=600, cache_path=None)
+    cache.set_tasks(generate_mock_tasks(100))
+
+    tasks = cache.get_tasks()
+    search_index = cache.get_search_index()
+
+    assert tasks is not None, "Tasks should be cached"
+    assert len(tasks) == 100
+    assert search_index is None, "Search index should be disabled below threshold"
 
 
 def test_search_performance():

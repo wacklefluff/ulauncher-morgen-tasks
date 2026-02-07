@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 _DEFAULT_CACHE_DIR = os.path.join(os.path.expanduser("~"), ".cache", "ulauncher-morgen-tasks")
 _DEFAULT_CACHE_FILE = os.path.join(_DEFAULT_CACHE_DIR, "tasks_cache.json")
+_SEARCH_INDEX_THRESHOLD = 200
 
 
 class TaskCache:
@@ -91,6 +92,15 @@ class TaskCache:
 
     def _build_search_index(self, tasks):
         """Pre-compute lowercase title+description for fast searching."""
+        if len(tasks) < _SEARCH_INDEX_THRESHOLD:
+            self._search_index = None
+            logger.debug(
+                "Search index skipped: %d tasks (threshold: %d)",
+                len(tasks),
+                _SEARCH_INDEX_THRESHOLD,
+            )
+            return
+
         self._search_index = {}
         for task in tasks:
             task_id = task.get("id")
@@ -99,7 +109,11 @@ class TaskCache:
             title = (task.get("title") or "").lower()
             description = (task.get("description") or "").lower()
             self._search_index[task_id] = (title, description)
-        logger.debug("Search index built: %d entries", len(self._search_index))
+        logger.debug(
+            "Search index built: %d entries (threshold: %d)",
+            len(self._search_index),
+            _SEARCH_INDEX_THRESHOLD,
+        )
 
     def get_search_index(self):
         """Return pre-computed search index {task_id: (title_lower, desc_lower)}."""

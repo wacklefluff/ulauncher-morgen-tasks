@@ -23,8 +23,9 @@ Use this checklist **every time** you implement a feature or fix (not just once 
 
 ## Immediate Next Steps
 
-1. Decide v1.2.0 scope (pick from candidates below)
-2. Implement, test, release
+1. Pick remaining v1.2.0 scope items (beyond SUG-03) from the roadmap below
+2. Run manual v1.2.0 tests and record PASS/FAIL by test ID
+3. Release v1.2.0
 
 ## Release History
 
@@ -48,7 +49,7 @@ Use this checklist **every time** you implement a feature or fix (not just once 
 Candidates — pick items to commit to this release:
 
 ### From Backlog
-- [ ] **SUG-03**: Search optimization threshold (evaluate whether 200+ cutoff makes sense)
+- [x] **SUG-03**: Search optimization threshold (evaluate whether 200+ cutoff makes sense) (+v1.2.0)
 
 ### From Future Enhancements (High)
 - [ ] Filter tasks by priority/due date
