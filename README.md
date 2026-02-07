@@ -191,6 +191,7 @@ Your Morgen API key is stored by **Ulauncher** **unencrypted** in a local SQLite
 - **User Guide**: `extension/README.md` - End-user documentation
 - **Development Guide**: `CLAUDE.md` - AI agent/developer guide
 - **Agent Quick Reference**: `AGENTS.md` - Quick start for AI agents
+- **Git Maintenance Protocol**: `development/protocols/git_maintenance_protocol_2026-02-07.md` - Branch/tag/release maintenance guide
 - **Implementation Plan**: `.claude/plans/buzzing-waddling-fiddle.md` - Detailed implementation plan
 - **Morgen API Docs**: `(Morgen) Tasks - Morgen Developer Documentation.pdf`
 - **Development Log**: `extension/logs/dev_log.md`

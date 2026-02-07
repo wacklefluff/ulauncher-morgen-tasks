@@ -549,6 +549,7 @@ ls development/research/
 
 **Documentation Locations**:
 - Implementation plans: `development/research/`
+- Git maintenance protocol: `development/protocols/git_maintenance_protocol_2026-02-07.md`
 - Morgen API docs: `https://docs.morgen.so/ or "(Morgen) Tasks - Morgen Developer Documentation.pdf"`
 - Ulauncher API: https://docs.ulauncher.io/
 - Development issues: `extension/logs/issues.md`

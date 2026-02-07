@@ -301,6 +301,8 @@ git commit -m "feat: implement Morgen API client with caching"
 
 **Implementation Plans**: `development/research/`
 
+**Git Maintenance Protocol**: `development/protocols/git_maintenance_protocol_2026-02-07.md`
+
 **Morgen API Docs**: `(Morgen) Tasks - Morgen Developer Documentation.pdf`
 
 **Ulauncher API**: https://docs.ulauncher.io/
